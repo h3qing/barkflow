@@ -568,7 +568,7 @@
     },
     "title": "Redefinir sua senha"
   },
-  "fullPrompt": "Prompt completo",
+  "actionPrompt": "Prompt de ação",
   "hotkeyGuidance": {
     "blockedDescription": "Esses atalhos são bloqueados porque são comumente usados pelo sistema.",
     "blockedTitle": "Atalhos bloqueados",

@@ -18,7 +18,7 @@ interface Message {
 }
 
 const MIN_HEIGHT = 200;
-const MAX_HEIGHT = 700;
+const MAX_HEIGHT = 1000;
 const WIDTH = 420;
 
 export default function AgentOverlay() {
@@ -169,11 +169,43 @@ export default function AgentOverlay() {
     };
   }, [addSystemMessage, handleTranscriptionComplete]);
 
+  const resizeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastSentHeightRef = useRef<number>(0);
+
   const resizeToContent = useCallback(() => {
     const el = containerRef.current;
     if (!el) return;
-    const height = Math.max(MIN_HEIGHT, Math.min(el.scrollHeight, MAX_HEIGHT));
-    window.electronAPI?.resizeAgentWindow?.(WIDTH, height);
+
+    // Find the scrollable chat container
+    const chatEl = el.querySelector(".agent-chat-scroll") as HTMLElement;
+    if (!chatEl) return;
+
+    const chatContent = chatEl.firstElementChild as HTMLElement;
+    if (!chatContent) return;
+
+    // Empty state has h-full class — skip resize to avoid oscillation
+    if (chatContent.classList.contains("h-full")) return;
+
+    // Measure the actual message list height + chat padding
+    const chatStyle = getComputedStyle(chatEl);
+    const chatPadding =
+      parseFloat(chatStyle.paddingTop || "0") + parseFloat(chatStyle.paddingBottom || "0");
+    const contentHeight = chatContent.scrollHeight + chatPadding;
+
+    // Title bar (h-8 = 32px) + chat content + Input (h-12 = 48px) + borders (~2px)
+    const desiredHeight = 32 + contentHeight + 48 + 2;
+    const height = Math.max(MIN_HEIGHT, Math.min(Math.ceil(desiredHeight), MAX_HEIGHT));
+
+    // Skip if height hasn't meaningfully changed
+    if (Math.abs(height - lastSentHeightRef.current) < 4) return;
+    lastSentHeightRef.current = height;
+
+    if (resizeTimeoutRef.current) {
+      clearTimeout(resizeTimeoutRef.current);
+    }
+    resizeTimeoutRef.current = setTimeout(() => {
+      window.electronAPI?.resizeAgentWindow?.(WIDTH, height);
+    }, 50);
   }, []);
 
   useEffect(() => {
@@ -230,6 +262,8 @@ export default function AgentOverlay() {
     setAgentState("idle");
     setPartialTranscript("");
     conversationIdRef.current = null;
+    lastSentHeightRef.current = 0;
+    window.electronAPI?.resizeAgentWindow?.(WIDTH, MIN_HEIGHT);
   }, []);
 
   const handleClose = useCallback(() => {

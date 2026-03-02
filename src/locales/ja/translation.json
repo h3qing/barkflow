@@ -596,7 +596,7 @@
     },
     "title": "パスワードをリセット"
   },
-  "fullPrompt": "フルプロンプト",
+  "actionPrompt": "アクションプロンプト",
   "hotkeyGuidance": {
     "blockedDescription": "これらのショートカットはシステムでよく使われるためブロックされています。",
     "blockedTitle": "ブロックされたショートカット",

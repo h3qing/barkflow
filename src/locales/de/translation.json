@@ -596,7 +596,7 @@
     },
     "title": "Passwort zurücksetzen"
   },
-  "fullPrompt": "Vollständiger Prompt",
+  "actionPrompt": "Aktions-Prompt",
   "hotkeyGuidance": {
     "blockedDescription": "Diese Tastenkombinationen sind blockiert, da sie häufig vom System verwendet werden.",
     "blockedTitle": "Blockierte Tastenkombinationen",

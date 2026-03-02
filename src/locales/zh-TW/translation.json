@@ -596,7 +596,7 @@
     },
     "title": "重設你的密碼"
   },
-  "fullPrompt": "完整提示詞",
+  "actionPrompt": "動作提示詞",
   "hotkeyGuidance": {
     "blockedDescription": "這些快捷鍵已被封鎖，因為它們通常是系統保留的。",
     "blockedTitle": "已封鎖的快捷鍵",

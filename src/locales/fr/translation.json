@@ -596,7 +596,7 @@
     },
     "title": "Réinitialiser votre mot de passe"
   },
-  "fullPrompt": "Prompt complet",
+  "actionPrompt": "Prompt d'action",
   "hotkeyGuidance": {
     "blockedDescription": "Ces raccourcis sont bloqués car ils sont couramment utilisés par le système.",
     "blockedTitle": "Raccourcis bloqués",

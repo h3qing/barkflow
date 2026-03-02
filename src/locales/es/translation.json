@@ -596,7 +596,7 @@
     },
     "title": "Restablece tu contraseña"
   },
-  "fullPrompt": "Prompt completo",
+  "actionPrompt": "Prompt de acción",
   "hotkeyGuidance": {
     "blockedDescription": "Estos atajos están bloqueados porque son de uso común del sistema.",
     "blockedTitle": "Atajos bloqueados",

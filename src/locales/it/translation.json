@@ -596,7 +596,7 @@
     },
     "title": "Reimposta la password"
   },
-  "fullPrompt": "Prompt completo",
+  "actionPrompt": "Prompt di azione",
   "hotkeyGuidance": {
     "blockedDescription": "Queste scorciatoie sono bloccate perché comunemente usate dal sistema.",
     "blockedTitle": "Scorciatoie bloccate",

@@ -4,10 +4,9 @@ import { en as enPrompts, type PromptBundle } from "../locales/prompts";
 import { getLanguageInstruction } from "../utils/languageSupport";
 
 export const CLEANUP_PROMPT = promptData.CLEANUP_PROMPT;
-export const FULL_PROMPT = promptData.FULL_PROMPT;
-/** @deprecated Use FULL_PROMPT instead — kept for PromptStudio backwards compat */
-export const UNIFIED_SYSTEM_PROMPT = promptData.FULL_PROMPT;
-export const LEGACY_PROMPTS = promptData.LEGACY_PROMPTS;
+export const ACTION_PROMPT = promptData.ACTION_PROMPT;
+/** @deprecated Use ACTION_PROMPT — kept for PromptStudio compat */
+export const UNIFIED_SYSTEM_PROMPT = promptData.ACTION_PROMPT;
 
 function getPromptBundle(uiLanguage?: string): PromptBundle {
   const locale = normalizeUiLanguage(uiLanguage || "en");
@@ -15,7 +14,7 @@ function getPromptBundle(uiLanguage?: string): PromptBundle {
 
   return {
     cleanupPrompt: t("cleanupPrompt", { defaultValue: enPrompts.cleanupPrompt }),
-    fullPrompt: t("fullPrompt", { defaultValue: enPrompts.fullPrompt }),
+    actionPrompt: t("actionPrompt", { defaultValue: enPrompts.actionPrompt }),
     dictionarySuffix: t("dictionarySuffix", { defaultValue: enPrompts.dictionarySuffix }),
   };
 }
@@ -24,11 +23,7 @@ function detectAgentName(transcript: string, agentName: string): boolean {
   const lower = transcript.toLowerCase();
   const name = agentName.toLowerCase();
 
-  if (lower.includes(name)) return true;
-
-  const variants: string[] = [];
-
-  return variants.some((v) => lower.includes(v));
+  return lower.includes(name);
 }
 
 export function getSystemPrompt(
@@ -47,9 +42,7 @@ export function getSystemPrompt(
     if (customPrompt) {
       try {
         promptTemplate = JSON.parse(customPrompt);
-      } catch {
-        // Use default if parsing fails
-      }
+      } catch {}
     }
   }
 
@@ -57,8 +50,8 @@ export function getSystemPrompt(
   if (promptTemplate) {
     prompt = promptTemplate.replace(/\{\{agentName\}\}/g, name);
   } else {
-    const useFullPrompt = !transcript || detectAgentName(transcript, name);
-    prompt = (useFullPrompt ? prompts.fullPrompt : prompts.cleanupPrompt).replace(
+    const useActionPrompt = !transcript || detectAgentName(transcript, name);
+    prompt = (useActionPrompt ? prompts.actionPrompt : prompts.cleanupPrompt).replace(
       /\{\{agentName\}\}/g,
       name
     );
@@ -93,13 +86,3 @@ export function getAgentSystemPrompt(): string {
   }
   return DEFAULT_AGENT_SYSTEM_PROMPT;
 }
-
-export default {
-  CLEANUP_PROMPT,
-  FULL_PROMPT,
-  UNIFIED_SYSTEM_PROMPT,
-  getSystemPrompt,
-  getWordBoost,
-  getAgentSystemPrompt,
-  LEGACY_PROMPTS,
-};

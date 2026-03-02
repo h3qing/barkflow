@@ -30,6 +30,7 @@ class WindowManager {
     this.winPushState = null;
     this._cachedActivationMode = "tap";
     this._floatingIconAutoHide = false;
+    this._agentAnimationState = null;
 
     app.on("before-quit", () => {
       this.isQuitting = true;
@@ -600,6 +601,16 @@ class WindowManager {
   showAgentOverlay() {
     if (!this.agentWindow || this.agentWindow.isDestroyed()) return;
 
+    // Reset to compact initial size
+    this._clearAgentAnimation();
+    const bounds = this.agentWindow.getBounds();
+    this.agentWindow.setBounds({
+      x: bounds.x,
+      y: bounds.y,
+      width: AGENT_OVERLAY_CONFIG.width,
+      height: AGENT_OVERLAY_CONFIG.height,
+    });
+
     this._positionAgentWindow();
     WindowPositionUtil.setupAlwaysOnTop(this.agentWindow);
 
@@ -615,6 +626,7 @@ class WindowManager {
   hideAgentOverlay() {
     if (!this.agentWindow || this.agentWindow.isDestroyed()) return;
 
+    this._clearAgentAnimation();
     this.agentWindow.webContents.send("agent-stop-recording");
     this.agentWindow.hide();
   }
@@ -622,24 +634,88 @@ class WindowManager {
   resizeAgentWindow(width, height) {
     if (!this.agentWindow || this.agentWindow.isDestroyed()) return;
 
-    const clamped = {
-      width: Math.max(
-        AGENT_OVERLAY_CONFIG.minWidth,
-        Math.min(width, AGENT_OVERLAY_CONFIG.maxWidth)
-      ),
-      height: Math.max(
-        AGENT_OVERLAY_CONFIG.minHeight,
-        Math.min(height, AGENT_OVERLAY_CONFIG.maxHeight)
-      ),
+    const ANIMATION_DURATION_MS = 250;
+    const TICK_MS = 16;
+
+    const targetWidth = Math.max(
+      AGENT_OVERLAY_CONFIG.minWidth,
+      Math.min(width, AGENT_OVERLAY_CONFIG.maxWidth)
+    );
+    const targetHeight = Math.max(
+      AGENT_OVERLAY_CONFIG.minHeight,
+      Math.min(height, AGENT_OVERLAY_CONFIG.maxHeight)
+    );
+
+    const currentBounds = this.agentWindow.getBounds();
+
+    if (currentBounds.height === targetHeight && currentBounds.width === targetWidth) {
+      this._clearAgentAnimation();
+      return;
+    }
+
+    // If animation already running, retarget from current position
+    if (this._agentAnimationState) {
+      this._agentAnimationState.targetHeight = targetHeight;
+      this._agentAnimationState.targetWidth = targetWidth;
+      this._agentAnimationState.startHeight = currentBounds.height;
+      this._agentAnimationState.startWidth = currentBounds.width;
+      this._agentAnimationState.startTime = Date.now();
+      return;
+    }
+
+    this._agentAnimationState = {
+      startHeight: currentBounds.height,
+      startWidth: currentBounds.width,
+      targetHeight,
+      targetWidth,
+      startTime: Date.now(),
+      intervalId: null,
     };
 
-    const bounds = this.agentWindow.getBounds();
-    this.agentWindow.setBounds({
-      x: bounds.x,
-      y: bounds.y,
-      width: clamped.width,
-      height: clamped.height,
-    });
+    this._agentAnimationState.intervalId = setInterval(() => {
+      if (!this.agentWindow || this.agentWindow.isDestroyed()) {
+        this._clearAgentAnimation();
+        return;
+      }
+
+      const state = this._agentAnimationState;
+      if (!state) return;
+
+      const elapsed = Date.now() - state.startTime;
+      const rawT = Math.min(elapsed / ANIMATION_DURATION_MS, 1);
+      // Ease-out quadratic
+      const t = 1 - (1 - rawT) * (1 - rawT);
+
+      const newHeight = Math.round(
+        state.startHeight + (state.targetHeight - state.startHeight) * t
+      );
+      const newWidth = Math.round(state.startWidth + (state.targetWidth - state.startWidth) * t);
+
+      const bounds = this.agentWindow.getBounds();
+
+      // Clamp to screen work area
+      const display = screen.getDisplayNearestPoint({ x: bounds.x, y: bounds.y });
+      const workArea = display.workArea || display.bounds;
+      const clampedHeight = Math.min(newHeight, workArea.y + workArea.height - bounds.y);
+
+      this.agentWindow.setBounds({
+        x: bounds.x,
+        y: bounds.y,
+        width: newWidth,
+        height: Math.max(AGENT_OVERLAY_CONFIG.minHeight, clampedHeight),
+      });
+
+      if (rawT >= 1) {
+        this._clearAgentAnimation();
+      }
+    }, TICK_MS);
+  }
+
+  _clearAgentAnimation() {
+    if (this._agentAnimationState?.intervalId) {
+      clearInterval(this._agentAnimationState.intervalId);
+    }
+    this._agentAnimationState = null;
   }
 
   _positionAgentWindow() {

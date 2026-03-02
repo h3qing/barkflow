@@ -110,7 +110,7 @@ const AGENT_OVERLAY_CONFIG = {
   minWidth: 360,
   minHeight: 200,
   maxWidth: 600,
-  maxHeight: 700,
+  maxHeight: 1000,
   frame: false,
   alwaysOnTop: true,
   transparent: true,

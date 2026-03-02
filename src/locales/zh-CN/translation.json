@@ -596,7 +596,7 @@
     },
     "title": "重置密码"
   },
-  "fullPrompt": "完整提示词",
+  "actionPrompt": "动作提示词",
   "hotkeyGuidance": {
     "blockedDescription": "以下快捷方式已被屏蔽，因为它们是常用的系统快捷键。",
     "blockedTitle": "被屏蔽的快捷方式",

@@ -11,7 +11,7 @@ import zhTWPrompts from "./zh-TW/prompts.json";
 
 export interface PromptBundle {
   cleanupPrompt: string;
-  fullPrompt: string;
+  actionPrompt: string;
   dictionarySuffix: string;
 }
 

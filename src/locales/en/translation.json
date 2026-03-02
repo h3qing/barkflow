@@ -596,7 +596,7 @@
     },
     "title": "Reset your password"
   },
-  "fullPrompt": "Full Prompt",
+  "actionPrompt": "Action Prompt",
   "hotkeyGuidance": {
     "blockedDescription": "These shortcuts are blocked because they are commonly used by the system.",
     "blockedTitle": "Blocked shortcuts",
