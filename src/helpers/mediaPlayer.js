@@ -9,8 +9,10 @@ class MediaPlayer {
     this._linuxBinaryPath = null;
     this._nircmdChecked = false;
     this._nircmdPath = null;
+    this._macBinaryChecked = false;
+    this._macBinaryPath = null;
     this._pausedPlayers = []; // MPRIS players we paused (Linux)
-    this._didPause = false; // Whether we sent a pause on macOS/Windows
+    this._didPause = false; // Whether we sent a pause via toggle fallback
   }
 
   _resolveLinuxFastPaste() {
@@ -53,6 +55,33 @@ class MediaPlayer {
       try {
         if (fs.existsSync(candidate)) {
           this._nircmdPath = candidate;
+          return candidate;
+        }
+      } catch {
+        continue;
+      }
+    }
+    return null;
+  }
+
+  _resolveMacMediaRemote() {
+    if (this._macBinaryChecked) return this._macBinaryPath;
+    this._macBinaryChecked = true;
+
+    const candidates = [
+      path.join(__dirname, "..", "..", "resources", "bin", "macos-media-remote"),
+      path.join(__dirname, "..", "..", "resources", "macos-media-remote"),
+    ];
+
+    if (process.resourcesPath) {
+      candidates.push(path.join(process.resourcesPath, "bin", "macos-media-remote"));
+    }
+
+    for (const candidate of candidates) {
+      try {
+        if (fs.existsSync(candidate)) {
+          fs.accessSync(candidate, fs.constants.X_OK);
+          this._macBinaryPath = candidate;
           return candidate;
         }
       } catch {
@@ -271,19 +300,31 @@ class MediaPlayer {
     return toggled;
   }
 
-  // --- macOS ---
+  // --- macOS: MediaRemote-aware pause/resume ---
 
   _pauseMacOS() {
     this._didPause = false;
-    const result = spawnSync("osascript", [
-      "-e",
-      'tell application "System Events" to key code 100',
-    ], {
-      stdio: "pipe",
-      timeout: 3000,
-    });
-    if (result.status === 0) {
-      debugLogger.debug("Media paused via osascript", {}, "media");
+
+    // Try MediaRemote binary first (state-aware, no toggle)
+    const binary = this._resolveMacMediaRemote();
+    if (binary) {
+      const result = spawnSync(binary, ["--pause"], {
+        stdio: "pipe",
+        timeout: 3000,
+      });
+      if (result.status === 0) {
+        debugLogger.debug("Media paused via MediaRemote", {}, "media");
+        this._didPause = true;
+        return true;
+      }
+      // exit 1 = nothing was playing, don't fallback to toggle
+      const output = (result.stdout?.toString() || "").trim();
+      if (output === "NOT_PLAYING") return false;
+    }
+
+    // Fallback to media key toggle
+    debugLogger.debug("MediaRemote unavailable, falling back to osascript", {}, "media");
+    if (this._sendMacMediaKey()) {
       this._didPause = true;
       return true;
     }
@@ -293,6 +334,24 @@ class MediaPlayer {
   _resumeMacOS() {
     if (!this._didPause) return false;
     this._didPause = false;
+
+    const binary = this._resolveMacMediaRemote();
+    if (binary) {
+      const result = spawnSync(binary, ["--play"], {
+        stdio: "pipe",
+        timeout: 3000,
+      });
+      if (result.status === 0) {
+        debugLogger.debug("Media resumed via MediaRemote", {}, "media");
+        return true;
+      }
+    }
+
+    // Fallback to media key toggle
+    return this._sendMacMediaKey();
+  }
+
+  _sendMacMediaKey() {
     const result = spawnSync("osascript", [
       "-e",
       'tell application "System Events" to key code 100',
@@ -301,7 +360,7 @@ class MediaPlayer {
       timeout: 3000,
     });
     if (result.status === 0) {
-      debugLogger.debug("Media resumed via osascript", {}, "media");
+      debugLogger.debug("Media key sent via osascript", {}, "media");
       return true;
     }
     return false;
