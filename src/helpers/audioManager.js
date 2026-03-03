@@ -587,12 +587,13 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
       );
 
       if (result.success && result.text) {
+        const rawText = result.text;
         const reasoningStart = performance.now();
         const text = await this.processTranscription(result.text, "local");
         timings.reasoningProcessingDurationMs = Math.round(performance.now() - reasoningStart);
 
         if (text !== null && text !== undefined) {
-          return { success: true, text: text || result.text, source: "local", timings };
+          return { success: true, text: text || result.text, rawText, source: "local", timings };
         } else {
           throw new Error("No text transcribed");
         }
@@ -660,12 +661,19 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
       );
 
       if (result.success && result.text) {
+        const rawText = result.text;
         const reasoningStart = performance.now();
         const text = await this.processTranscription(result.text, "local-parakeet");
         timings.reasoningProcessingDurationMs = Math.round(performance.now() - reasoningStart);
 
         if (text !== null && text !== undefined) {
-          return { success: true, text: text || result.text, source: "local-parakeet", timings };
+          return {
+            success: true,
+            text: text || result.text,
+            rawText,
+            source: "local-parakeet",
+            timings,
+          };
         } else {
           throw new Error("No text transcribed");
         }
@@ -1226,6 +1234,7 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
     timings.transcriptionProcessingDurationMs = Math.round(performance.now() - transcriptionStart);
 
     // Process with reasoning if enabled
+    const rawText = result.text;
     let processedText = result.text;
     if (settings.useReasoningModel && processedText && !this.skipReasoning) {
       const reasoningStart = performance.now();
@@ -1279,6 +1288,7 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
     return {
       success: true,
       text: processedText,
+      rawText,
       source: "openwhispr",
       timings,
       limitReached: result.limitReached,
@@ -1431,12 +1441,13 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
 
         if (proxyText && proxyText.trim().length > 0) {
           timings.transcriptionProcessingDurationMs = Math.round(performance.now() - apiCallStart);
+          const rawText = proxyText;
           const reasoningStart = performance.now();
           const text = await this.processTranscription(proxyText, "mistral");
           timings.reasoningProcessingDurationMs = Math.round(performance.now() - reasoningStart);
 
           const source = (await this.isReasoningAvailable()) ? "mistral-reasoned" : "mistral";
-          return { success: true, text, source, timings };
+          return { success: true, text, rawText, source, timings };
         }
 
         throw new Error("No text transcribed - Mistral response was empty");
@@ -1565,6 +1576,7 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
       // Check for text - handle both empty string and missing field
       if (result.text && result.text.trim().length > 0) {
         timings.transcriptionProcessingDurationMs = Math.round(performance.now() - apiCallStart);
+        const rawText = result.text;
 
         const reasoningStart = performance.now();
         const text = await this.processTranscription(result.text, "openai");
@@ -1582,7 +1594,7 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
           },
           "transcription"
         );
-        return { success: true, text, source, timings };
+        return { success: true, text, rawText, source, timings };
       } else {
         // Log at info level so it shows without debug mode
         logger.info(
@@ -2422,6 +2434,7 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
       this.onTranscriptionComplete?.({
         success: true,
         text: finalText,
+        rawText: finalText,
         source: `${this.sttConfig?.streamingProvider || "deepgram"}-streaming`,
       });
 

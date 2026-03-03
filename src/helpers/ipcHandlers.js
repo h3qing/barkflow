@@ -452,42 +452,6 @@ class IPCHandlers {
       return result;
     });
 
-    ipcMain.handle("retry-transcription", async (event, id) => {
-      const buffer = this.audioStorageManager.getAudioBuffer(id);
-      if (!buffer) return { success: false, error: "Audio file not found" };
-      try {
-        let result;
-        if (this.parakeetManager?.isReady?.()) {
-          result = await this.parakeetManager.transcribeLocalParakeet(buffer, {});
-        } else if (this.whisperManager?.serverManager?.isReady?.()) {
-          result = await this.whisperManager.transcribeLocalWhisper(buffer, {});
-        } else {
-          return { success: false, error: "No transcription engine available" };
-        }
-        if (result?.text) {
-          this.databaseManager.updateTranscriptionText(id, result.text, result.text);
-          const provider = result.source || "local";
-          const model = result.model || null;
-          this.databaseManager.updateTranscriptionAudio(id, {
-            hasAudio: 1,
-            audioDurationMs: null,
-            provider,
-            model,
-          });
-          const updated = this.databaseManager.getTranscriptionById(id);
-          return { success: true, transcription: updated };
-        }
-        return { success: false, error: "Transcription returned empty" };
-      } catch (error) {
-        debugLogger.error(
-          "Retry transcription failed",
-          { id, error: error.message },
-          "audio-storage"
-        );
-        return { success: false, error: error.message };
-      }
-    });
-
     ipcMain.handle("get-transcription-by-id", async (event, id) => {
       return this.databaseManager.getTranscriptionById(id);
     });
@@ -2041,6 +2005,68 @@ class IPCHandlers {
         };
       } catch (error) {
         debugLogger.error("Cloud transcription error", { error: error.message }, "cloud-api");
+        return { success: false, error: error.message };
+      }
+    });
+
+    ipcMain.handle("retry-transcription", async (event, id) => {
+      const buffer = this.audioStorageManager.getAudioBuffer(id);
+      if (!buffer) return { success: false, error: "Audio file not found" };
+      try {
+        let result;
+        // Try local engines first
+        if (this.parakeetManager?.isReady?.()) {
+          result = await this.parakeetManager.transcribeLocalParakeet(buffer, {});
+        } else if (this.whisperManager?.serverManager?.isReady?.()) {
+          result = await this.whisperManager.transcribeLocalWhisper(buffer, {});
+        }
+
+        // Fall back to cloud transcription
+        if (!result?.text) {
+          const win = BrowserWindow.fromWebContents(event.sender);
+          if (win) {
+            const cookieHeader = await getSessionCookiesFromWindow(win);
+            if (cookieHeader) {
+              const apiUrl = getApiUrl();
+              if (apiUrl) {
+                const { body, boundary } = buildMultipartBody(buffer, "audio.webm", "audio/webm", {
+                  clientType: "desktop",
+                  appVersion: app.getVersion(),
+                  sessionId: this.sessionId,
+                });
+                const url = new URL(`${apiUrl}/api/transcribe`);
+                const data = await postMultipart(url, body, boundary, {
+                  Cookie: cookieHeader,
+                });
+                if (data.statusCode === 200 && data.data?.text) {
+                  result = { text: data.data.text, source: "openwhispr", model: "cloud" };
+                }
+              }
+            }
+          }
+        }
+
+        if (!result?.text) {
+          return { success: false, error: "No transcription engine available" };
+        }
+
+        this.databaseManager.updateTranscriptionText(id, result.text, result.text);
+        const provider = result.source || "local";
+        const model = result.model || null;
+        this.databaseManager.updateTranscriptionAudio(id, {
+          hasAudio: 1,
+          audioDurationMs: null,
+          provider,
+          model,
+        });
+        const updated = this.databaseManager.getTranscriptionById(id);
+        return { success: true, transcription: updated };
+      } catch (error) {
+        debugLogger.error(
+          "Retry transcription failed",
+          { id, error: error.message },
+          "audio-storage"
+        );
         return { success: false, error: error.message };
       }
     });
