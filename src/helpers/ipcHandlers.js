@@ -1679,6 +1679,7 @@ class IPCHandlers {
     ipcMain.handle("llama-server-start", async (event, modelId) => {
       try {
         const modelManager = require("./modelManagerBridge").default;
+        modelManager.ensureInitialized();
         const modelInfo = modelManager.findModelById(modelId);
         if (!modelInfo) {
           return { success: false, error: `Model "${modelId}" not found` };
@@ -3556,6 +3557,15 @@ class IPCHandlers {
 
     ipcMain.handle("resize-agent-window", async (_event, width, height) => {
       this.windowManager.resizeAgentWindow(width, height);
+      return { success: true };
+    });
+
+    ipcMain.handle("get-agent-window-bounds", async () => {
+      return this.windowManager.getAgentWindowBounds();
+    });
+
+    ipcMain.handle("set-agent-window-bounds", async (_event, x, y, width, height) => {
+      this.windowManager.setAgentWindowBounds(x, y, width, height);
       return { success: true };
     });
 

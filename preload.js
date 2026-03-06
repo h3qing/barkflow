@@ -512,16 +512,21 @@ contextBridge.exposeInMainWorld("electronAPI", {
   saveAgentKey: (key) => ipcRenderer.invoke("save-agent-key", key),
   onAgentStartRecording: registerListener("agent-start-recording", (callback) => () => callback()),
   onAgentStopRecording: registerListener("agent-stop-recording", (callback) => () => callback()),
-  onAgentToggleRecording: registerListener("agent-toggle-recording", (callback) => () => callback()),
+  onAgentToggleRecording: registerListener(
+    "agent-toggle-recording",
+    (callback) => () => callback()
+  ),
   toggleAgentOverlay: () => ipcRenderer.invoke("toggle-agent-overlay"),
   hideAgentOverlay: () => ipcRenderer.invoke("hide-agent-overlay"),
   resizeAgentWindow: (width, height) => ipcRenderer.invoke("resize-agent-window", width, height),
+  getAgentWindowBounds: () => ipcRenderer.invoke("get-agent-window-bounds"),
+  setAgentWindowBounds: (x, y, width, height) =>
+    ipcRenderer.invoke("set-agent-window-bounds", x, y, width, height),
   acquireRecordingLock: (pipeline) => ipcRenderer.invoke("acquire-recording-lock", pipeline),
   releaseRecordingLock: (pipeline) => ipcRenderer.invoke("release-recording-lock", pipeline),
 
   // Agent cloud streaming
-  cloudAgentStream: (messages, opts) =>
-    ipcRenderer.invoke("cloud-agent-stream", messages, opts),
+  cloudAgentStream: (messages, opts) => ipcRenderer.invoke("cloud-agent-stream", messages, opts),
   onAgentStreamChunk: registerListener(
     "agent-stream-chunk",
     (callback) => (_event, chunk) => callback(chunk)
@@ -529,20 +534,15 @@ contextBridge.exposeInMainWorld("electronAPI", {
   onAgentStreamDone: registerListener("agent-stream-done", (callback) => () => callback()),
 
   // Agent conversation persistence
-  createAgentConversation: (title) =>
-    ipcRenderer.invoke("db-create-agent-conversation", title),
-  getAgentConversations: (limit) =>
-    ipcRenderer.invoke("db-get-agent-conversations", limit),
-  getAgentConversation: (id) =>
-    ipcRenderer.invoke("db-get-agent-conversation", id),
-  deleteAgentConversation: (id) =>
-    ipcRenderer.invoke("db-delete-agent-conversation", id),
+  createAgentConversation: (title) => ipcRenderer.invoke("db-create-agent-conversation", title),
+  getAgentConversations: (limit) => ipcRenderer.invoke("db-get-agent-conversations", limit),
+  getAgentConversation: (id) => ipcRenderer.invoke("db-get-agent-conversation", id),
+  deleteAgentConversation: (id) => ipcRenderer.invoke("db-delete-agent-conversation", id),
   updateAgentConversationTitle: (id, title) =>
     ipcRenderer.invoke("db-update-agent-conversation-title", id, title),
   addAgentMessage: (conversationId, role, content) =>
     ipcRenderer.invoke("db-add-agent-message", conversationId, role, content),
-  getAgentMessages: (conversationId) =>
-    ipcRenderer.invoke("db-get-agent-messages", conversationId),
+  getAgentMessages: (conversationId) => ipcRenderer.invoke("db-get-agent-messages", conversationId),
 
   // Google Calendar
   gcalStartOAuth: () => ipcRenderer.invoke("gcal-start-oauth"),

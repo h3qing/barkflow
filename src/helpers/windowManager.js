@@ -644,17 +644,32 @@ class WindowManager {
   showAgentOverlay() {
     if (!this.agentWindow || this.agentWindow.isDestroyed()) return;
 
-    // Reset to compact initial size
     this._clearAgentAnimation();
-    const bounds = this.agentWindow.getBounds();
+
+    // Get work area to fill full screen height
+    const mainBounds =
+      this.mainWindow && !this.mainWindow.isDestroyed() ? this.mainWindow.getBounds() : null;
+    const refPoint = mainBounds || { x: 0, y: 0 };
+    const display = screen.getDisplayNearestPoint({ x: refPoint.x, y: refPoint.y });
+    const workArea = display.workArea || display.bounds;
+
+    const width = AGENT_OVERLAY_CONFIG.width;
+    const height = workArea.height;
+
+    // Center horizontally relative to main window, fill work area height
+    let x = workArea.x;
+    if (mainBounds) {
+      x = mainBounds.x + Math.round((mainBounds.width - width) / 2);
+      x = Math.max(workArea.x, Math.min(x, workArea.x + workArea.width - width));
+    }
+
     this.agentWindow.setBounds({
-      x: bounds.x,
-      y: bounds.y,
-      width: AGENT_OVERLAY_CONFIG.width,
-      height: AGENT_OVERLAY_CONFIG.height,
+      x,
+      y: workArea.y,
+      width,
+      height,
     });
 
-    this._positionAgentWindow();
     WindowPositionUtil.setupAlwaysOnTop(this.agentWindow);
 
     if (typeof this.agentWindow.showInactive === "function") {
@@ -761,26 +776,32 @@ class WindowManager {
     this._agentAnimationState = null;
   }
 
-  _positionAgentWindow() {
-    if (!this.mainWindow || this.mainWindow.isDestroyed()) return;
+  getAgentWindowBounds() {
+    if (!this.agentWindow || this.agentWindow.isDestroyed()) return null;
+    return this.agentWindow.getBounds();
+  }
+
+  setAgentWindowBounds(x, y, width, height) {
     if (!this.agentWindow || this.agentWindow.isDestroyed()) return;
 
-    const mainBounds = this.mainWindow.getBounds();
-    const agentBounds = this.agentWindow.getBounds();
-    const MARGIN = 8;
+    const bounds = {
+      x: Math.round(x),
+      y: Math.round(y),
+      width: Math.round(width),
+      height: Math.round(height),
+    };
 
-    const x = mainBounds.x + Math.round((mainBounds.width - agentBounds.width) / 2);
-    const y = mainBounds.y - agentBounds.height - MARGIN;
+    // Enforce minimums
+    bounds.width = Math.max(AGENT_OVERLAY_CONFIG.minWidth, bounds.width);
+    bounds.height = Math.max(AGENT_OVERLAY_CONFIG.minHeight, bounds.height);
 
-    const display = screen.getDisplayNearestPoint({ x: mainBounds.x, y: mainBounds.y });
+    // Clamp to screen work area
+    const display = screen.getDisplayNearestPoint({ x: bounds.x, y: bounds.y });
     const workArea = display.workArea || display.bounds;
+    bounds.width = Math.min(bounds.width, workArea.width);
+    bounds.height = Math.min(bounds.height, workArea.y + workArea.height - bounds.y);
 
-    this.agentWindow.setBounds({
-      x: Math.max(workArea.x, Math.min(x, workArea.x + workArea.width - agentBounds.width)),
-      y: Math.max(workArea.y, y),
-      width: agentBounds.width,
-      height: agentBounds.height,
-    });
+    this.agentWindow.setBounds(bounds);
   }
 
   showDictationPanel(options = {}) {

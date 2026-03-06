@@ -18,14 +18,12 @@ interface Message {
 }
 
 const MIN_HEIGHT = 200;
-const MAX_HEIGHT = 1000;
-const WIDTH = 420;
+const MIN_WIDTH = 360;
 
 export default function AgentOverlay() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [agentState, setAgentState] = useState<AgentState>("idle");
   const [partialTranscript, setPartialTranscript] = useState("");
-  const containerRef = useRef<HTMLDivElement>(null);
   const audioManagerRef = useRef<InstanceType<typeof AudioManager> | null>(null);
   const messagesRef = useRef<Message[]>([]);
   const agentStateRef = useRef<AgentState>("idle");
@@ -169,58 +167,47 @@ export default function AgentOverlay() {
     };
   }, [addSystemMessage, handleTranscriptionComplete]);
 
-  const resizeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const lastSentHeightRef = useRef<number>(0);
+  const handleResizeStart = useCallback((e: React.MouseEvent, direction: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const startX = e.screenX;
+    const startY = e.screenY;
 
-  const resizeToContent = useCallback(() => {
-    const el = containerRef.current;
-    if (!el) return;
+    window.electronAPI?.getAgentWindowBounds?.().then((bounds) => {
+      if (!bounds) return;
+      const startBounds = { ...bounds };
 
-    // Find the scrollable chat container
-    const chatEl = el.querySelector(".agent-chat-scroll") as HTMLElement;
-    if (!chatEl) return;
+      const handleMouseMove = (ev: MouseEvent) => {
+        const dx = ev.screenX - startX;
+        const dy = ev.screenY - startY;
+        let { x, y, width, height } = startBounds;
 
-    const chatContent = chatEl.firstElementChild as HTMLElement;
-    if (!chatContent) return;
+        if (direction.includes("e")) width += dx;
+        if (direction.includes("w")) {
+          x += dx;
+          width -= dx;
+        }
+        if (direction.includes("s")) height += dy;
+        if (direction.includes("n")) {
+          y += dy;
+          height -= dy;
+        }
 
-    // Empty state has h-full class — skip resize to avoid oscillation
-    if (chatContent.classList.contains("h-full")) return;
+        width = Math.max(MIN_WIDTH, width);
+        height = Math.max(MIN_HEIGHT, height);
 
-    // Measure the actual message list height + chat padding
-    const chatStyle = getComputedStyle(chatEl);
-    const chatPadding =
-      parseFloat(chatStyle.paddingTop || "0") + parseFloat(chatStyle.paddingBottom || "0");
-    const contentHeight = chatContent.scrollHeight + chatPadding;
+        window.electronAPI?.setAgentWindowBounds?.(x, y, width, height);
+      };
 
-    // Title bar (h-8 = 32px) + chat content + Input (h-12 = 48px) + borders (~2px)
-    const desiredHeight = 32 + contentHeight + 48 + 2;
-    const height = Math.max(MIN_HEIGHT, Math.min(Math.ceil(desiredHeight), MAX_HEIGHT));
+      const handleMouseUp = () => {
+        document.removeEventListener("mousemove", handleMouseMove);
+        document.removeEventListener("mouseup", handleMouseUp);
+      };
 
-    // Skip if height hasn't meaningfully changed
-    if (Math.abs(height - lastSentHeightRef.current) < 4) return;
-    lastSentHeightRef.current = height;
-
-    if (resizeTimeoutRef.current) {
-      clearTimeout(resizeTimeoutRef.current);
-    }
-    resizeTimeoutRef.current = setTimeout(() => {
-      window.electronAPI?.resizeAgentWindow?.(WIDTH, height);
-    }, 50);
-  }, []);
-
-  useEffect(() => {
-    resizeToContent();
-  }, [messages, agentState, resizeToContent]);
-
-  useEffect(() => {
-    const observer = new ResizeObserver(() => {
-      resizeToContent();
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
     });
-    if (containerRef.current) {
-      observer.observe(containerRef.current);
-    }
-    return () => observer.disconnect();
-  }, [resizeToContent]);
+  }, []);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -262,8 +249,6 @@ export default function AgentOverlay() {
     setAgentState("idle");
     setPartialTranscript("");
     conversationIdRef.current = null;
-    lastSentHeightRef.current = 0;
-    window.electronAPI?.resizeAgentWindow?.(WIDTH, MIN_HEIGHT);
   }, []);
 
   const handleClose = useCallback(() => {
@@ -271,9 +256,8 @@ export default function AgentOverlay() {
   }, []);
 
   return (
-    <div className="agent-overlay-window w-screen h-screen bg-transparent">
+    <div className="agent-overlay-window w-screen h-screen bg-transparent relative">
       <div
-        ref={containerRef}
         className={cn(
           "flex flex-col w-full h-full",
           "bg-surface-1/75 backdrop-blur-2xl",
@@ -286,6 +270,42 @@ export default function AgentOverlay() {
         <AgentChat messages={messages} />
         <AgentInput agentState={agentState} partialTranscript={partialTranscript} />
       </div>
+
+      {/* Resize handles — edges */}
+      <div
+        className="absolute top-0 left-2 right-2 h-[5px] cursor-n-resize"
+        onMouseDown={(e) => handleResizeStart(e, "n")}
+      />
+      <div
+        className="absolute bottom-0 left-2 right-2 h-[5px] cursor-s-resize"
+        onMouseDown={(e) => handleResizeStart(e, "s")}
+      />
+      <div
+        className="absolute left-0 top-2 bottom-2 w-[5px] cursor-w-resize"
+        onMouseDown={(e) => handleResizeStart(e, "w")}
+      />
+      <div
+        className="absolute right-0 top-2 bottom-2 w-[5px] cursor-e-resize"
+        onMouseDown={(e) => handleResizeStart(e, "e")}
+      />
+
+      {/* Resize handles — corners */}
+      <div
+        className="absolute top-0 left-0 w-[10px] h-[10px] cursor-nw-resize"
+        onMouseDown={(e) => handleResizeStart(e, "nw")}
+      />
+      <div
+        className="absolute top-0 right-0 w-[10px] h-[10px] cursor-ne-resize"
+        onMouseDown={(e) => handleResizeStart(e, "ne")}
+      />
+      <div
+        className="absolute bottom-0 left-0 w-[10px] h-[10px] cursor-sw-resize"
+        onMouseDown={(e) => handleResizeStart(e, "sw")}
+      />
+      <div
+        className="absolute bottom-0 right-0 w-[10px] h-[10px] cursor-se-resize"
+        onMouseDown={(e) => handleResizeStart(e, "se")}
+      />
     </div>
   );
 }

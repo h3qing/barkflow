@@ -1002,6 +1002,13 @@ declare global {
 
       // Agent overlay
       resizeAgentWindow?: (width: number, height: number) => Promise<void>;
+      getAgentWindowBounds?: () => Promise<{
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+      } | null>;
+      setAgentWindowBounds?: (x: number, y: number, width: number, height: number) => Promise<void>;
       hideAgentOverlay?: () => Promise<void>;
       onAgentStartRecording?: (callback: () => void) => () => void;
       onAgentStopRecording?: (callback: () => void) => () => void;
