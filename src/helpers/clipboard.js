@@ -461,11 +461,14 @@ class ClipboardManager {
     const webContents = options.webContents;
 
     try {
-      const originalClipboard = clipboard.readText();
-      this.safeLog(
-        "💾 Saved original clipboard content:",
-        originalClipboard.substring(0, 50) + "..."
-      );
+      const shouldRestore = options.restoreClipboard !== false;
+      const originalClipboard = shouldRestore ? clipboard.readText() : null;
+      if (shouldRestore) {
+        this.safeLog(
+          "💾 Saved original clipboard content:",
+          originalClipboard.substring(0, 50) + "..."
+        );
+      }
 
       if (platform === "linux" && this._isWayland()) {
         this._writeClipboardWayland(text, webContents);
@@ -553,9 +556,11 @@ class ClipboardManager {
 
           if (code === 0) {
             this.safeLog(`Text pasted successfully via ${useFastPaste ? "CGEvent" : "osascript"}`);
-            setTimeout(() => {
-              clipboard.writeText(originalClipboard);
-            }, RESTORE_DELAYS.darwin);
+            if (originalClipboard != null) {
+              setTimeout(() => {
+                clipboard.writeText(originalClipboard);
+              }, RESTORE_DELAYS.darwin);
+            }
             resolve();
           } else if (useFastPaste) {
             this.safeLog(
@@ -617,9 +622,11 @@ class ClipboardManager {
 
         if (code === 0) {
           this.safeLog("Text pasted successfully via osascript fallback");
-          setTimeout(() => {
-            clipboard.writeText(originalClipboard);
-          }, RESTORE_DELAYS.darwin);
+          if (originalClipboard != null) {
+            setTimeout(() => {
+              clipboard.writeText(originalClipboard);
+            }, RESTORE_DELAYS.darwin);
+          }
           resolve();
         } else {
           this.accessibilityCache = { value: null, expiresAt: 0 };
@@ -695,10 +702,12 @@ class ClipboardManager {
               elapsedMs: elapsed,
               output,
             });
-            setTimeout(() => {
-              clipboard.writeText(originalClipboard);
-              this.safeLog("🔄 Clipboard restored");
-            }, RESTORE_DELAYS.win32_nircmd);
+            if (originalClipboard != null) {
+              setTimeout(() => {
+                clipboard.writeText(originalClipboard);
+                this.safeLog("🔄 Clipboard restored");
+              }, RESTORE_DELAYS.win32_nircmd);
+            }
             resolve();
           } else {
             this.safeLog(
@@ -768,10 +777,12 @@ class ClipboardManager {
               elapsedMs: elapsed,
               restoreDelayMs: restoreDelay,
             });
-            setTimeout(() => {
-              clipboard.writeText(originalClipboard);
-              this.safeLog("🔄 Clipboard restored");
-            }, restoreDelay);
+            if (originalClipboard != null) {
+              setTimeout(() => {
+                clipboard.writeText(originalClipboard);
+                this.safeLog("🔄 Clipboard restored");
+              }, restoreDelay);
+            }
             resolve();
           } else {
             this.safeLog(`❌ nircmd failed (code ${code}), falling back to PowerShell`, {
@@ -844,10 +855,12 @@ class ClipboardManager {
               elapsedMs: elapsed,
               restoreDelayMs: restoreDelay,
             });
-            setTimeout(() => {
-              clipboard.writeText(originalClipboard);
-              this.safeLog("🔄 Clipboard restored");
-            }, restoreDelay);
+            if (originalClipboard != null) {
+              setTimeout(() => {
+                clipboard.writeText(originalClipboard);
+                this.safeLog("🔄 Clipboard restored");
+              }, restoreDelay);
+            }
             resolve();
           } else {
             this.safeLog(`❌ PowerShell paste failed`, {
@@ -926,6 +939,7 @@ class ClipboardManager {
     );
 
     const restoreClipboard = () => {
+      if (originalClipboard == null) return;
       setTimeout(() => {
         if (isWayland) {
           this._writeClipboardWayland(originalClipboard, webContents);
@@ -1070,7 +1084,11 @@ class ClipboardManager {
               }
               if (portalError?.message === "portal-denied") {
                 this.portalDenied = true;
-                debugLogger.warn("User denied portal access, skipping portal for this session", {}, "clipboard");
+                debugLogger.warn(
+                  "User denied portal access, skipping portal for this session",
+                  {},
+                  "clipboard"
+                );
               } else {
                 debugLogger.warn(
                   "linux-fast-paste --portal failed, falling back to uinput",

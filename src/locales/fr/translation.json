@@ -1099,8 +1099,8 @@
       },
       "clipboard": {
         "title": "Presse-papiers",
-        "autoPaste": "Coller automatiquement après la dictée",
-        "autoPasteDescription": "Coller automatiquement le texte transcrit dans l'application active"
+        "keepInClipboard": "Garder la transcription dans le presse-papiers",
+        "keepInClipboardDescription": "Conserver le texte dicté dans le presse-papiers pour pouvoir le coller manuellement si nécessaire"
       },
       "startup": {
         "launchAtLogin": "Lancer au démarrage",

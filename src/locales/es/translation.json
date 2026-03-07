@@ -1099,8 +1099,8 @@
       },
       "clipboard": {
         "title": "Portapapeles",
-        "autoPaste": "Pegar automáticamente después del dictado",
-        "autoPasteDescription": "Pegar automáticamente el texto transcrito en la aplicación activa"
+        "keepInClipboard": "Mantener transcripción en el portapapeles",
+        "keepInClipboardDescription": "Mantener el texto dictado en el portapapeles para poder pegarlo manualmente si es necesario"
       },
       "startup": {
         "launchAtLogin": "Abrir al iniciar sesión",

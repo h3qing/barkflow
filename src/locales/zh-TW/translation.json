@@ -1095,8 +1095,8 @@
       },
       "clipboard": {
         "title": "剪貼簿",
-        "autoPaste": "語音輸入後自動貼上",
-        "autoPasteDescription": "自動將轉錄文字貼上到使用中的應用程式"
+        "keepInClipboard": "將轉錄內容保留在剪貼簿",
+        "keepInClipboardDescription": "將語音輸入的文字保留在剪貼簿中，以便在需要時手動貼上"
       },
       "startup": {
         "launchAtLogin": "登入時啟動",

@@ -1095,8 +1095,8 @@
       },
       "clipboard": {
         "title": "クリップボード",
-        "autoPaste": "ディクテーション後に自動貼り付け",
-        "autoPasteDescription": "文字起こしテキストをアクティブなアプリに自動的に貼り付け"
+        "keepInClipboard": "文字起こしをクリップボードに保持",
+        "keepInClipboardDescription": "必要に応じて手動で貼り付けできるよう、音声入力テキストをクリップボードに保持します"
       },
       "startup": {
         "launchAtLogin": "ログイン時に起動",

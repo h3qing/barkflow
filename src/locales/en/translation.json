@@ -1158,8 +1158,8 @@
       },
       "clipboard": {
         "title": "Clipboard",
-        "autoPaste": "Auto-paste after dictation",
-        "autoPasteDescription": "Automatically paste transcribed text into the active app"
+        "keepInClipboard": "Keep transcription in clipboard",
+        "keepInClipboardDescription": "Keep dictated text in your clipboard so you can paste it manually if needed"
       },
       "startup": {
         "launchAtLogin": "Launch at login",

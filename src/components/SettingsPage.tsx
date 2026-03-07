@@ -694,8 +694,8 @@ export default function SettingsPage({ activeSection = "general" }: SettingsPage
     setAudioCuesEnabled,
     pauseMediaOnDictation,
     setPauseMediaOnDictation,
-    autoPasteEnabled,
-    setAutoPasteEnabled,
+    keepTranscriptionInClipboard,
+    setKeepTranscriptionInClipboard,
     floatingIconAutoHide,
     setFloatingIconAutoHide,
     startMinimized,
@@ -1779,10 +1779,13 @@ export default function SettingsPage({ activeSection = "general" }: SettingsPage
               <SettingsPanel>
                 <SettingsPanelRow>
                   <SettingsRow
-                    label={t("settingsPage.general.clipboard.autoPaste")}
-                    description={t("settingsPage.general.clipboard.autoPasteDescription")}
+                    label={t("settingsPage.general.clipboard.keepInClipboard")}
+                    description={t("settingsPage.general.clipboard.keepInClipboardDescription")}
                   >
-                    <Toggle checked={autoPasteEnabled} onChange={setAutoPasteEnabled} />
+                    <Toggle
+                      checked={keepTranscriptionInClipboard}
+                      onChange={setKeepTranscriptionInClipboard}
+                    />
                   </SettingsRow>
                 </SettingsPanelRow>
               </SettingsPanel>

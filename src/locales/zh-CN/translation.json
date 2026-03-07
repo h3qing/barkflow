@@ -1095,8 +1095,8 @@
       },
       "clipboard": {
         "title": "剪贴板",
-        "autoPaste": "听写后自动粘贴",
-        "autoPasteDescription": "自动将转录文本粘贴到活动应用中"
+        "keepInClipboard": "将转录内容保留在剪贴板",
+        "keepInClipboardDescription": "将听写文本保留在剪贴板中，以便在需要时手动粘贴"
       },
       "startup": {
         "launchAtLogin": "登录时启动",

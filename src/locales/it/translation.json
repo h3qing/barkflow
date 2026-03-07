@@ -1099,8 +1099,8 @@
       },
       "clipboard": {
         "title": "Appunti",
-        "autoPaste": "Incolla automaticamente dopo la dettatura",
-        "autoPasteDescription": "Incolla automaticamente il testo trascritto nell'app attiva"
+        "keepInClipboard": "Mantieni la trascrizione negli appunti",
+        "keepInClipboardDescription": "Mantieni il testo dettato negli appunti per poterlo incollare manualmente se necessario"
       },
       "startup": {
         "launchAtLogin": "Avvia all'accesso",

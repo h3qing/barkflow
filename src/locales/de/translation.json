@@ -1095,8 +1095,8 @@
       },
       "clipboard": {
         "title": "Zwischenablage",
-        "autoPaste": "Nach dem Diktat automatisch einfügen",
-        "autoPasteDescription": "Transkribierten Text automatisch in die aktive App einfügen"
+        "keepInClipboard": "Transkription in der Zwischenablage behalten",
+        "keepInClipboardDescription": "Diktierten Text in der Zwischenablage behalten, damit Sie ihn bei Bedarf manuell einfügen können"
       },
       "startup": {
         "launchAtLogin": "Beim Anmelden starten",
