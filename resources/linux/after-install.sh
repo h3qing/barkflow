@@ -4,6 +4,13 @@
 
 set -euo pipefail
 
+# 0. Fix chrome-sandbox SUID permissions (required by Electron on Linux)
+CHROME_SANDBOX="/opt/OpenWhispr/chrome-sandbox"
+if [ -f "$CHROME_SANDBOX" ]; then
+  chown root:root "$CHROME_SANDBOX"
+  chmod 4755 "$CHROME_SANDBOX"
+fi
+
 UDEV_RULE='KERNEL=="uinput", GROUP="input", MODE="0660", TAG+="uaccess"'
 UDEV_RULE_PATH="/etc/udev/rules.d/70-uinput.rules"
 SERVICE_PATH="/usr/lib/systemd/user/ydotoold.service"
