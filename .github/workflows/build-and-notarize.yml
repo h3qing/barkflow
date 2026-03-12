@@ -30,6 +30,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install platform-specific rollup binary
+        run: npm install @rollup/rollup-linux-x64-gnu --no-save
+
       - name: Cache native binaries
         uses: actions/cache@v4
         with:
@@ -96,6 +99,9 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Install platform-specific rollup binary
+        run: npm install @rollup/rollup-win32-x64-msvc --no-save
 
       - name: Cache native binaries
         uses: actions/cache@v4
