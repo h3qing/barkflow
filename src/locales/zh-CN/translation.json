@@ -1367,13 +1367,14 @@
         "groq_kimi_k2_0905": "Moonshot AI 1T MoE，256K 上下文"
       },
       "local": {
+        "qwen_qwen3_5_9b_q4_k_m": "强大的混合模型",
+        "qwen_qwen3_5_4b_q4_k_m": "均衡的 Qwen3.5，通用用途",
+        "qwen_qwen3_5_2b_q4_k_m": "紧凑的 Qwen3.5，快速任务",
         "qwen_qwen3_8b_q4_k_m": "最新 Qwen3，支持思维模式",
         "qwen_qwen3_8b_q5_k_m": "更高质量 Qwen3，支持思维模式",
         "qwen_qwen3_4b_q4_k_m": "紧凑型 Qwen3，具备推理能力",
         "qwen_qwen3_1_7b_q8_0": "小而强的 Qwen3 模型",
-        "qwen_qwen3_0_6b_q8_0": "超小 Qwen3，适用于边缘设备",
         "qwen_qwen3_32b_q4_k_m": "最强大的本地 Qwen3，深度推理",
-        "qwen_qwen2_5_0_5b_instruct_q5_k_m": "最小模型，快速但能力有限",
         "qwen_qwen2_5_1_5b_instruct_q5_k_m": "小型模型，适合基础任务",
         "qwen_qwen2_5_3b_instruct_q5_k_m": "均衡模型，通用场景",
         "qwen_qwen2_5_7b_instruct_q4_k_m": "大型模型，高质量（Q4_K_M）",

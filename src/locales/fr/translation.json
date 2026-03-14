@@ -1367,13 +1367,14 @@
         "groq_kimi_k2_0905": "Moonshot AI 1T MoE, contexte 256K"
       },
       "local": {
+        "qwen_qwen3_5_9b_q4_k_m": "Modèle hybride puissant",
+        "qwen_qwen3_5_4b_q4_k_m": "Qwen3.5 équilibré pour usage général",
+        "qwen_qwen3_5_2b_q4_k_m": "Qwen3.5 compact pour tâches rapides",
         "qwen_qwen3_8b_q4_k_m": "Dernier Qwen3 avec prise en charge du mode réflexion",
         "qwen_qwen3_8b_q5_k_m": "Qwen3 de meilleure qualité avec mode réflexion",
         "qwen_qwen3_4b_q4_k_m": "Qwen3 compact avec capacités de raisonnement",
         "qwen_qwen3_1_7b_q8_0": "Petit modèle Qwen3 mais performant",
-        "qwen_qwen3_0_6b_q8_0": "Qwen3 minuscule pour appareils edge",
         "qwen_qwen3_32b_q4_k_m": "Le Qwen3 local le plus puissant avec raisonnement approfondi",
-        "qwen_qwen2_5_0_5b_instruct_q5_k_m": "Modèle le plus petit, rapide mais capacités limitées",
         "qwen_qwen2_5_1_5b_instruct_q5_k_m": "Petit modèle, bon pour les tâches de base",
         "qwen_qwen2_5_3b_instruct_q5_k_m": "Modèle équilibré pour un usage général",
         "qwen_qwen2_5_7b_instruct_q4_k_m": "Grand modèle de haute qualité (Q4_K_M)",

@@ -1367,13 +1367,14 @@
         "groq_kimi_k2_0905": "Moonshot AI 1T MoE、256K コンテキスト"
       },
       "local": {
+        "qwen_qwen3_5_9b_q4_k_m": "強力なハイブリッドモデル",
+        "qwen_qwen3_5_4b_q4_k_m": "汎用向けバランス型 Qwen3.5",
+        "qwen_qwen3_5_2b_q4_k_m": "軽量タスク向けコンパクト Qwen3.5",
         "qwen_qwen3_8b_q4_k_m": "思考モード対応の最新 Qwen3",
         "qwen_qwen3_8b_q5_k_m": "思考モード対応の高品質 Qwen3",
         "qwen_qwen3_4b_q4_k_m": "推論機能を持つコンパクトな Qwen3",
         "qwen_qwen3_1_7b_q8_0": "小型ながら高性能な Qwen3 モデル",
-        "qwen_qwen3_0_6b_q8_0": "エッジデバイス向け超小型 Qwen3",
         "qwen_qwen3_32b_q4_k_m": "深い推論を備えた最も強力なローカル Qwen3",
-        "qwen_qwen2_5_0_5b_instruct_q5_k_m": "最小モデル、高速だが機能は限定的",
         "qwen_qwen2_5_1_5b_instruct_q5_k_m": "小型モデル、基本的なタスクに最適",
         "qwen_qwen2_5_3b_instruct_q5_k_m": "汎用のバランスモデル",
         "qwen_qwen2_5_7b_instruct_q4_k_m": "高品質な大型モデル（Q4_K_M）",
