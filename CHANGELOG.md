@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.5] - 2026-03-17
+
+### Added
+
+- **Data Retention Toggle**: New privacy setting to control whether transcription text is retained in history (Privacy & Data settings)
+
+### Fixed
+
+- **Meeting Detection Reset**: Fix meeting detection not properly resetting after a meeting ends
+
 ## [1.6.4] - 2026-03-15
 
 ### Added
