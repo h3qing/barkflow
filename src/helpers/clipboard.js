@@ -81,6 +81,12 @@ class ClipboardManager {
     this.linuxFastPasteChecked = false;
     this.portalDenied = false;
     this._kwinScriptPath = null;
+
+    process.on("exit", () => {
+      if (this._kwinScriptPath) {
+        try { fs.unlinkSync(this._kwinScriptPath); } catch {}
+      }
+    });
   }
 
   _isWayland() {
@@ -419,9 +425,8 @@ class ClipboardManager {
             ["org.kde.KWin", `/Scripting/Script${scriptId}`, "run"],
             { timeout: 1000, stdio: "pipe" }
           );
-          // KWin script executes in the compositor; 30ms lets the journal flush.
-          const waitEnd = Date.now() + 30;
-          while (Date.now() < waitEnd) {}
+          // KWin script executes in the compositor; brief pause lets the journal flush.
+          spawnSync("sleep", ["0.03"], { timeout: 100 });
 
           const journalResult = spawnSync(
             "journalctl",
@@ -454,7 +459,7 @@ class ClipboardManager {
           }
         }
       } catch (err) {
-        debugLogger.debug("KWin script fallback failed", { error: err?.message }, "clipboard");
+        debugLogger.warn("KWin script fallback failed", { error: err?.message }, "clipboard");
       }
     }
 
