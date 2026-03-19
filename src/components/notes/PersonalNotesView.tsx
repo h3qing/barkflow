@@ -64,7 +64,6 @@ export default function PersonalNotesView({
   const [localTitle, setLocalTitle] = useState("");
   const [localContent, setLocalContent] = useState("");
   const [localEnhancedContent, setLocalEnhancedContent] = useState<string | null>(null);
-  const [finalTranscript, setFinalTranscript] = useState<string | null>(null);
   const [showActionManager, setShowActionManager] = useState(false);
   const saveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const enhancedSaveTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -82,6 +81,8 @@ export default function PersonalNotesView({
   const liveTranscriptRef = useRef("");
   const { granted: screenRecordingGranted } = useScreenRecordingPermission();
 
+  // System audio is captured when screen recording permission is granted.
+  // Recording always saves to the transcript field regardless.
   const systemAudioEnabled = screenRecordingGranted;
 
   const {
@@ -130,43 +131,21 @@ export default function PersonalNotesView({
     stopRecording,
   } = useNoteRecording({
     systemAudioEnabled,
-    onTranscriptionComplete: useCallback(
-      (text: string) => {
-        if (systemAudioEnabled) {
-          // System audio mode: save to transcript field (separate from content).
-          // `text` is the complete final transcript from the provider.
-          const noteId = activeNoteRef.current;
-          if (noteId) {
-            window.electronAPI.updateNote(noteId, { transcript: text });
-            setLiveTranscript(text);
-            liveTranscriptRef.current = text;
-          }
-        } else {
-          setFinalTranscript(text);
-        }
-      },
-      [systemAudioEnabled]
-    ),
-    onPartialTranscript: useCallback(
-      (text: string) => {
-        if (systemAudioEnabled) {
-          // Show partial text in live transcript view
-          setLiveTranscript(
-            liveTranscriptRef.current + (liveTranscriptRef.current ? " " : "") + text
-          );
-        }
-      },
-      [systemAudioEnabled]
-    ),
-    onStreamingCommit: useCallback(
-      (text: string) => {
-        if (systemAudioEnabled) {
-          liveTranscriptRef.current += text;
-          setLiveTranscript(liveTranscriptRef.current);
-        }
-      },
-      [systemAudioEnabled]
-    ),
+    onTranscriptionComplete: useCallback((text: string) => {
+      const noteId = activeNoteRef.current;
+      if (noteId) {
+        window.electronAPI.updateNote(noteId, { transcript: text });
+        setLiveTranscript(text);
+        liveTranscriptRef.current = text;
+      }
+    }, []),
+    onPartialTranscript: useCallback((text: string) => {
+      setLiveTranscript(liveTranscriptRef.current + (liveTranscriptRef.current ? " " : "") + text);
+    }, []),
+    onStreamingCommit: useCallback((text: string) => {
+      liveTranscriptRef.current += text;
+      setLiveTranscript(liveTranscriptRef.current);
+    }, []),
     onError: useCallback(
       (error: { title: string; description: string }) => {
         toast({ title: error.title, description: error.description, variant: "destructive" });
@@ -175,17 +154,14 @@ export default function PersonalNotesView({
     ),
   });
 
-  const handleFinalTranscriptConsumed = useCallback(() => setFinalTranscript(null), []);
-
-  // Reset live transcript when recording starts (system audio mode)
   const prevIsRecordingRef = useRef(false);
   useEffect(() => {
-    if (isRecording && !prevIsRecordingRef.current && systemAudioEnabled) {
+    if (isRecording && !prevIsRecordingRef.current) {
       setLiveTranscript("");
       liveTranscriptRef.current = "";
     }
     prevIsRecordingRef.current = isRecording;
-  }, [isRecording, systemAudioEnabled]);
+  }, [isRecording]);
 
   useEffect(() => {
     if (activeNote && activeNote.id !== activeNoteRef.current) {
@@ -746,11 +722,6 @@ export default function PersonalNotesView({
               isSaving={isSaving}
               isRecording={isRecording}
               isProcessing={isProcessing}
-              partialTranscript={systemAudioEnabled ? "" : partialTranscript}
-              finalTranscript={systemAudioEnabled ? null : finalTranscript}
-              onFinalTranscriptConsumed={handleFinalTranscriptConsumed}
-              streamingCommit={systemAudioEnabled ? null : streamingCommit}
-              onStreamingCommitConsumed={consumeStreamingCommit}
               onStartRecording={startRecording}
               onStopRecording={stopRecording}
               onExportNote={handleExportNote}

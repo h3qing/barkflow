@@ -1,14 +1,6 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Download,
-  Loader2,
-  FileText,
-  Sparkles,
-  AlignLeft,
-  Radio,
-  MessageSquareText,
-} from "lucide-react";
+import { Download, Loader2, FileText, Sparkles, AlignLeft, MessageSquareText } from "lucide-react";
 import { RichTextEditor } from "../ui/RichTextEditor";
 import type { Editor } from "@tiptap/react";
 import { MeetingTranscriptChat } from "./MeetingTranscriptChat";
@@ -25,7 +17,6 @@ import type { ActionProcessingState } from "../../hooks/useActionProcessing";
 import ActionProcessingOverlay from "./ActionProcessingOverlay";
 import DictationWidget from "./DictationWidget";
 import { normalizeDbDate } from "../../utils/dateFormatting";
-import { useSettingsStore } from "../../stores/settingsStore";
 
 function formatNoteDate(dateStr: string): string {
   const date = normalizeDbDate(dateStr);
@@ -53,11 +44,6 @@ interface NoteEditorProps {
   onContentChange: (content: string) => void;
   isSaving: boolean;
   isRecording: boolean;
-  partialTranscript: string;
-  finalTranscript: string | null;
-  onFinalTranscriptConsumed: () => void;
-  streamingCommit: string | null;
-  onStreamingCommitConsumed: () => void;
   isProcessing: boolean;
   onStartRecording: () => void;
   onStopRecording: () => void;
@@ -75,13 +61,6 @@ interface NoteEditorProps {
   liveTranscript?: string;
 }
 
-interface DictationRange {
-  start: number;
-  partialStart: number;
-  end: number;
-  committedChars: number;
-}
-
 export default function NoteEditor({
   note,
   onTitleChange,
@@ -89,11 +68,6 @@ export default function NoteEditor({
   isSaving,
   isRecording,
   isProcessing,
-  partialTranscript,
-  finalTranscript,
-  onFinalTranscriptConsumed,
-  streamingCommit,
-  onStreamingCommitConsumed,
   onStartRecording,
   onStopRecording,
   onExportNote,
@@ -114,46 +88,6 @@ export default function NoteEditor({
   const editorRef = useRef<Editor | null>(null);
   const titleRef = useRef<HTMLDivElement>(null);
   const prevNoteIdRef = useRef<number>(note.id);
-
-  const isSignedIn = useSettingsStore((s) => s.isSignedIn);
-  const cloudMode = useSettingsStore((s) => s.cloudTranscriptionMode);
-  const useLocalWhisper = useSettingsStore((s) => s.useLocalWhisper);
-  const canStream = isSignedIn && cloudMode === "openwhispr" && !useLocalWhisper;
-
-  const [liveMode, setLiveMode] = useState(() => {
-    const pref = localStorage.getItem("notesStreamingPreference");
-    return pref === "streaming";
-  });
-
-  const handleLiveToggle = useCallback(() => {
-    setLiveMode((prev) => {
-      const next = !prev;
-      localStorage.setItem("notesStreamingPreference", next ? "streaming" : "batch");
-      return next;
-    });
-  }, []);
-
-  const cursorPosRef = useRef(0);
-  const dictationRef = useRef<DictationRange | null>(null);
-  const prevRecordingRef = useRef(false);
-  const contentRef = useRef(note.content);
-  contentRef.current = note.content;
-
-  const commitContentChange = useCallback(
-    (newContent: string) => {
-      contentRef.current = newContent;
-      onContentChange(newContent);
-    },
-    [onContentChange]
-  );
-
-  // Insert text directly into TipTap at ProseMirror positions (fast, no full-doc replace).
-  // TipTap's onUpdate callback handles syncing markdown back to the parent.
-  const editorInsertText = useCallback((from: number, to: number, text: string) => {
-    const ed = editorRef.current;
-    if (!ed || ed.isDestroyed) return;
-    ed.chain().deleteRange({ from, to }).insertContentAt(from, text).run();
-  }, []);
 
   const segmentContainerRef = useRef<HTMLDivElement>(null);
   const [indicatorStyle, setIndicatorStyle] = useState<React.CSSProperties>({ opacity: 0 });
@@ -259,47 +193,22 @@ export default function NoteEditor({
     document.execCommand("insertText", false, text);
   }, []);
 
-  const handleStartRecording = useCallback(() => {
-    const ed = editorRef.current;
-    if (ed) {
-      cursorPosRef.current = ed.state.selection.from;
-    }
-    onStartRecording();
-  }, [onStartRecording]);
-
   const prevMeetingRecRef = useRef(false);
   useEffect(() => {
     prevMeetingRecRef.current = !!isMeetingRecording;
   }, [isMeetingRecording]);
 
+  // Auto-switch to transcript view after recording stops and transcript is ready
+  const prevRecordingRef = useRef(false);
   const pendingTranscriptSwitchRef = useRef(false);
 
   useEffect(() => {
     if (isRecording && !prevRecordingRef.current) {
-      const pos = cursorPosRef.current;
-      dictationRef.current = {
-        start: pos,
-        partialStart: pos,
-        end: pos,
-        committedChars: 0,
-      };
-      if (viewMode === "enhanced") setViewMode("raw");
-      // Mark that we should switch to transcript view once transcript arrives
       pendingTranscriptSwitchRef.current = true;
-    }
-    if (!isRecording && prevRecordingRef.current) {
-      // Only clear if no progressive text was inserted (non-streaming case).
-      // For streaming, keep dictationRef alive so the final transcript replaces
-      // the partial zone instead of inserting a duplicate at cursor.
-      const range = dictationRef.current;
-      if (range && range.partialStart === range.start && range.end === range.start) {
-        dictationRef.current = null;
-      }
     }
     prevRecordingRef.current = isRecording;
   }, [isRecording]);
 
-  // Auto-switch to transcript view after recording stops and transcript is ready
   useEffect(() => {
     if (!isRecording && !isProcessing && pendingTranscriptSwitchRef.current && liveTranscript) {
       pendingTranscriptSwitchRef.current = false;
@@ -307,104 +216,8 @@ export default function NoteEditor({
     }
   }, [isRecording, isProcessing, liveTranscript]);
 
-  // Partial effect: only replace the active partial zone [partialStart, end].
-  // Committed text before partialStart is untouched — users can edit it freely.
-  useEffect(() => {
-    if (!partialTranscript || !dictationRef.current) return;
-
-    const { partialStart, end } = dictationRef.current;
-    const hasCommitted = partialStart > dictationRef.current.start;
-    const textToInsert = (hasCommitted ? " " : "") + partialTranscript;
-    const newEnd = partialStart + textToInsert.length;
-
-    editorInsertText(partialStart, end, textToInsert);
-    dictationRef.current.end = newEnd;
-  }, [partialTranscript, editorInsertText]); // note.content intentionally excluded
-
-  // Streaming commit: a Deepgram segment was finalized. Replace the partial zone
-  // with the committed text and advance partialStart for the next utterance.
-  useEffect(() => {
-    if (streamingCommit == null || !dictationRef.current) return;
-
-    const { partialStart, end } = dictationRef.current;
-    const newPartialStart = partialStart + streamingCommit.length;
-
-    editorInsertText(partialStart, end, streamingCommit);
-    dictationRef.current.partialStart = newPartialStart;
-    dictationRef.current.end = newPartialStart;
-    dictationRef.current.committedChars += streamingCommit.length;
-
-    onStreamingCommitConsumed();
-  }, [streamingCommit, onStreamingCommitConsumed, editorInsertText]); // note.content intentionally excluded
-
-  // Final transcript (on recording stop).
-  useEffect(() => {
-    if (finalTranscript == null) return;
-
-    const range = dictationRef.current;
-    if (!range) {
-      // Non-streaming: insert at cursor position
-      const ed = editorRef.current;
-      if (ed && !ed.isDestroyed) {
-        const pos = cursorPosRef.current;
-        ed.chain().insertContentAt(pos, finalTranscript).run();
-      } else {
-        commitContentChange(contentRef.current + finalTranscript);
-      }
-      onFinalTranscriptConsumed();
-      return;
-    }
-
-    // Streaming: committed text is already in the note. Only finalize the
-    // remaining partial zone with the tail of the final transcript.
-    const { partialStart, end, committedChars } = range;
-    const remainingFinal = finalTranscript.slice(committedChars);
-
-    // If partial zone is empty and nothing new to insert, just clean up
-    if (partialStart === end && !remainingFinal.trim()) {
-      dictationRef.current = null;
-      onFinalTranscriptConsumed();
-      return;
-    }
-
-    editorInsertText(partialStart, end, remainingFinal);
-    dictationRef.current = null;
-    onFinalTranscriptConsumed();
-  }, [finalTranscript, commitContentChange, onFinalTranscriptConsumed, editorInsertText]); // note.content intentionally excluded
-
-  // Safety: clear dictation range when processing ends without a final transcript
-  // (e.g. cancelled recording with no captured text). Declared after the final
-  // transcript effect so it runs second if both trigger in the same render.
-  const prevDictationProcessingRef = useRef(false);
-  useEffect(() => {
-    if (prevDictationProcessingRef.current && !isProcessing && dictationRef.current) {
-      dictationRef.current = null;
-    }
-    prevDictationProcessingRef.current = isProcessing;
-  }, [isProcessing]);
-
-  const handleSelect = useCallback(() => {
-    const ed = editorRef.current;
-    if (ed) {
-      cursorPosRef.current = ed.state.selection.from;
-    }
-  }, []);
-
   const handleContentChange = useCallback(
     (newValue: string) => {
-      if (newValue === contentRef.current) return;
-
-      if (dictationRef.current) {
-        const delta = newValue.length - contentRef.current.length;
-        if (delta !== 0) {
-          const range = dictationRef.current;
-          range.start = Math.max(0, range.start + delta);
-          range.partialStart = Math.max(range.start, range.partialStart + delta);
-          range.end = Math.max(range.partialStart, range.end + delta);
-        }
-      }
-
-      contentRef.current = newValue;
       onContentChange(newValue);
     },
     [onContentChange]
@@ -517,21 +330,6 @@ export default function NoteEditor({
                 )}
               </div>
             )}
-            {canStream && (
-              <button
-                onClick={handleLiveToggle}
-                className={cn(
-                  "shrink-0 h-6 px-1.5 flex items-center gap-1 rounded-md text-xs font-medium transition-colors duration-150",
-                  liveMode
-                    ? "bg-primary/8 text-primary/70 hover:bg-primary/12 dark:bg-primary/12 dark:text-primary/80"
-                    : "bg-foreground/3 dark:bg-white/3 text-foreground/25 hover:text-foreground/40 hover:bg-foreground/6 dark:hover:bg-white/6"
-                )}
-                aria-label={t("notes.editor.live")}
-              >
-                <Radio size={9} />
-                {t("notes.editor.live")}
-              </button>
-            )}
             {onExportNote && (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -574,7 +372,6 @@ export default function NoteEditor({
             <RichTextEditor
               value={note.content}
               onChange={handleContentChange}
-              onSelect={handleSelect}
               editorRef={editorRef}
               placeholder={t("notes.editor.startWriting")}
               disabled={actionProcessingState === "processing"}
@@ -592,7 +389,7 @@ export default function NoteEditor({
         <DictationWidget
           isRecording={isRecording || !!isMeetingRecording}
           isProcessing={isProcessing}
-          onStart={handleStartRecording}
+          onStart={onStartRecording}
           onStop={isMeetingRecording ? onStopMeetingRecording! : onStopRecording}
           actionPicker={isMeetingRecording ? undefined : actionPicker}
         />
