@@ -888,7 +888,6 @@ body:has(.agent-overlay-window) #root {
   caret-color: var(--color-foreground);
 }
 
-
 .rich-text-editor-content h1 {
   font-size: 1.125rem;
   font-weight: 700;

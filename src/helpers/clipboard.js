@@ -84,7 +84,9 @@ class ClipboardManager {
 
     process.on("exit", () => {
       if (this._kwinScriptPath) {
-        try { fs.unlinkSync(this._kwinScriptPath); } catch {}
+        try {
+          fs.unlinkSync(this._kwinScriptPath);
+        } catch {}
       }
     });
   }
@@ -420,11 +422,10 @@ class ClipboardManager {
         );
         if (loadResult.status === 0) {
           const scriptId = loadResult.stdout.toString().trim();
-          spawnSync(
-            qdbus,
-            ["org.kde.KWin", `/Scripting/Script${scriptId}`, "run"],
-            { timeout: 1000, stdio: "pipe" }
-          );
+          spawnSync(qdbus, ["org.kde.KWin", `/Scripting/Script${scriptId}`, "run"], {
+            timeout: 1000,
+            stdio: "pipe",
+          });
           // KWin script executes in the compositor; brief pause lets the journal flush.
           spawnSync("sleep", ["0.03"], { timeout: 100 });
 
@@ -435,24 +436,28 @@ class ClipboardManager {
               // KDE 6 logs KWin output under this identifier
               "--identifier=kwin_wayland_wrapper",
               "--since=3 seconds ago",
-              "-n", "5",
+              "-n",
+              "5",
               "--no-pager",
-              "-o", "cat",
+              "-o",
+              "cat",
             ],
             { timeout: 1000, stdio: "pipe" }
           );
-          spawnSync(
-            qdbus,
-            ["org.kde.KWin", `/Scripting/Script${scriptId}`, "stop"],
-            { timeout: 1000, stdio: "pipe" }
-          );
+          spawnSync(qdbus, ["org.kde.KWin", `/Scripting/Script${scriptId}`, "stop"], {
+            timeout: 1000,
+            stdio: "pipe",
+          });
 
           if (journalResult.status === 0) {
             const lines = journalResult.stdout.toString().split("\n");
             for (let i = lines.length - 1; i >= 0; i--) {
               const idx = lines[i].indexOf(`${journalMarker}:`);
               if (idx !== -1) {
-                const cls = lines[i].slice(idx + journalMarker.length + 1).trim().toLowerCase();
+                const cls = lines[i]
+                  .slice(idx + journalMarker.length + 1)
+                  .trim()
+                  .toLowerCase();
                 if (cls) return cls;
               }
             }
@@ -1214,9 +1219,7 @@ class ClipboardManager {
           }
         }
 
-        this.safeLog(
-          "⚠️ Native linux-fast-paste failed, falling back to system tools"
-        );
+        this.safeLog("⚠️ Native linux-fast-paste failed, falling back to system tools");
       } else {
         const xtestArgs = [];
         if (targetWindowId) xtestArgs.push("--window", targetWindowId);

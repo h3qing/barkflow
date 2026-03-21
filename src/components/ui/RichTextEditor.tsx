@@ -54,7 +54,7 @@ export function RichTextEditor({
     editable: !disabled,
     onUpdate: ({ editor: ed }) => {
       if (suppressUpdateRef.current) return;
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
       const md = (ed.storage as any).markdown.getMarkdown() as string;
       internalValueRef.current = md;
       onChange?.(md);

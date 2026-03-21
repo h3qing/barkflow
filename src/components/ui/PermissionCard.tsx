@@ -98,9 +98,7 @@ export default function PermissionCard({
 
       {/* Troubleshooting hint */}
       {hint && !granted && (
-        <p className="text-[11px] text-warning/80 leading-snug mt-2 pl-11">
-          {hint}
-        </p>
+        <p className="text-[11px] text-warning/80 leading-snug mt-2 pl-11">{hint}</p>
       )}
     </div>
   );
