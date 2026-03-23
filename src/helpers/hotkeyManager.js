@@ -861,6 +861,28 @@ class HotkeyManager {
         };
       }
 
+      if (this.useKDE && this.kdeManager) {
+        debugLogger.log(`[HotkeyManager] Updating KDE hotkey to "${hotkey}"`);
+        const success = await this.kdeManager.registerKeybinding(hotkey, "dictation", callback);
+        if (!success) {
+          return {
+            success: false,
+            message: `Failed to update KDE hotkey to "${hotkey}". Check the format is valid.`,
+          };
+        }
+        this.currentHotkey = hotkey;
+        const saved = await this.saveHotkeyToRenderer(hotkey);
+        if (!saved) {
+          debugLogger.warn(
+            "[HotkeyManager] KDE hotkey registered but failed to persist to localStorage"
+          );
+        }
+        return {
+          success: true,
+          message: `Hotkey updated to: ${hotkey} (via KDE D-Bus shortcut)`,
+        };
+      }
+
       const result = this.setupShortcuts(hotkey, callback);
       if (result.success) {
         const saved = await this.saveHotkeyToRenderer(hotkey);
