@@ -117,12 +117,37 @@ export const useAudioRecording = (toast, options = {}) => {
             return;
           }
 
-          setTranscript(result.text);
+          // BarkFlow: Ollama text polish (if available)
+          let textToPaste = result.text;
+          let rawText = result.rawText ?? result.text;
+          try {
+            const polishResult = await window.electronAPI?.barkflowOllamaPolish?.(
+              transcribedText
+            );
+            if (polishResult?.polished && polishResult.text) {
+              rawText = transcribedText;
+              textToPaste = polishResult.text;
+              logger.info(
+                "BarkFlow Ollama polish applied",
+                {
+                  inputLen: transcribedText.length,
+                  outputLen: polishResult.text.length,
+                  elapsed: polishResult.elapsed,
+                },
+                "barkflow"
+              );
+            }
+          } catch (polishError) {
+            // Polish failed — use raw STT text. Never block the pipeline.
+            logger.warn("BarkFlow Ollama polish failed", { error: polishError }, "barkflow");
+          }
+
+          setTranscript(textToPaste);
 
           const isStreaming = result.source?.includes("streaming");
           const { keepTranscriptionInClipboard } = getSettings();
           const pasteStart = performance.now();
-          await audioManagerRef.current.safePaste(result.text, {
+          await audioManagerRef.current.safePaste(textToPaste, {
             ...(isStreaming ? { fromStreaming: true } : {}),
             restoreClipboard: !keepTranscriptionInClipboard,
           });
@@ -136,7 +161,7 @@ export const useAudioRecording = (toast, options = {}) => {
             "streaming"
           );
 
-          audioManagerRef.current.saveTranscription(result.text, result.rawText ?? result.text);
+          audioManagerRef.current.saveTranscription(textToPaste, rawText);
 
           if (result.source === "openai" && getSettings().useLocalWhisper) {
             toast({
