@@ -78,8 +78,8 @@
     "desktop-app"
   ],
   "author": {
-    "name": "OpenWhispr Team",
-    "email": "support@openwhispr.com"
+    "name": "BarkFlow",
+    "email": "heqing@barkflow.app"
   },
   "license": "MIT",
   "devDependencies": {

@@ -13,9 +13,9 @@ require("dotenv").config({ path: path.join(__dirname, ".env") });
 
 const VALID_CHANNELS = new Set(["development", "staging", "production"]);
 const DEFAULT_OAUTH_PROTOCOL_BY_CHANNEL = {
-  development: "openwhispr-dev",
-  staging: "openwhispr-staging",
-  production: "openwhispr",
+  development: "barkflow-dev",
+  staging: "barkflow-staging",
+  production: "barkflow",
 };
 const BASE_WINDOWS_APP_ID = "com.barkflow.app";
 const DEFAULT_AUTH_BRIDGE_PORT = 5199;
@@ -56,7 +56,7 @@ function configureChannelUserDataPath() {
     return;
   }
 
-  const isolatedPath = path.join(app.getPath("appData"), `OpenWhispr-${APP_CHANNEL}`);
+  const isolatedPath = path.join(app.getPath("appData"), `BarkFlow-${APP_CHANNEL}`);
   app.setPath("userData", isolatedPath);
 }
 
@@ -150,8 +150,8 @@ if (!gotSingleInstanceLock) {
 const isLiveWindow = (window) => window && !window.isDestroyed();
 
 // Ensure macOS menus use the proper casing for the app name
-if (process.platform === "darwin" && app.getName() !== "OpenWhispr") {
-  app.setName("OpenWhispr");
+if (process.platform === "darwin" && app.getName() !== "BarkFlow") {
+  app.setName("BarkFlow");
 }
 
 // Add global error handling for uncaught exceptions
@@ -490,7 +490,7 @@ function startAuthBridgeServer() {
 
     res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
     res.end(
-      "<html><body><h3>OpenWhispr sign-in complete.</h3><p>You can close this tab.</p></body></html>"
+      "<html><body><h3>BarkFlow sign-in complete.</h3><p>You can close this tab.</p></body></html>"
     );
   });
 

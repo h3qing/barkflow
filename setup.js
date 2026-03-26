@@ -1,6 +1,6 @@
 const fs = require("fs");
 
-console.log("Setting up OpenWhispr...");
+console.log("Setting up BarkFlow...");
 
 const envTemplate = `# OpenAI API Configuration
 # Get your API key from: https://platform.openai.com/api-keys
