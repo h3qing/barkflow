@@ -664,4 +664,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
   getUpdateNotificationData: () => ipcRenderer.invoke("get-update-notification-data"),
   updateNotificationReady: () => ipcRenderer.invoke("update-notification-ready"),
   updateNotificationRespond: (action) => ipcRenderer.invoke("update-notification-respond", action),
+
+  // BarkFlow: Ollama text polish
+  barkflowOllamaPolish: (text, options) => ipcRenderer.invoke("barkflow-ollama-polish", text, options),
+  barkflowOllamaCheck: () => ipcRenderer.invoke("barkflow-ollama-check"),
 });

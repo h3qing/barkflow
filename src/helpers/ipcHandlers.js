@@ -1751,6 +1751,25 @@ class IPCHandlers {
       }
     });
 
+    // BarkFlow: Ollama text polish — separate from OpenWhispr's reasoning system
+    ipcMain.handle("barkflow-ollama-polish", async (event, text, options) => {
+      try {
+        const { polishWithOllama } = require("../barkflow/bridge/ollama-bridge");
+        return await polishWithOllama(text, options);
+      } catch (error) {
+        return { success: true, text, polished: false, error: error.message };
+      }
+    });
+
+    ipcMain.handle("barkflow-ollama-check", async () => {
+      try {
+        const { checkOllamaAvailable } = require("../barkflow/bridge/ollama-bridge");
+        return await checkOllamaAvailable();
+      } catch {
+        return { available: false, models: [] };
+      }
+    });
+
     ipcMain.handle(
       "process-anthropic-reasoning",
       async (event, text, modelId, _agentName, config) => {
