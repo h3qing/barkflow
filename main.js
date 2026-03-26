@@ -515,6 +515,10 @@ async function startApp() {
   initializeCoreManagers();
   startAuthBridgeServer();
 
+  // BarkFlow: Initialize BarkFlow subsystems
+  const { initializeBarkFlow } = require("./src/barkflow/bridge/app-init");
+  await initializeBarkFlow();
+
   // Electron's file:// sends no Origin header, which Neon Auth rejects.
   session.defaultSession.webRequest.onBeforeSendHeaders(
     { urls: ["https://*.neon.tech/*"] },
@@ -1117,6 +1121,10 @@ if (gotSingleInstanceLock) {
   });
 
   app.on("will-quit", () => {
+    // BarkFlow: Shutdown BarkFlow subsystems
+    const { shutdownBarkFlow } = require("./src/barkflow/bridge/app-init");
+    shutdownBarkFlow().catch(() => {});
+
     if (authBridgeServer) {
       authBridgeServer.close();
       authBridgeServer = null;

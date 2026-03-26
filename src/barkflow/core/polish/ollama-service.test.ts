@@ -9,6 +9,7 @@ import type { PolishConfig } from './types';
 const mockFetch = vi.fn();
 
 beforeEach(() => {
+  mockFetch.mockReset();
   vi.stubGlobal('fetch', mockFetch);
 });
 
