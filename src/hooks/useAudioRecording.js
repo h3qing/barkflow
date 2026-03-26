@@ -136,6 +136,20 @@ export const useAudioRecording = (toast, options = {}) => {
                 },
                 "barkflow"
               );
+
+              // BarkFlow: Learning mode — show polish before/after
+              const captureCount = parseInt(localStorage.getItem("barkflow_capture_count") || "0", 10);
+              const isLearningMode = captureCount < 20;
+              localStorage.setItem("barkflow_capture_count", String(captureCount + 1));
+
+              if (isLearningMode && polishResult.polished) {
+                toast({
+                  title: "\u2728 Text polished",
+                  description: `"${polishResult.text.slice(0, 60)}${polishResult.text.length > 60 ? '...' : ''}"`,
+                  variant: "default",
+                  duration: 5000,
+                });
+              }
             }
           } catch (polishError) {
             // Polish failed — use raw STT text. Never block the pipeline.

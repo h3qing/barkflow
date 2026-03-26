@@ -64,13 +64,9 @@ export default function ControlPanelSidebar({
     () => localStorage.getItem("upgradeProDismissed") === "true"
   );
 
-  const showLimitBanner = authLoaded && isSignedIn && !isProUser && isOverLimit;
-  const showUpgradeBanner =
-    !showLimitBanner &&
-    authLoaded &&
-    (!isSignedIn || usageLoaded !== false) &&
-    !isProUser &&
-    !upgradeDismissed;
+  // BarkFlow: No cloud subscription — disable all upgrade/limit banners
+  const showLimitBanner = false;
+  const showUpgradeBanner = false;
 
   const navItems: {
     id: ControlPanelView;
@@ -220,21 +216,7 @@ export default function ControlPanelSidebar({
           </div>
         )}
 
-        {isSignedIn && onOpenReferrals && (
-          <button
-            onClick={onOpenReferrals}
-            aria-label={t("sidebar.referral")}
-            className="group flex items-center gap-2.5 w-full h-8 px-2.5 rounded-md text-left outline-none hover:bg-foreground/4 dark:hover:bg-white/4 focus-visible:ring-1 focus-visible:ring-primary/30 transition-colors duration-150"
-          >
-            <Gift
-              size={15}
-              className="shrink-0 text-foreground/60 group-hover:text-foreground/75 dark:text-foreground/50 dark:group-hover:text-foreground/65 transition-colors duration-150"
-            />
-            <span className="text-xs text-foreground/80 group-hover:text-foreground dark:text-foreground/70 dark:group-hover:text-foreground/85 transition-colors duration-150">
-              {t("sidebar.referral")}
-            </span>
-          </button>
-        )}
+        {/* BarkFlow: Referral system removed — cloud-only feature */}
 
         <button
           onClick={onOpenSettings}
