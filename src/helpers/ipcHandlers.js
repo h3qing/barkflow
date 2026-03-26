@@ -1803,6 +1803,38 @@ class IPCHandlers {
       }
     });
 
+    // BarkFlow: History entries (voice + clipboard unified view)
+    ipcMain.handle("barkflow-get-entries", async (_event, limit, offset) => {
+      try {
+        const { getBarkFlowEntries } = require("../barkflow/bridge/app-init");
+        return getBarkFlowEntries(limit, offset);
+      } catch (error) {
+        debugLogger.log(`[BarkFlow] get-entries failed: ${error.message}`);
+        return [];
+      }
+    });
+
+    ipcMain.handle("barkflow-search-entries", async (_event, query, limit) => {
+      try {
+        const { searchBarkFlowEntries } = require("../barkflow/bridge/app-init");
+        return searchBarkFlowEntries(query, limit);
+      } catch (error) {
+        debugLogger.log(`[BarkFlow] search-entries failed: ${error.message}`);
+        return [];
+      }
+    });
+
+    ipcMain.handle("barkflow-delete-entry", async (_event, id) => {
+      try {
+        const { deleteBarkFlowEntry } = require("../barkflow/bridge/app-init");
+        deleteBarkFlowEntry(id);
+        return { success: true };
+      } catch (error) {
+        debugLogger.log(`[BarkFlow] delete-entry failed: ${error.message}`);
+        return { success: false, error: error.message };
+      }
+    });
+
     ipcMain.handle(
       "process-anthropic-reasoning",
       async (event, text, modelId, _agentName, config) => {

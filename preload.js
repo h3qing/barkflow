@@ -673,4 +673,9 @@ contextBridge.exposeInMainWorld("electronAPI", {
   // BarkFlow: Markdown notes (Fn+N)
   barkflowSaveMarkdown: (text) => ipcRenderer.invoke("barkflow-save-markdown", text),
   barkflowGetNotesDir: () => ipcRenderer.invoke("barkflow-get-notes-dir"),
+
+  // BarkFlow: History entries (voice + clipboard unified view)
+  barkflowGetEntries: (limit, offset) => ipcRenderer.invoke("barkflow-get-entries", limit, offset),
+  barkflowSearchEntries: (query, limit) => ipcRenderer.invoke("barkflow-search-entries", query, limit),
+  barkflowDeleteEntry: (id) => ipcRenderer.invoke("barkflow-delete-entry", id),
 });

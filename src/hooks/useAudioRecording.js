@@ -177,6 +177,19 @@ export const useAudioRecording = (toast, options = {}) => {
 
           audioManagerRef.current.saveTranscription(textToPaste, rawText);
 
+          // BarkFlow: Save to bf_entries for unified history
+          window.electronAPI?.barkflowSaveEntry?.({
+            source: 'voice',
+            rawText: rawText,
+            polished: textToPaste !== rawText ? textToPaste : null,
+            routedTo: 'paste-at-cursor',
+            hotkeyUsed: null, // TODO: pass actual hotkey from Phase 1a routing
+            durationMs: null, // TODO: get from audio recording
+            projectId: null,
+            audioPath: null,
+            metadata: {},
+          });
+
           if (result.source === "openai" && getSettings().useLocalWhisper) {
             toast({
               title: t("hooks.audioRecording.fallback.title"),

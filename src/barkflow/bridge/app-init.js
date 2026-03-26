@@ -170,4 +170,35 @@ function saveBarkFlowEntry({ source, rawText, polished, routedTo, hotkeyUsed, du
   }
 }
 
-module.exports = { initializeBarkFlow, shutdownBarkFlow, saveBarkFlowEntry };
+function getBarkFlowEntries(limit = 50, offset = 0) {
+  if (!barkflowDb) return [];
+  const rows = barkflowDb.prepare(
+    'SELECT * FROM bf_entries ORDER BY created_at DESC LIMIT ? OFFSET ?'
+  ).all(limit, offset);
+  return rows;
+}
+
+function searchBarkFlowEntries(query, limit = 50) {
+  if (!barkflowDb) return [];
+  const rows = barkflowDb.prepare(
+    `SELECT e.* FROM bf_entries e
+     INNER JOIN bf_entries_fts fts ON e.rowid = fts.rowid
+     WHERE bf_entries_fts MATCH ?
+     ORDER BY e.created_at DESC LIMIT ?`
+  ).all(query, limit);
+  return rows;
+}
+
+function deleteBarkFlowEntry(id) {
+  if (!barkflowDb) return;
+  barkflowDb.prepare('DELETE FROM bf_entries WHERE id = ?').run(id);
+}
+
+module.exports = {
+  initializeBarkFlow,
+  shutdownBarkFlow,
+  saveBarkFlowEntry,
+  getBarkFlowEntries,
+  searchBarkFlowEntries,
+  deleteBarkFlowEntry,
+};
