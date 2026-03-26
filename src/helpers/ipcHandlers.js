@@ -1770,6 +1770,39 @@ class IPCHandlers {
       }
     });
 
+    // BarkFlow: Save entry to bf_entries table
+    ipcMain.handle("barkflow-save-entry", async (event, entry) => {
+      try {
+        const { saveBarkFlowEntry } = require("../barkflow/bridge/app-init");
+        const result = saveBarkFlowEntry(entry);
+        if (result) {
+          return { success: true, ...result };
+        }
+        return { success: false, error: "BarkFlow database not initialized" };
+      } catch (error) {
+        return { success: false, error: error.message };
+      }
+    });
+
+    // BarkFlow: Save as Markdown note (Fn+N routing destination)
+    ipcMain.handle("barkflow-save-markdown", async (event, text) => {
+      try {
+        const { saveAsMarkdown } = require("../barkflow/bridge/markdown-route");
+        return saveAsMarkdown(text);
+      } catch (error) {
+        return { success: false, error: error.message };
+      }
+    });
+
+    ipcMain.handle("barkflow-get-notes-dir", async () => {
+      try {
+        const { getNotesDirectory } = require("../barkflow/bridge/markdown-route");
+        return { success: true, path: getNotesDirectory() };
+      } catch (error) {
+        return { success: false, error: error.message };
+      }
+    });
+
     ipcMain.handle(
       "process-anthropic-reasoning",
       async (event, text, modelId, _agentName, config) => {

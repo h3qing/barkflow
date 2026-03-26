@@ -9,6 +9,7 @@
  * Phase 1a: StorageProvider wired up — creates BarkFlow tables in OpenWhispr DB.
  */
 
+const crypto = require("crypto");
 const { app } = require("electron");
 const Database = require("better-sqlite3");
 const path = require("path");
@@ -142,4 +143,31 @@ async function shutdownBarkFlow() {
   debugLogger.log("[BarkFlow] Shutdown complete");
 }
 
-module.exports = { initializeBarkFlow, shutdownBarkFlow };
+function saveBarkFlowEntry({ source, rawText, polished, routedTo, hotkeyUsed, durationMs, projectId, audioPath, metadata }) {
+  if (!barkflowDb) return null;
+
+  const id = crypto.randomUUID();
+  const createdAt = new Date().toISOString();
+
+  try {
+    const insertEntry = barkflowDb.prepare(`
+      INSERT INTO bf_entries (id, created_at, source, raw_text, polished, routed_to, hotkey_used, duration_ms, project_id, audio_path, metadata)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+    insertEntry.run(id, createdAt, source, rawText, polished, routedTo, hotkeyUsed, durationMs, projectId, audioPath, JSON.stringify(metadata ?? {}));
+
+    const insertAudit = barkflowDb.prepare(`
+      INSERT INTO bf_audit_log (action, entity_id, detail)
+      VALUES (?, ?, ?)
+    `);
+    insertAudit.run("entry_created", id, `source=${source}`);
+
+    debugLogger.log(`[BarkFlow] Entry saved: ${id} (source=${source})`);
+    return { id, createdAt };
+  } catch (error) {
+    debugLogger.log(`[BarkFlow] Failed to save entry: ${error.message}`);
+    return null;
+  }
+}
+
+module.exports = { initializeBarkFlow, shutdownBarkFlow, saveBarkFlowEntry };

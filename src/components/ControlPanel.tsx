@@ -1,7 +1,7 @@
 import React, { Suspense, useState, useEffect, useRef, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "./ui/button";
-import { Download, RefreshCw, Loader2, AlertTriangle, Zap, ChevronLeft } from "lucide-react";
+import { Download, RefreshCw, Loader2, Zap, ChevronLeft } from "lucide-react";
 
 import { ConfirmDialog, AlertDialog } from "./ui/dialog";
 import { useDialogs } from "../hooks/useDialogs";
@@ -67,8 +67,6 @@ export default function ControlPanel() {
     useLocalWhisper,
     localTranscriptionProvider,
     useReasoningModel,
-    setUseLocalWhisper,
-    setCloudTranscriptionMode,
   } = useSettings();
   const { isSignedIn, isLoaded: authLoaded, user } = useAuth();
 
@@ -608,8 +606,8 @@ export default function ControlPanel() {
                 history={history}
                 isLoading={isLoading}
                 hotkey={hotkey}
-                showCloudMigrationBanner={showCloudMigrationBanner}
-                setShowCloudMigrationBanner={setShowCloudMigrationBanner}
+                showCloudMigrationBanner={false}
+                setShowCloudMigrationBanner={() => {}}
                 aiCTADismissed={aiCTADismissed}
                 setAiCTADismissed={setAiCTADismissed}
                 useReasoningModel={useReasoningModel}

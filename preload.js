@@ -668,4 +668,9 @@ contextBridge.exposeInMainWorld("electronAPI", {
   // BarkFlow: Ollama text polish
   barkflowOllamaPolish: (text, options) => ipcRenderer.invoke("barkflow-ollama-polish", text, options),
   barkflowOllamaCheck: () => ipcRenderer.invoke("barkflow-ollama-check"),
+  barkflowSaveEntry: (entry) => ipcRenderer.invoke("barkflow-save-entry", entry),
+
+  // BarkFlow: Markdown notes (Fn+N)
+  barkflowSaveMarkdown: (text) => ipcRenderer.invoke("barkflow-save-markdown", text),
+  barkflowGetNotesDir: () => ipcRenderer.invoke("barkflow-get-notes-dir"),
 });
