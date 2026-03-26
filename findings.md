@@ -105,6 +105,38 @@ openwhispr/
 - Clipboard polling battery cost → profile in Phase 1b
 - FTS performance at 150K+ entries → address in Phase 3
 
+## Security Audit (2026-03-26)
+
+### Preload Bridge Inventory
+- **241 total IPC methods** exposed via `window.electronAPI`
+- ~175 invoke (request/response), ~23 send (fire-and-forget), ~43 on (listeners)
+- Grouped into 46 categories
+
+### Critical Issues
+1. **Unsanitized file paths** — `get-file-size`, `transcribe-audio-file`, `transcribe-audio-file-cloud`, `transcribe-audio-file-byok` accept filePath directly from renderer without validation. Path traversal possible.
+2. **API keys in plaintext .env** — 20+ handlers read/write API keys to a plaintext `.env` file. No OS keychain usage for BYOK keys.
+3. **cleanup-app wipes everything** — Database, .env, localStorage can all be destroyed via one IPC call from renderer. No confirmation required.
+
+### High Issues
+4. **open-external accepts arbitrary URLs** — No protocol validation. Could open `file://` or `javascript:` URLs.
+5. **No audio file size limit (local)** — Cloud handlers have 25MB limit, local `transcribe-audio-file` has none.
+6. **Audio buffer memory exhaustion** — `get-audio-buffer` returns entire buffer with no size limit or rate limiting.
+7. **Environment variable injection** — `parakeet-server-start` sets `process.env.PARAKEET_MODEL` from user input without validation.
+
+### Medium Issues
+8. No rate limiting on transcription endpoints
+9. No input validation on database handlers (SQL injection risk if Kysely doesn't parameterize)
+10. No CSP configured anywhere
+11. `webSecurity: false` on control panel and agent overlay
+
+### BarkFlow Phase 0 Security Fixes (planned)
+- [x] Audit complete — 241 methods catalogued
+- [ ] Add URL validation to `open-external` (allowlist protocols)
+- [ ] Add path validation to file read handlers
+- [ ] Add CSP headers to all windows
+- [ ] Enable `webSecurity: true` on control panel (proxy cloud calls through main)
+- [ ] Document preload bridge inventory in security doc
+
 ## Resources
 - Design doc: `docs/design/design-doc.md`
 - CEO plan: `docs/design/ceo-plan.md`

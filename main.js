@@ -92,7 +92,7 @@ if (process.platform === "linux" && process.env.XDG_SESSION_TYPE === "wayland") 
 // Set desktop filename so Wayland compositors can match windows to the .desktop entry.
 // This allows XDG portals (e.g. PipeWire) to persist permissions across sessions.
 if (process.platform === "linux") {
-  app.setDesktopName("open-whispr.desktop");
+  app.setDesktopName("barkflow.desktop");
 }
 
 // Group all windows under single taskbar entry on Windows
@@ -527,6 +527,25 @@ async function startApp() {
       callback({ requestHeaders: details.requestHeaders });
     }
   );
+
+  // BarkFlow security: Add Content Security Policy to all responses
+  session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
+    callback({
+      responseHeaders: {
+        ...details.responseHeaders,
+        "Content-Security-Policy": [
+          "default-src 'self';" +
+          " script-src 'self';" +
+          " style-src 'self' 'unsafe-inline';" +
+          " img-src 'self' data: blob:;" +
+          " font-src 'self' data:;" +
+          " connect-src 'self' http://localhost:* https://*.neon.tech https://api.openai.com https://api.groq.com https://api.deepgram.com https://api.assemblyai.com https://generativelanguage.googleapis.com https://api.anthropic.com https://api.mistral.ai http://localhost:11434;" +
+          " media-src 'self' blob:;" +
+          " worker-src 'self' blob:;"
+        ],
+      },
+    });
+  });
 
   windowManager.setActivationModeCache(environmentManager.getActivationMode());
   windowManager.setFloatingIconAutoHide(environmentManager.getFloatingIconAutoHide());

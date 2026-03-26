@@ -733,7 +733,16 @@ class IPCHandlers {
     ipcMain.handle("get-file-size", async (_event, filePath) => {
       const fs = require("fs");
       try {
-        const stats = fs.statSync(filePath);
+        // BarkFlow security: validate path is not traversing outside expected directories
+        const resolved = path.resolve(filePath);
+        const userDataDir = app.getPath("userData");
+        const homeDir = app.getPath("home");
+        // Allow files in user data dir, home dir, or paths from file dialog (absolute)
+        if (!resolved.startsWith(userDataDir) && !resolved.startsWith(homeDir)) {
+          debugLogger.warn("get-file-size: blocked path outside home directory", { filePath: resolved });
+          return 0;
+        }
+        const stats = fs.statSync(resolved);
         return stats.size;
       } catch {
         return 0;
@@ -743,7 +752,18 @@ class IPCHandlers {
     ipcMain.handle("transcribe-audio-file", async (event, filePath, options = {}) => {
       const fs = require("fs");
       try {
-        const audioBuffer = fs.readFileSync(filePath);
+        // BarkFlow security: validate file path and size
+        const resolved = path.resolve(filePath);
+        const homeDir = app.getPath("home");
+        if (!resolved.startsWith(homeDir)) {
+          return { success: false, error: "File path outside home directory" };
+        }
+        const stats = fs.statSync(resolved);
+        const MAX_FILE_SIZE = 500 * 1024 * 1024; // 500MB max for local transcription
+        if (stats.size > MAX_FILE_SIZE) {
+          return { success: false, error: `File too large (${Math.round(stats.size / 1024 / 1024)}MB). Maximum is 500MB.` };
+        }
+        const audioBuffer = fs.readFileSync(resolved);
         if (options.provider === "nvidia") {
           const result = await this.parakeetManager.transcribeLocalParakeet(audioBuffer, options);
           return result;
@@ -1400,6 +1420,12 @@ class IPCHandlers {
 
     ipcMain.handle("open-external", async (event, url) => {
       try {
+        // BarkFlow security: validate URL protocol before opening
+        const parsed = new URL(url);
+        const allowedProtocols = ["http:", "https:", "mailto:"];
+        if (!allowedProtocols.includes(parsed.protocol)) {
+          return { success: false, error: `Blocked protocol: ${parsed.protocol}` };
+        }
         await shell.openExternal(url);
         return { success: true };
       } catch (error) {

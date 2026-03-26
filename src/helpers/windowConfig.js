@@ -72,11 +72,10 @@ const CONTROL_PANEL_CONFIG = {
     // sandbox: false is required because the preload script bridges IPC
     // between the renderer and main process.
     sandbox: false,
-    // webSecurity: false disables same-origin policy. Required because in
-    // production the renderer loads from a file:// origin but makes
-    // cross-origin fetch calls to Neon Auth, Gemini, OpenAI, and Groq APIs
-    // directly from the browser. These would be blocked by CORS otherwise.
-    webSecurity: false,
+    // BarkFlow: webSecurity re-enabled. Cross-origin API calls are allowed
+    // via CSP connect-src in main.js. Cloud API calls should be proxied
+    // through the main process for full security.
+    webSecurity: true,
     spellcheck: false,
     backgroundThrottling: false,
   },
@@ -201,7 +200,8 @@ const AGENT_OVERLAY_CONFIG = {
     nodeIntegration: false,
     contextIsolation: true,
     sandbox: false,
-    webSecurity: false,
+    // BarkFlow: webSecurity re-enabled (same as control panel)
+    webSecurity: true,
     spellcheck: false,
     backgroundThrottling: false,
   },
