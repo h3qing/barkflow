@@ -82,10 +82,36 @@
   - `findings.md`
   - `progress.md`
 
+### Overnight Build Session (continued)
+- **Status:** complete
+- Actions taken:
+  - npm install completed (Node 22 required, cache permission fix with --cache /tmp/npm-cache)
+  - Wired BarkFlow init into main.js (startApp + will-quit)
+  - Compiled native binaries (Globe key, fast-paste, audio-tap, mic-listener)
+  - Built Vite renderer (npm run build:renderer)
+  - Verified app launches: `npx electron .` boots, shows UI, no crashes
+  - All 70 tests pass (248ms)
+- Files created/modified:
+  - `src/barkflow/bridge/app-init.js` (CommonJS shim for main process)
+  - `main.js` (wired BarkFlow init + shutdown)
+  - `package.json` (vitest added as dev dependency)
+
 ## Test Results
 | Test | Input | Expected | Actual | Status |
 |------|-------|----------|--------|--------|
-| (none yet — OpenWhispr has zero tests) | | | | |
+| Pipeline happy path | raw text + polish + route | polished + routed + stored | Pass | ✓ |
+| Pipeline polish disabled | raw text, polish off | raw text routed directly | Pass | ✓ |
+| Pipeline polish failure | Ollama timeout | fallback to raw text | Pass | ✓ |
+| Pipeline storage failure | DB locked | returns synthetic entry | Pass | ✓ |
+| OllamaService happy path | mock Ollama API | polished text returned | Pass | ✓ |
+| OllamaService timeout | 2s timeout | fallback to raw | Pass | ✓ |
+| OllamaService empty input | blank string | skip polish, return raw | Pass | ✓ |
+| HotkeyRouter register + resolve | Fn+T → todo | route found | Pass | ✓ |
+| HotkeyRouter unknown hotkey | Fn+Z | fallback to paste-at-cursor | Pass | ✓ |
+| ClipboardMonitor dedup | same text twice | captured once | Pass | ✓ |
+| ClipboardMonitor concealed | password entry | skipped | Pass | ✓ |
+| App launch | npx electron . | boots without crash | Pass | ✓ |
+| 70 total tests across 4 files | vitest run | all pass | 70/70 | ✓ |
 
 ## Error Log
 | Timestamp | Error | Attempt | Resolution |
@@ -95,8 +121,8 @@
 ## 5-Question Reboot Check
 | Question | Answer |
 |----------|--------|
-| Where am I? | Phase 0 (pending — repo setup complete, fork next) |
-| Where am I going? | Phase 0 → 1a → 1b → 2 → 3 |
+| Where am I? | Phase 0 nearly complete — app boots, 70 tests pass, security hardened |
+| Where am I going? | Finish Phase 0 (push branch, PR) → Phase 1a (pipeline integration) |
 | What's the goal? | Fork OpenWhispr → BarkFlow: voice-first personal automation |
 | What have I learned? | OpenWhispr provides STT, hotkeys, audio, LLM polish, SQLite, UI. Needs: tests, security hardening, StorageProvider, clipboard monitoring, routing. See findings.md |
 | What have I done? | Design doc approved, CEO plan active, design review 8/10, eng review cleared, 3 new features added, repo organized. See above. |

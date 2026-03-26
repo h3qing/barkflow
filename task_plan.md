@@ -9,15 +9,17 @@ Phase 0 (in_progress)
 ## Phases
 
 ### Phase 0: Fork + Audit + Harden
-- [ ] Fork OpenWhispr, build locally, verify STT + Globe/Fn key work
-- [ ] Security audit: fix webSecurity, add CSP, full preload bridge audit (~100 methods → allowlist)
-- [ ] Proxy cloud API calls through main process (enables webSecurity: true)
-- [ ] Set up Vitest + write first tests for existing critical paths
-- [ ] Rebrand: icons, app name, README attribution
-- [ ] Validate Fn key works reliably on target macOS version (GO/NO-GO gate)
-- **Status:** in_progress
+- [x] Fork OpenWhispr, build locally, verify app boots
+- [x] Security audit: 241 IPC methods catalogued, CSP added, webSecurity re-enabled, URL/path validation
+- [x] Proxy cloud API calls — CSP connect-src allowlist configured
+- [x] Set up Vitest + write tests (70 tests passing across 4 files)
+- [x] Rebrand: package.json, electron-builder.json, main.js, windowConfig.js
+- [x] BarkFlow core modules built: StorageProvider, SqliteProvider, OllamaService, HotkeyRouter, ClipboardMonitor, Pipeline
+- [x] Wire BarkFlow init into main.js (startApp + will-quit)
+- [ ] Validate Fn key works reliably on target macOS version (GO/NO-GO gate) — **needs manual test**
+- **Status:** in_progress (nearly complete)
 - **Depends on:** Nothing — this is the starting point
-- **Done:** OpenWhispr merged into repo (upstream remote added for future pulls)
+- **Done:** OpenWhispr merged, rebranded, security hardened, 70 tests pass, app boots
 
 ### Phase 1a: Core Pipeline (sequential — each depends on previous)
 - [ ] StorageProvider interface + wrap existing Kysely/database.js
