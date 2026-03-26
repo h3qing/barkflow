@@ -113,16 +113,62 @@
 | App launch | npx electron . | boots without crash | Pass | ✓ |
 | 70 total tests across 4 files | vitest run | all pass | 70/70 | ✓ |
 
+## Session: 2026-03-26 — User Testing Feedback + Fixes + Phase 1a
+
+### User Feedback Investigation
+- **Status:** complete
+- User reported: hotkey Ctrl+Option not registering, whisper binary intermittent failure,
+  no recording visual feedback, OpenWhispr branding everywhere, local model not default,
+  no text beautification visible
+- Launched 4 parallel investigation agents: hotkey, whisper, branding, visual feedback
+- Root causes identified for all issues
+
+### Fixes Applied
+- **Status:** complete
+- Actions taken:
+  - Default `useLocalWhisper` to true (local-first)
+  - Default `floatingIconAutoHide` to true (icon only during recording)
+  - Default `startMinimized` to true (menu bar app)
+  - Fixed intermittent whisper: clear cached binary path + auto-start server before transcription
+  - Added macOS modifier-only hotkey validation (reject Ctrl+Option with clear message)
+  - Comprehensive rebranding: 620+ string replacements across 10 locale files
+  - Fixed all user-facing OpenWhispr references (title, menus, tray, dialogs, settings)
+  - Removed Google Fonts CDN import (blocked by CSP, unnecessary)
+  - Removed HeroTools code signing identity
+  - Updated support email, author, D-Bus names, OAuth protocol
+
+### Phase 1a: Ollama Polish Integration
+- **Status:** in_progress
+- Actions taken:
+  - Created ollama-bridge.js (main process) — calls Ollama HTTP API
+  - Registered IPC handlers: barkflow-ollama-polish, barkflow-ollama-check
+  - Exposed in preload bridge
+  - Hooked into useAudioRecording.js onTranscriptionComplete flow
+  - Auto-polish: STT → Ollama polish → paste polished text
+  - Fallback: if Ollama unavailable, paste raw text (no delay)
+  - Both raw and polished saved to history
+- Files created/modified:
+  - `src/barkflow/bridge/ollama-bridge.js` (new)
+  - `src/helpers/ipcHandlers.js` (added IPC handlers)
+  - `preload.js` (exposed new methods)
+  - `src/hooks/useAudioRecording.js` (hooked polish into flow)
+  - `src/stores/settingsStore.ts` (default changes)
+  - `src/utils/hotkeyValidator.ts` (macOS validation)
+  - `src/helpers/whisper.js` (server reliability fix)
+  - All locale translation files (branding)
+
 ## Error Log
 | Timestamp | Error | Attempt | Resolution |
 |-----------|-------|---------|------------|
-| (none yet) | | | |
+| 2026-03-26 | whisper-server binary not found (intermittent) | 1 | Cleared cached path + added auto-start before transcription |
+| 2026-03-26 | Ctrl+Option hotkey not registering | 1 | Added macOS modifier-only validation with clear error message |
+| 2026-03-26 | Google Fonts blocked by CSP | 1 | Removed CDN import — font bundled locally |
 
 ## 5-Question Reboot Check
 | Question | Answer |
 |----------|--------|
-| Where am I? | Phase 0 nearly complete — app boots, 70 tests pass, security hardened |
-| Where am I going? | Finish Phase 0 (push branch, PR) → Phase 1a (pipeline integration) |
+| Where am I? | Phase 1a in progress — Ollama polish wired into transcription flow |
+| Where am I going? | Remaining Phase 1a (hotkey routing) → Phase 1b (features) |
 | What's the goal? | Fork OpenWhispr → BarkFlow: voice-first personal automation |
 | What have I learned? | OpenWhispr provides STT, hotkeys, audio, LLM polish, SQLite, UI. Needs: tests, security hardening, StorageProvider, clipboard monitoring, routing. See findings.md |
 | What have I done? | Design doc approved, CEO plan active, design review 8/10, eng review cleared, 3 new features added, repo organized. See above. |
