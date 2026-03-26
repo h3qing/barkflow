@@ -599,6 +599,17 @@ export function validateHotkey(
     }
   }
 
+  // BarkFlow: macOS cannot register modifier-only combos (e.g., Control+Alt)
+  // via Electron's globalShortcut. Reject with a clear message.
+  if (!hasBaseKey && modifierCount >= 2 && platform === "darwin") {
+    return {
+      valid: false,
+      error:
+        "On macOS, add a non-modifier key (e.g., Control+Option+Space instead of Control+Option).",
+      errorCode: "NO_MODIFIER_OR_SPECIAL" as ValidationErrorCode,
+    };
+  }
+
   const normalizedHotkey = normalizeHotkey(hotkey, platform);
   const normalizedExisting = existingHotkeys.map((existing) => normalizeHotkey(existing, platform));
 

@@ -244,11 +244,16 @@ class WhisperManager {
       serverReady: this.serverManager.ready,
     });
 
-    // Server mode required
+    // Server mode required — check binary exists
     if (!this.serverManager.isAvailable()) {
-      throw new Error(
-        "whisper-server binary not found. Please ensure the app is installed correctly."
-      );
+      // BarkFlow: try clearing the cached path and re-checking (binary may have
+      // been downloaded after initial check)
+      this.serverManager.cachedServerBinaryPath = null;
+      if (!this.serverManager.isAvailable()) {
+        throw new Error(
+          "whisper-server binary not found. Please ensure the app is installed correctly."
+        );
+      }
     }
 
     const model = options.model || "base";
@@ -259,6 +264,13 @@ class WhisperManager {
     // Check if model exists
     if (!fs.existsSync(modelPath)) {
       throw new Error(`Whisper model "${model}" not downloaded. Please download it from Settings.`);
+    }
+
+    // BarkFlow: ensure server is started before transcription
+    if (!this.serverManager.ready) {
+      debugLogger.info("Whisper server not ready, starting before transcription", { model });
+      await this.serverManager.start(modelPath, { useCuda: this.serverManager.useCuda });
+      this.currentServerModel = model;
     }
 
     return await this.transcribeViaServer(audioBlob, model, language, initialPrompt);

@@ -284,8 +284,8 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
   dataRetentionEnabled: readBoolean("dataRetentionEnabled", true),
   audioCuesEnabled: readBoolean("audioCuesEnabled", true),
   pauseMediaOnDictation: readBoolean("pauseMediaOnDictation", false),
-  floatingIconAutoHide: readBoolean("floatingIconAutoHide", false),
-  startMinimized: readBoolean("startMinimized", false),
+  floatingIconAutoHide: readBoolean("floatingIconAutoHide", true), // BarkFlow: hide when not recording
+  startMinimized: readBoolean("startMinimized", true), // BarkFlow: start in menu bar, not as visible window
   ...(() => {
     let accounts: GoogleCalendarAccount[] = [];
     try {
