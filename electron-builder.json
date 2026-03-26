@@ -1,9 +1,9 @@
 {
-  "appId": "com.herotools.openwispr",
-  "productName": "OpenWhispr",
+  "appId": "com.barkflow.app",
+  "productName": "BarkFlow",
   "protocols": {
-    "name": "OpenWhispr Protocol",
-    "schemes": ["openwhispr"]
+    "name": "BarkFlow Protocol",
+    "schemes": ["barkflow"]
   },
   "directories": {
     "output": "dist"
@@ -23,6 +23,7 @@
     "src/models/**/*",
     "src/services/localReasoningBridge.js",
     "src/types/**/*",
+    "src/barkflow/**/*",
     "src/utils.js",
     "src/utils/**/*",
     "src/updater.js",
@@ -123,10 +124,10 @@
     "identity": "HeroTools Inc. (9R85XFMH59)",
     "notarize": true,
     "extendInfo": {
-      "LSUIElement": false,
-      "NSMicrophoneUsageDescription": "OpenWhispr uses the microphone to capture your voice for transcription.",
-      "NSAudioCaptureUsageDescription": "OpenWhispr uses system audio to capture other participants' audio from calls and meetings. Your screen is never recorded.",
-      "NSAccessibilityUsageDescription": "OpenWhispr needs accessibility permissions to paste transcribed text into other applications."
+      "LSUIElement": true,
+      "NSMicrophoneUsageDescription": "BarkFlow uses the microphone to capture your voice for transcription and routing.",
+      "NSAudioCaptureUsageDescription": "BarkFlow uses system audio to capture meeting audio for transcription. Your screen is never recorded.",
+      "NSAccessibilityUsageDescription": "BarkFlow needs accessibility permissions to paste transcribed text into other applications."
     }
   },
   "win": {
@@ -211,7 +212,7 @@
     "include": "resources/nsis/cleanup-models.nsh"
   },
   "dmg": {
-    "title": "OpenWhispr",
+    "title": "BarkFlow",
     "icon": "src/assets/icon.icns",
     "window": {
       "width": 540,
@@ -220,8 +221,8 @@
   },
   "publish": {
     "provider": "github",
-    "owner": "OpenWhispr",
-    "repo": "openwhispr",
+    "owner": "h3qing",
+    "repo": "barkflow",
     "private": false,
     "releaseType": "draft"
   }

@@ -4,7 +4,7 @@
 Fork OpenWhispr and build BarkFlow: a voice-first personal automation tool that transcribes, polishes (local LLM), routes (hotkey-driven), and stores (unified capture layer) voice and clipboard input.
 
 ## Current Phase
-Phase 0
+Phase 0 (in_progress)
 
 ## Phases
 
@@ -15,9 +15,9 @@ Phase 0
 - [ ] Set up Vitest + write first tests for existing critical paths
 - [ ] Rebrand: icons, app name, README attribution
 - [ ] Validate Fn key works reliably on target macOS version (GO/NO-GO gate)
-- **Status:** pending
+- **Status:** in_progress
 - **Depends on:** Nothing — this is the starting point
-- **Blocked by:** Need to fork OpenWhispr first
+- **Done:** OpenWhispr merged into repo (upstream remote added for future pulls)
 
 ### Phase 1a: Core Pipeline (sequential — each depends on previous)
 - [ ] StorageProvider interface + wrap existing Kysely/database.js

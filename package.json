@@ -1,7 +1,7 @@
 {
-  "name": "open-whispr",
-  "version": "1.6.6",
-  "description": "A desktop dictation application using whisper.cpp for speech-to-text transcription",
+  "name": "barkflow",
+  "version": "0.1.0",
+  "description": "Voice-first personal automation — transcribe, polish, route, and store. Fork of OpenWhispr.",
   "main": "main.js",
   "private": true,
   "engines": {
@@ -61,6 +61,9 @@
     "format:check": "eslint . && cd src && eslint . && prettier --check \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
     "lint": "eslint . && cd src && eslint .",
     "typecheck": "cd src && tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "quality-check": "npm run format:check && npm run typecheck",
     "i18n:check": "node scripts/check-i18n.js",
     "preview": "cd src && vite preview",
