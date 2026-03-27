@@ -38,13 +38,13 @@ Phase 0 (in_progress)
 - [x] ClipboardMonitor (polling every 500ms, dedup, saves to bf_entries)
 - [x] Floating indicator reskin (dog ear SVG, amber brand, centered, 48px)
 - [x] Voice-to-Markdown route (Fn+N → .md file to ~/Documents/BarkFlow Notes/)
-- [ ] History UI (sidebar nav + search + filters + detail pane) — building now
-- [ ] Projects system (Fn+P → project picker → capture to named bucket)
+- [x] History UI (search + filters + detail pane + sidebar nav)
+- [x] Projects system (create/delete projects, view entries, FolderOpen sidebar)
+- [x] File import pipeline (validate + read + STT + polish + save to bf_entries)
+- [x] Settings panel (Ollama status, clipboard toggle, notes dir, Sparkles sidebar)
+- [x] Onboarding adaptation (removed dead auth code, BarkFlow-themed text, local-first flow)
 - [ ] Meeting recording (adapt AudioTapManager + transcript-only mode + streaming STT)
-- [ ] File upload pipeline (drop zone + ffmpeg transcode → STT, background processing)
-- [ ] Settings screen (extend SettingsPage.tsx: General, Hotkeys, Voice, Polish, Storage, Clipboard)
-- [ ] Onboarding adaptation (reorder: live demo first, then STT, then Ollama)
-- **Status:** in_progress
+- **Status:** nearly complete (meeting recording remaining)
 - **Depends on:** Phase 1a gate passed
 
 ### Phase 2: MCP Plugin System
