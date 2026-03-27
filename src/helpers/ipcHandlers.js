@@ -2040,6 +2040,48 @@ class IPCHandlers {
       }
     });
 
+    // BarkFlow: Plugin management (MCP server plugins)
+    ipcMain.handle("barkflow-get-plugins", async () => {
+      try {
+        const { getPlugins } = require("../barkflow/bridge/plugin-bridge");
+        return getPlugins();
+      } catch (error) {
+        debugLogger.log(`[BarkFlow] get-plugins failed: ${error.message}`);
+        return [];
+      }
+    });
+
+    ipcMain.handle("barkflow-update-plugin", async (_event, id, updates) => {
+      try {
+        const { updatePlugin } = require("../barkflow/bridge/plugin-bridge");
+        return updatePlugin(id, updates);
+      } catch (error) {
+        debugLogger.log(`[BarkFlow] update-plugin failed: ${error.message}`);
+        return null;
+      }
+    });
+
+    ipcMain.handle("barkflow-add-plugin", async (_event, config) => {
+      try {
+        const { addPlugin } = require("../barkflow/bridge/plugin-bridge");
+        return addPlugin(config);
+      } catch (error) {
+        debugLogger.log(`[BarkFlow] add-plugin failed: ${error.message}`);
+        return null;
+      }
+    });
+
+    ipcMain.handle("barkflow-remove-plugin", async (_event, id) => {
+      try {
+        const { removePlugin } = require("../barkflow/bridge/plugin-bridge");
+        removePlugin(id);
+        return { success: true };
+      } catch (error) {
+        debugLogger.log(`[BarkFlow] remove-plugin failed: ${error.message}`);
+        return { success: false, error: error.message };
+      }
+    });
+
     ipcMain.handle(
       "process-anthropic-reasoning",
       async (event, text, modelId, _agentName, config) => {

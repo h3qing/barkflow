@@ -696,4 +696,10 @@ contextBridge.exposeInMainWorld("electronAPI", {
   barkflowMeetingSegment: (text) => ipcRenderer.invoke("barkflow-meeting-segment", text),
   barkflowMeetingEnd: () => ipcRenderer.invoke("barkflow-meeting-end"),
   barkflowMeetingStatus: () => ipcRenderer.invoke("barkflow-meeting-status"),
+
+  // BarkFlow: Plugin management (MCP server plugins)
+  barkflowGetPlugins: () => ipcRenderer.invoke("barkflow-get-plugins"),
+  barkflowUpdatePlugin: (id, updates) => ipcRenderer.invoke("barkflow-update-plugin", id, updates),
+  barkflowAddPlugin: (config) => ipcRenderer.invoke("barkflow-add-plugin", config),
+  barkflowRemovePlugin: (id) => ipcRenderer.invoke("barkflow-remove-plugin", id),
 });
