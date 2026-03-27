@@ -167,8 +167,8 @@
 ## 5-Question Reboot Check
 | Question | Answer |
 |----------|--------|
-| Where am I? | Phase 1a in progress — Ollama polish wired into transcription flow |
-| Where am I going? | Remaining Phase 1a (hotkey routing) → Phase 1b (features) |
+| Where am I? | Phase 1b nearly complete — 8/9 features done, ready for merge |
+| Where am I going? | Merge → user testing → meeting recording → Phase 2 (MCP) |
 | What's the goal? | Fork OpenWhispr → BarkFlow: voice-first personal automation |
 | What have I learned? | OpenWhispr provides STT, hotkeys, audio, LLM polish, SQLite, UI. Needs: tests, security hardening, StorageProvider, clipboard monitoring, routing. See findings.md |
 | What have I done? | Design doc approved, CEO plan active, design review 8/10, eng review cleared, 3 new features added, repo organized. See above. |
