@@ -247,6 +247,39 @@ function deleteBarkFlowEntry(id) {
   barkflowDb.prepare('DELETE FROM bf_entries WHERE id = ?').run(id);
 }
 
+function createBarkFlowProject(name) {
+  if (!barkflowDb) return null;
+  const id = crypto.randomUUID();
+  const createdAt = new Date().toISOString();
+  barkflowDb.prepare(
+    'INSERT INTO bf_projects (id, name, created_at, integration_target, metadata) VALUES (?, ?, ?, NULL, NULL)'
+  ).run(id, name, createdAt);
+  // audit log
+  barkflowDb.prepare(
+    'INSERT INTO bf_audit_log (action, entity_id, detail) VALUES (?, ?, ?)'
+  ).run('project_created', id, JSON.stringify({ name }));
+  return { id, name, createdAt };
+}
+
+function getBarkFlowProjects() {
+  if (!barkflowDb) return [];
+  return barkflowDb.prepare('SELECT * FROM bf_projects ORDER BY created_at DESC').all();
+}
+
+function deleteBarkFlowProject(id) {
+  if (!barkflowDb) return;
+  // Set entries' project_id to null (don't delete entries)
+  barkflowDb.prepare('UPDATE bf_entries SET project_id = NULL WHERE project_id = ?').run(id);
+  barkflowDb.prepare('DELETE FROM bf_projects WHERE id = ?').run(id);
+}
+
+function getProjectEntries(projectId, limit = 50) {
+  if (!barkflowDb) return [];
+  return barkflowDb.prepare(
+    'SELECT * FROM bf_entries WHERE project_id = ? ORDER BY created_at DESC LIMIT ?'
+  ).all(projectId, limit);
+}
+
 module.exports = {
   initializeBarkFlow,
   shutdownBarkFlow,
@@ -256,4 +289,8 @@ module.exports = {
   deleteBarkFlowEntry,
   startClipboardMonitor,
   stopClipboardMonitor,
+  createBarkFlowProject,
+  getBarkFlowProjects,
+  deleteBarkFlowProject,
+  getProjectEntries,
 };

@@ -679,4 +679,14 @@ contextBridge.exposeInMainWorld("electronAPI", {
   barkflowSearchEntries: (query, limit) => ipcRenderer.invoke("barkflow-search-entries", query, limit),
   barkflowDeleteEntry: (id) => ipcRenderer.invoke("barkflow-delete-entry", id),
   barkflowClipboardToggle: (enabled) => ipcRenderer.invoke("barkflow-clipboard-toggle", enabled),
+
+  // BarkFlow: Projects — named buckets for voice capture routing
+  barkflowCreateProject: (name) => ipcRenderer.invoke("barkflow-create-project", name),
+  barkflowGetProjects: () => ipcRenderer.invoke("barkflow-get-projects"),
+  barkflowDeleteProject: (id) => ipcRenderer.invoke("barkflow-delete-project", id),
+  barkflowGetProjectEntries: (projectId, limit) => ipcRenderer.invoke("barkflow-get-project-entries", projectId, limit),
+
+  // BarkFlow: File import — upload audio files for transcription
+  barkflowImportAudio: (filePath) => ipcRenderer.invoke("barkflow-import-audio", filePath),
+  barkflowImportSupportedExtensions: () => ipcRenderer.invoke("barkflow-import-supported-extensions"),
 });

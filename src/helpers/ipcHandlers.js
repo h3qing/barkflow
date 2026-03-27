@@ -1851,6 +1851,104 @@ class IPCHandlers {
       }
     });
 
+    // BarkFlow: Projects — named buckets for "wandering mind" capture
+    ipcMain.handle("barkflow-create-project", async (_event, name) => {
+      try {
+        const { createBarkFlowProject } = require("../barkflow/bridge/app-init");
+        const result = createBarkFlowProject(name);
+        if (result) {
+          return { success: true, ...result };
+        }
+        return { success: false, error: "BarkFlow database not initialized" };
+      } catch (error) {
+        debugLogger.log(`[BarkFlow] create-project failed: ${error.message}`);
+        return { success: false, error: error.message };
+      }
+    });
+
+    ipcMain.handle("barkflow-get-projects", async () => {
+      try {
+        const { getBarkFlowProjects } = require("../barkflow/bridge/app-init");
+        return getBarkFlowProjects();
+      } catch (error) {
+        debugLogger.log(`[BarkFlow] get-projects failed: ${error.message}`);
+        return [];
+      }
+    });
+
+    ipcMain.handle("barkflow-delete-project", async (_event, id) => {
+      try {
+        const { deleteBarkFlowProject } = require("../barkflow/bridge/app-init");
+        deleteBarkFlowProject(id);
+        return { success: true };
+      } catch (error) {
+        debugLogger.log(`[BarkFlow] delete-project failed: ${error.message}`);
+        return { success: false, error: error.message };
+      }
+    });
+
+    ipcMain.handle("barkflow-get-project-entries", async (_event, projectId, limit) => {
+      try {
+        const { getProjectEntries } = require("../barkflow/bridge/app-init");
+        return getProjectEntries(projectId, limit);
+      } catch (error) {
+        debugLogger.log(`[BarkFlow] get-project-entries failed: ${error.message}`);
+        return [];
+      }
+    });
+
+    // BarkFlow: File import — upload audio files for transcription
+    ipcMain.handle("barkflow-import-audio", async (_event, filePath) => {
+      try {
+        const { importAudioFile } = require("../barkflow/bridge/file-import");
+        const result = importAudioFile(filePath);
+        if (!result.success) return result;
+
+        const transcription = await this.whisperManager.transcribeLocalWhisper(
+          result.audioBuffer,
+          { model: process.env.WHISPER_MODEL || "base" }
+        );
+
+        if (transcription.success && transcription.text) {
+          let polished = null;
+          try {
+            const { polishWithOllama } = require("../barkflow/bridge/ollama-bridge");
+            const polishResult = await polishWithOllama(transcription.text);
+            if (polishResult.polished) polished = polishResult.text;
+          } catch { /* polish failed, use raw */ }
+
+          const { saveBarkFlowEntry } = require("../barkflow/bridge/app-init");
+          const entry = saveBarkFlowEntry({
+            source: "import",
+            rawText: transcription.text,
+            polished,
+            routedTo: null,
+            hotkeyUsed: null,
+            durationMs: null,
+            projectId: null,
+            audioPath: filePath,
+            metadata: { filename: result.filename, size: result.size },
+          });
+
+          return {
+            success: true,
+            text: polished || transcription.text,
+            rawText: transcription.text,
+            entryId: entry?.id,
+            filename: result.filename,
+          };
+        }
+        return { success: false, error: transcription.error || "Transcription failed" };
+      } catch (error) {
+        return { success: false, error: error.message };
+      }
+    });
+
+    ipcMain.handle("barkflow-import-supported-extensions", async () => {
+      const { getSupportedExtensions } = require("../barkflow/bridge/file-import");
+      return getSupportedExtensions();
+    });
+
     ipcMain.handle(
       "process-anthropic-reasoning",
       async (event, text, modelId, _agentName, config) => {

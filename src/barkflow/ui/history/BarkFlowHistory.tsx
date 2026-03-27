@@ -5,6 +5,19 @@ import { Input } from "../../../components/ui/input";
 import { cn } from "../../../components/lib/utils";
 import type { Entry, EntrySource } from "../../core/storage/types";
 
+// BarkFlow-specific electronAPI methods (exposed in preload.js).
+// These augment the global Window.electronAPI declared in src/types/electron.ts.
+interface BarkFlowElectronAPI {
+  barkflowGetEntries: (limit: number, offset: number) => Promise<Entry[]>;
+  barkflowSearchEntries: (query: string, limit: number) => Promise<Entry[]>;
+  barkflowDeleteEntry: (id: string) => Promise<{ success: boolean }>;
+}
+
+function getAPI(): BarkFlowElectronAPI {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (window as any).electronAPI as BarkFlowElectronAPI;
+}
+
 type SourceFilter = "all" | "voice" | "clipboard";
 
 interface BarkFlowHistoryProps {
@@ -243,7 +256,7 @@ export default function BarkFlowHistory({ className }: BarkFlowHistoryProps) {
     try {
       setIsLoading(true);
       setError(null);
-      const data = await window.electronAPI.barkflowGetEntries(50, 0);
+      const data = await getAPI().barkflowGetEntries(50, 0);
       setEntries(data ?? []);
     } catch (err) {
       setError("Failed to load entries. Please try again.");
@@ -256,7 +269,7 @@ export default function BarkFlowHistory({ className }: BarkFlowHistoryProps) {
     try {
       setIsLoading(true);
       setError(null);
-      const data = await window.electronAPI.barkflowSearchEntries(query, 50);
+      const data = await getAPI().barkflowSearchEntries(query, 50);
       setEntries(data ?? []);
     } catch (err) {
       setError("Search failed. Please try again.");
@@ -293,7 +306,7 @@ export default function BarkFlowHistory({ className }: BarkFlowHistoryProps) {
 
   const handleDelete = useCallback(async (id: string) => {
     try {
-      await window.electronAPI.barkflowDeleteEntry(id);
+      await getAPI().barkflowDeleteEntry(id);
       setEntries((prev) => prev.filter((e) => e.id !== id));
       setSelectedId((prev) => (prev === id ? null : prev));
     } catch {
@@ -310,10 +323,6 @@ export default function BarkFlowHistory({ className }: BarkFlowHistoryProps) {
     () => filteredEntries.find((e) => e.id === selectedId) ?? null,
     [filteredEntries, selectedId]
   );
-
-  // -----------------------------------------------------------------------
-  // Render
-  // -----------------------------------------------------------------------
 
   return (
     <div className={cn("flex h-full max-w-5xl mx-auto w-full", className)}>
