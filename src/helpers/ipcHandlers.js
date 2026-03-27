@@ -1770,6 +1770,12 @@ class IPCHandlers {
       }
     });
 
+    // BarkFlow: Polish presets (personality selection)
+    ipcMain.handle("barkflow-get-polish-presets", async () => {
+      const { getPolishPresets } = require("../barkflow/bridge/polish-presets");
+      return getPolishPresets();
+    });
+
     // BarkFlow: Save entry to bf_entries table
     ipcMain.handle("barkflow-save-entry", async (event, entry) => {
       try {

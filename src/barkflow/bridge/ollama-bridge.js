@@ -7,24 +7,18 @@
 
 const debugLogger = require("../../helpers/debugLogger");
 
+const { getPresetPrompt, DEFAULT_PRESET_ID } = require("./polish-presets");
+
 const DEFAULT_BASE_URL = "http://localhost:11434";
 const DEFAULT_MODEL = "llama3.2:1b";
 const DEFAULT_TIMEOUT_MS = 5000;
-
-const SYSTEM_PROMPT =
-  "Clean up this voice transcript. Rules:\n" +
-  "- Remove filler words (um, uh, like, you know, so, basically)\n" +
-  "- Fix grammar and punctuation\n" +
-  "- When the speaker says 'first... second... third...' or 'one... two... three...', format as a numbered list\n" +
-  "- When the speaker lists items, format as bullet points\n" +
-  "- Keep the original meaning, tone, and vocabulary\n" +
-  "- Be concise — don't add words that weren't spoken\n" +
-  "- Return ONLY the cleaned text, no explanations or commentary";
 
 async function polishWithOllama(text, options = {}) {
   const baseUrl = options.baseUrl || DEFAULT_BASE_URL;
   const model = options.model || DEFAULT_MODEL;
   const timeoutMs = options.timeoutMs || DEFAULT_TIMEOUT_MS;
+  const presetId = options.preset || DEFAULT_PRESET_ID;
+  const systemPrompt = getPresetPrompt(presetId);
 
   if (!text || !text.trim()) {
     return { success: true, text: text || "", polished: false };
@@ -42,7 +36,7 @@ async function polishWithOllama(text, options = {}) {
       body: JSON.stringify({
         model,
         messages: [
-          { role: "system", content: SYSTEM_PROMPT },
+          { role: "system", content: systemPrompt },
           { role: "user", content: text },
         ],
         stream: false,

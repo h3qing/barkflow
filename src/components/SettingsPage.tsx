@@ -226,8 +226,8 @@ function TranscriptionSection({
         description={t("settingsPage.transcription.description")}
       />
 
-      {/* Mode selector */}
-      {isSignedIn && (
+      {/* BarkFlow: cloud/subscription mode selector hidden — local-first, always show model picker */}
+      {false && isSignedIn && (
         <SettingsPanel>
           <SettingsPanelRow>
             <button
@@ -352,8 +352,8 @@ function TranscriptionSection({
         </SettingsPanel>
       )}
 
-      {/* Custom Setup model picker — shown when Custom Setup is active or not signed in */}
-      {(isCustomMode || !isSignedIn) && (
+      {/* BarkFlow: always show model picker (no cloud gate) */}
+      {(isCustomMode || !isSignedIn || true) && (
         <TranscriptionModelPicker
           selectedCloudProvider={cloudTranscriptionProvider}
           onCloudProviderSelect={setCloudTranscriptionProvider}
@@ -475,8 +475,8 @@ function AiModelsSection({
 
       {useReasoningModel && (
         <>
-          {/* Mode selector */}
-          {isSignedIn && (
+          {/* BarkFlow: cloud/subscription mode selector hidden — local-first, always show model picker */}
+          {false && isSignedIn && (
             <SettingsPanel>
               <SettingsPanelRow>
                 <button
@@ -598,8 +598,8 @@ function AiModelsSection({
             </SettingsPanel>
           )}
 
-          {/* Custom Setup model picker — shown when Custom Setup is active or not signed in */}
-          {(isCustomMode || !isSignedIn) && (
+          {/* BarkFlow: always show model picker (no cloud gate) */}
+          {(isCustomMode || !isSignedIn || true) && (
             <ReasoningModelSelector
               reasoningModel={reasoningModel}
               setReasoningModel={setReasoningModel}
@@ -845,20 +845,21 @@ export default function SettingsPage({ activeSection = "general" }: SettingsPage
 
   const { theme, setTheme } = useTheme();
   const usage = useUsage();
-  const hasShownApproachingToast = useRef(false);
-  useEffect(() => {
-    if (usage?.isApproachingLimit && !hasShownApproachingToast.current) {
-      hasShownApproachingToast.current = true;
-      toast({
-        title: t("settingsPage.account.toasts.approachingLimit.title"),
-        description: t("settingsPage.account.toasts.approachingLimit.description", {
-          used: usage.wordsUsed.toLocaleString(i18n.language),
-          limit: usage.limit.toLocaleString(i18n.language),
-        }),
-        duration: 6000,
-      });
-    }
-  }, [usage?.isApproachingLimit, usage?.wordsUsed, usage?.limit, toast, t, i18n.language]);
+  // BarkFlow: usage limit toast hidden — local-first, no cloud usage limits
+  // const hasShownApproachingToast = useRef(false);
+  // useEffect(() => {
+  //   if (usage?.isApproachingLimit && !hasShownApproachingToast.current) {
+  //     hasShownApproachingToast.current = true;
+  //     toast({
+  //       title: t("settingsPage.account.toasts.approachingLimit.title"),
+  //       description: t("settingsPage.account.toasts.approachingLimit.description", {
+  //         used: usage.wordsUsed.toLocaleString(i18n.language),
+  //         limit: usage.limit.toLocaleString(i18n.language),
+  //       }),
+  //       duration: 6000,
+  //     });
+  //   }
+  // }, [usage?.isApproachingLimit, usage?.wordsUsed, usage?.limit, toast, t, i18n.language]);
 
   const installTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -1240,7 +1241,10 @@ export default function SettingsPage({ activeSection = "general" }: SettingsPage
   const renderSectionContent = () => {
     switch (activeSection) {
       case "account":
-        return (
+        // BarkFlow: account section hidden — local-first, no cloud account management
+        return null;
+        // Original account section preserved below for future re-enablement
+        if (false) return (
           <div className="space-y-5">
             {!NEON_AUTH_URL ? (
               <>
@@ -1379,7 +1383,10 @@ export default function SettingsPage({ activeSection = "general" }: SettingsPage
         );
 
       case "plansBilling":
-        return (
+        // BarkFlow: plans/billing section hidden — local-first, no cloud subscriptions
+        return null;
+        // Original plansBilling section preserved below for future re-enablement
+        if (false) return (
           <div className="space-y-5">
             {!NEON_AUTH_URL ? (
               <>
@@ -3175,7 +3182,8 @@ EOF`,
                 description={t("settingsPage.privacy.description")}
               />
 
-              {isSignedIn && (
+              {/* BarkFlow: cloud backup section hidden — local-first, no cloud sync */}
+              {false && isSignedIn && (
                 <div className="mb-4">
                   <SettingsPanel className="mb-2">
                     <SettingsPanelRow>
