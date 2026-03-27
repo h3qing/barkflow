@@ -1955,6 +1955,91 @@ class IPCHandlers {
       return getSupportedExtensions();
     });
 
+    // BarkFlow: Meeting transcription bridge — records meetings into bf_entries
+    ipcMain.handle("barkflow-meeting-start", async (_event, options = {}) => {
+      try {
+        const { startMeeting } = require("../barkflow/bridge/meeting-bridge");
+        const meetingId = startMeeting(options);
+        if (meetingId) {
+          return { success: true, meetingId };
+        }
+        return { success: false, error: "A meeting is already in progress" };
+      } catch (error) {
+        return { success: false, error: error.message };
+      }
+    });
+
+    ipcMain.handle("barkflow-meeting-segment", async (_event, text) => {
+      try {
+        const { addMeetingSegment } = require("../barkflow/bridge/meeting-bridge");
+        addMeetingSegment(text);
+        return { success: true };
+      } catch (error) {
+        return { success: false, error: error.message };
+      }
+    });
+
+    ipcMain.handle("barkflow-meeting-end", async () => {
+      try {
+        const { endMeeting } = require("../barkflow/bridge/meeting-bridge");
+        const result = endMeeting();
+        if (!result) {
+          return { success: false, error: "No active meeting" };
+        }
+
+        // Optionally polish transcript via Ollama
+        let polished = null;
+        if (result.transcript) {
+          try {
+            const { polishWithOllama } = require("../barkflow/bridge/ollama-bridge");
+            const polishResult = await polishWithOllama(result.transcript);
+            if (polishResult.polished) polished = polishResult.text;
+          } catch { /* polish failed, use raw transcript */ }
+        }
+
+        // Save to bf_entries
+        const { saveBarkFlowEntry } = require("../barkflow/bridge/app-init");
+        const entry = saveBarkFlowEntry({
+          source: "meeting",
+          rawText: result.transcript,
+          polished,
+          routedTo: null,
+          hotkeyUsed: null,
+          durationMs: result.durationMs,
+          projectId: null,
+          audioPath: null,
+          metadata: {
+            meetingId: result.id,
+            segmentCount: result.segmentCount,
+            transcriptOnly: result.transcriptOnly,
+          },
+        });
+
+        return {
+          success: true,
+          meetingId: result.id,
+          transcript: result.transcript,
+          polished,
+          durationMs: result.durationMs,
+          segmentCount: result.segmentCount,
+          transcriptOnly: result.transcriptOnly,
+          entryId: entry?.id ?? null,
+        };
+      } catch (error) {
+        return { success: false, error: error.message };
+      }
+    });
+
+    ipcMain.handle("barkflow-meeting-status", async () => {
+      try {
+        const { getActiveMeeting } = require("../barkflow/bridge/meeting-bridge");
+        const meeting = getActiveMeeting();
+        return { success: true, active: meeting !== null, meeting };
+      } catch (error) {
+        return { success: false, error: error.message };
+      }
+    });
+
     ipcMain.handle(
       "process-anthropic-reasoning",
       async (event, text, modelId, _agentName, config) => {

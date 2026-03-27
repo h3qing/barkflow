@@ -690,4 +690,10 @@ contextBridge.exposeInMainWorld("electronAPI", {
   // BarkFlow: File import — upload audio files for transcription
   barkflowImportAudio: (filePath) => ipcRenderer.invoke("barkflow-import-audio", filePath),
   barkflowImportSupportedExtensions: () => ipcRenderer.invoke("barkflow-import-supported-extensions"),
+
+  // BarkFlow: Meeting transcription — bridge to bf_entries with source='meeting'
+  barkflowMeetingStart: (options) => ipcRenderer.invoke("barkflow-meeting-start", options),
+  barkflowMeetingSegment: (text) => ipcRenderer.invoke("barkflow-meeting-segment", text),
+  barkflowMeetingEnd: () => ipcRenderer.invoke("barkflow-meeting-end"),
+  barkflowMeetingStatus: () => ipcRenderer.invoke("barkflow-meeting-status"),
 });

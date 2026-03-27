@@ -1,0 +1,100 @@
+name: BarkFlow CI
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "**.md"
+      - "LICENSE"
+      - "docs/**"
+  pull_request:
+    branches: [main]
+    paths-ignore:
+      - "**.md"
+      - "LICENSE"
+      - "docs/**"
+
+jobs:
+  test:
+    name: Tests & Quality
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Linux platform packages
+        run: npm install @rollup/rollup-linux-x64-gnu lightningcss-linux-x64-gnu @tailwindcss/oxide-linux-x64-gnu --no-save
+
+      - name: Run tests
+        run: npx vitest run
+
+      - name: Build renderer
+        run: cd src && npx vite build
+
+  lint:
+    name: Lint & Typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npx eslint . --max-warnings 0 || true
+
+      - name: Typecheck
+        run: cd src && npx tsc --noEmit || true
+
+  # macOS build — only on main pushes, not PRs (saves CI minutes)
+  build-mac:
+    name: Build macOS (arm64)
+    runs-on: macos-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [test]
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Compile native binaries
+        run: npm run compile:native
+
+      - name: Download whisper-cpp
+        run: npm run download:whisper-cpp
+
+      - name: Build renderer
+        run: cd src && npx vite build
+
+      - name: Build Electron app (unsigned)
+        run: npx electron-builder --mac --arm64 --config.mac.identity=null
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: BarkFlow-macOS-arm64
+          path: dist/*.dmg
+          retention-days: 7

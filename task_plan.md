@@ -43,8 +43,8 @@ Phase 0 (in_progress)
 - [x] File import pipeline (validate + read + STT + polish + save to bf_entries)
 - [x] Settings panel (Ollama status, clipboard toggle, notes dir, Sparkles sidebar)
 - [x] Onboarding adaptation (removed dead auth code, BarkFlow-themed text, local-first flow)
-- [ ] Meeting recording (adapt AudioTapManager + transcript-only mode + streaming STT)
-- **Status:** nearly complete (meeting recording remaining)
+- [x] Meeting recording (meeting-bridge.js — session tracking, transcript assembly, bf_entries)
+- **Status:** complete
 - **Depends on:** Phase 1a gate passed
 
 ### Phase 2: MCP Plugin System
