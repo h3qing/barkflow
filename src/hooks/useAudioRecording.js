@@ -121,8 +121,10 @@ export const useAudioRecording = (toast, options = {}) => {
           let textToPaste = result.text;
           let rawText = result.rawText ?? result.text;
           try {
+            const polishPreset = localStorage.getItem("barkflow-polish-preset") || "clean";
             const polishResult = await window.electronAPI?.barkflowOllamaPolish?.(
-              transcribedText
+              transcribedText,
+              { preset: polishPreset }
             );
             if (polishResult?.polished && polishResult.text) {
               rawText = transcribedText;

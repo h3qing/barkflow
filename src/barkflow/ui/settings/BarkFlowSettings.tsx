@@ -27,10 +27,18 @@ interface OllamaStatus {
   readonly models: readonly string[];
 }
 
+interface PolishPreset {
+  readonly id: string;
+  readonly name: string;
+  readonly description: string;
+}
+
 interface SettingsState {
   readonly polishEnabled: boolean;
   readonly ollamaModel: string;
   readonly ollama: OllamaStatus;
+  readonly polishPreset: string;
+  readonly presets: readonly PolishPreset[];
   readonly clipboardEnabled: boolean;
   readonly notesDir: string;
   readonly notesDirLoading: boolean;
@@ -41,6 +49,8 @@ function buildInitialState(): SettingsState {
     polishEnabled: localStorage.getItem("barkflow-polish-enabled") !== "false",
     ollamaModel: localStorage.getItem("barkflow-ollama-model") || "llama3.2:1b",
     ollama: { checking: true, available: false, models: [] },
+    polishPreset: localStorage.getItem("barkflow-polish-preset") || "clean",
+    presets: [],
     clipboardEnabled: localStorage.getItem("barkflow-clipboard-enabled") !== "false",
     notesDir: "",
     notesDirLoading: true,
@@ -79,6 +89,22 @@ export default function BarkFlowSettings({ className }: BarkFlowSettingsProps) {
     return () => { cancelled = true; };
   }, []);
 
+  // Load polish presets on mount
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      try {
+        const api = (window as any).electronAPI;
+        const presets = await api?.barkflowGetPolishPresets?.();
+        if (!cancelled && presets) {
+          setState((prev) => ({ ...prev, presets }));
+        }
+      } catch { /* ignore */ }
+    };
+    load();
+    return () => { cancelled = true; };
+  }, []);
+
   // Fetch notes directory on mount
   useEffect(() => {
     let cancelled = false;
@@ -110,6 +136,11 @@ export default function BarkFlowSettings({ className }: BarkFlowSettingsProps) {
   const handleModelChange = useCallback((value: string) => {
     localStorage.setItem("barkflow-ollama-model", value);
     setState((prev) => ({ ...prev, ollamaModel: value }));
+  }, []);
+
+  const handlePresetChange = useCallback((presetId: string) => {
+    localStorage.setItem("barkflow-polish-preset", presetId);
+    setState((prev) => ({ ...prev, polishPreset: presetId }));
   }, []);
 
   const handleClipboardToggle = useCallback(async (checked: boolean) => {
@@ -168,6 +199,34 @@ export default function BarkFlowSettings({ className }: BarkFlowSettingsProps) {
             {state.ollama.checking && <Loader2 size={12} className="animate-spin text-muted-foreground" />}
             <span className={`text-xs ${ollamaStatusColor}`}>{ollamaStatusText}</span>
           </div>
+
+          <SettingsRow label="Style" description="How your transcriptions get cleaned up.">
+            <select
+              value={state.polishPreset}
+              onChange={(e) => handlePresetChange(e.target.value)}
+              className="h-7 w-40 rounded-md border border-border/50 dark:border-white/10 bg-background px-2 text-xs text-foreground outline-none focus:ring-1 focus:ring-primary/30"
+            >
+              {state.presets.length > 0 ? (
+                state.presets.map((p) => (
+                  <option key={p.id} value={p.id}>{p.name}</option>
+                ))
+              ) : (
+                <>
+                  <option value="clean">Clean</option>
+                  <option value="professional">Professional</option>
+                  <option value="casual">Casual</option>
+                  <option value="minimal">Minimal</option>
+                  <option value="structured">Structured</option>
+                </>
+              )}
+            </select>
+          </SettingsRow>
+
+          {state.presets.length > 0 && (
+            <p className="text-xs text-muted-foreground/70">
+              {state.presets.find((p) => p.id === state.polishPreset)?.description ?? ""}
+            </p>
+          )}
 
           <SettingsRow label="Model" description="Ollama model used for text polish.">
             <input
