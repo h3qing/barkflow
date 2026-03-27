@@ -1,0 +1,2005 @@
+{
+  "settings": {
+    "language": {
+      "sectionTitle": "Lingua",
+      "sectionDescription": "Imposta separatamente la lingua dell'interfaccia e quella di trascrizione",
+      "uiLabel": "Lingua dell'interfaccia",
+      "uiDescription": "Scegli la lingua usata nell'interfaccia di BarkFlow",
+      "transcriptionLabel": "Lingua di trascrizione",
+      "transcriptionDescription": "Scegli la lingua che parli per una trascrizione più accurata"
+    }
+  },
+  "tray": {
+    "toggleDictation": {
+      "show": "Mostra pannello dettatura",
+      "hide": "Nascondi pannello dettatura"
+    },
+    "openControlPanel": "Apri pannello di controllo",
+    "quit": "Esci da BarkFlow",
+    "tooltip": "BarkFlow - Dettatura vocale"
+  },
+  "menu": {
+    "appLabel": "BarkFlow",
+    "quit": "Esci da BarkFlow",
+    "speech": "Voce",
+    "help": "Aiuto",
+    "learnMore": "Scopri di più",
+    "file": "File",
+    "closeWindow": "Chiudi finestra"
+  },
+  "window": {
+    "voiceRecorderTitle": "Registratore vocale",
+    "controlPanelTitle": "Pannello di controllo",
+    "agentChatTitle": "Chat dell'agente"
+  },
+  "dialog": {
+    "openLink": {
+      "title": "Impossibile aprire il link",
+      "message": "Impossibile aprire il link nel browser:\n{{url}}\n\nErrore: {{error}}"
+    },
+    "loadFailure": {
+      "title": "Caricamento di BarkFlow non riuscito",
+      "message": "BarkFlow non ha potuto caricare la sua interfaccia.",
+      "detail": {
+        "window": "Finestra: {{windowName}}",
+        "error": "Errore {{errorCode}}: {{errorDescription}}",
+        "url": "URL: {{url}}",
+        "hint": "Prova a reinstallare l'app o ad avviarla con --log-level=debug."
+      }
+    }
+  },
+  "startup": {
+    "error": {
+      "title": "Errore di avvio di BarkFlow",
+      "message": "Impossibile avviare l'applicazione:\n\n{{error}}\n\nSegnala questo problema."
+    },
+    "globeHotkey": {
+      "title": "Tasto Globe non disponibile",
+      "message": "BarkFlow non è riuscito ad attivare il tasto Globe.",
+      "details": {
+        "unknown": "Errore sconosciuto durante l'avvio del listener Globe.",
+        "fallback": "La scorciatoia Globe resterà disabilitata; le scorciatoie esistenti continueranno a funzionare.",
+        "devHint": "Esegui `npm run compile:globe` e ricompila l'app per rigenerare il binario.",
+        "reinstallHint": "Reinstalla BarkFlow o contatta il supporto se il problema persiste."
+      }
+    }
+  },
+  "hotkey": {
+    "errors": {
+      "callbackRequired": "È necessaria una funzione callback per configurare la scorciatoia",
+      "globeOnlyMac": "Il tasto Globe è disponibile solo su macOS.",
+      "alreadyRegistered": "\"{{hotkey}}\" è già registrata da un'altra applicazione.",
+      "osReserved": "\"{{hotkey}}\" potrebbe essere riservata dal sistema operativo.",
+      "registrationFailed": "Impossibile registrare \"{{hotkey}}\". Potrebbe essere in uso da un'altra applicazione.",
+      "trySuggestions": "Prova: {{suggestions}}",
+      "slotConflict": "Questa scorciatoia è già utilizzata per {{slot}}."
+    }
+  },
+  "systemSettings": {
+    "microphone": "Apri le impostazioni di sistema per configurare i permessi del microfono.",
+    "sound": "Apri le impostazioni audio di sistema (ad esempio, pavucontrol).",
+    "accessibility": "Le impostazioni di accessibilità non sono disponibili su questa piattaforma.",
+    "systemAudio": "Le impostazioni audio di sistema non sono disponibili su questa piattaforma."
+  },
+  "titleBar": {
+    "quitTitle": "Esci da BarkFlow",
+    "quitConfirmTitle": "Uscire da BarkFlow?",
+    "quitConfirmDescription": "Questa operazione chiuderà BarkFlow e interromperà i processi in background.",
+    "quit": "Esci",
+    "cancel": "Annulla"
+  },
+  "upgradePrompt": {
+    "paymentFailed": "Non siamo riusciti a elaborare il pagamento",
+    "weeklyLimit": "Hai raggiunto il limite settimanale",
+    "pastDueDescription": "Sei nel piano gratuito per ora — nessun problema, hai ancora {{limit}} parole a settimana.\nAggiorna il metodo di pagamento per tornare a Pro illimitato.",
+    "limitDescription": "{{used}} di {{limit}} parole utilizzate.\nLa trascrizione è stata salvata e incollata.",
+    "updatePayment": "Aggiorna metodo di pagamento",
+    "updatePaymentDescription": "Torna alle trascrizioni Pro illimitate.",
+    "upgradeToPro": "Passa a Pro",
+    "upgradeDescription": "Trascrizioni illimitate a partire da soli $8/mese.",
+    "useApiKey": "Usa la tua chiave API",
+    "useApiKeyDescription": "Porta la tua chiave per un uso illimitato.",
+    "switchToLocal": "Passa a locale",
+    "switchToLocalDescription": "Trascrizione offline. Nessun limite.",
+    "rollingWeeklyLimit": "Limite settimanale progressivo"
+  },
+  "windowControls": {
+    "minimize": "Riduci a icona",
+    "maximize": "Ingrandisci",
+    "restore": "Ripristina",
+    "close": "Chiudi"
+  },
+  "windows": {
+    "pttUnavailable": "Il listener nativo Push-to-Talk non è disponibile"
+  },
+  "common": {
+    "back": "Indietro",
+    "next": "Avanti",
+    "complete": "Completa",
+    "reset": "Reimposta",
+    "refresh": "Aggiorna",
+    "download": "Scarica",
+    "cancel": "Annulla",
+    "recommended": "Consigliato",
+    "active": "Attivo",
+    "cloud": "Cloud",
+    "local": "Locale",
+    "apiKey": "Chiave API",
+    "model": "Modello",
+    "loading": "Caricamento...",
+    "unknown": "Sconosciuto",
+    "availableModels": "Modelli disponibili",
+    "fast": "Veloce",
+    "hold": "Tieni premuto",
+    "private": "Privato",
+    "tap": "Tocca",
+    "close": "Chiudi",
+    "dismiss": "Ignora"
+  },
+  "onboarding": {
+    "steps": {
+      "welcome": "Benvenuto",
+      "setup": "Configurazione",
+      "permissions": "Permessi",
+      "activation": "Attivazione"
+    },
+    "hotkey": {
+      "couldNotRegisterTitle": "Impossibile registrare questa scorciatoia",
+      "couldNotRegisterDescription": "Questa combinazione potrebbe essere già in uso. Prova con un'altra."
+    },
+    "setup": {
+      "title": "Configurazione",
+      "description": "Scegli la lingua e concedi i permessi",
+      "language": "Lingua"
+    },
+    "permissions": {
+      "title": "Permessi",
+      "microphoneTitle": "Microfono",
+      "microphoneDescription": "Cattura la tua voce per la trascrizione",
+      "grant": "Concedi",
+      "grantAccess": "Concedi accesso",
+      "accessibilityTitle": "Accessibilità",
+      "accessibilityDescription": "Permette di incollare automaticamente il testo trascritto in qualsiasi app",
+      "testAndGrant": "Testa e concedi",
+      "requiredForApp": "Necessario per usare BarkFlow",
+      "microphoneRequired": "Accesso al microfono richiesto",
+      "openSystemSettings": "Apri Impostazioni di Sistema",
+      "systemAudioTitle": "Audio di Sistema",
+      "systemAudioDescription": "Cattura l'audio degli altri partecipanti durante chiamate e riunioni. Non registriamo mai il tuo schermo.",
+      "optional": "Facoltativo",
+      "recommended": "Consigliato",
+      "accessibilityTroubleshooting": "Non rilevato? Rimuovi BarkFlow da Accessibilità nelle Impostazioni di Sistema, aggiungilo di nuovo e attivalo. Puoi saltare questo passaggio — il testo verrà solo copiato negli appunti invece di essere incollato automaticamente."
+    },
+    "transcription": {
+      "title": "Configurazione trascrizione",
+      "description": "Scegli modalità e provider",
+      "preferredLanguage": "Lingua preferita"
+    },
+    "activation": {
+      "title": "Configurazione attivazione",
+      "description": "Configura come avviare la dettatura",
+      "hotkey": "Scorciatoia",
+      "mode": "Modalità",
+      "tapDescription": "Premi per avviare/fermare",
+      "holdDescription": "Tieni premuto mentre parli",
+      "test": "Test",
+      "hotkeyToStartStop": "{{hotkey}} per avviare/fermare",
+      "holdHotkey": "Tieni premuto {{hotkey}}",
+      "textareaPlaceholder": "Clicca qui e usa la scorciatoia per dettare..."
+    }
+  },
+  "controlPanel": {
+    "update": {
+      "readyTitle": "Aggiornamento pronto da installare",
+      "readyDescription": "Fai clic su 'Installa aggiornamento' per riavviare con l'ultima versione.",
+      "problemTitle": "Si è verificato un problema con l'aggiornamento",
+      "problemDescription": "Non siamo riusciti a completare l'aggiornamento. Riprova più tardi.",
+      "installTitle": "Installa aggiornamento",
+      "installDescription": "BarkFlow verrà riavviato per applicare l'aggiornamento. Il lavoro in corso verrà salvato.",
+      "couldNotInstallTitle": "Impossibile installare l'aggiornamento",
+      "couldNotInstallDescription": "Qualcosa è andato storto. Riprova.",
+      "couldNotDownloadTitle": "Impossibile scaricare l'aggiornamento",
+      "couldNotDownloadDescription": "Controlla la connessione e riprova.",
+      "installing": "Installazione...",
+      "installButton": "Installa aggiornamento",
+      "availableButton": "Aggiornamento disponibile"
+    },
+    "limit": {
+      "weeklyTitle": "Limite settimanale raggiunto",
+      "weeklyDescription": "Il limite si rinnova in modo progressivo. Passa a Pro o usa la tua chiave API per un uso illimitato."
+    },
+    "accessibilityMissing": {
+      "title": "Autorizzazioni di accessibilità necessarie",
+      "description": "Abbiamo rilevato che BarkFlow ha bisogno delle autorizzazioni di accessibilità per funzionare correttamente. Abilitale qui sotto."
+    },
+    "billing": {
+      "pastDueTitle": "Non siamo riusciti a elaborare il pagamento",
+      "pastDueDescription": "Nessun problema: sei nel piano gratuito per ora. Aggiorna il pagamento nelle Impostazioni per tornare a Pro.",
+      "bannerDescription": "Sei nel piano gratuito per ora: hai ancora {{limit}} parole a settimana. Aggiorna il pagamento per tornare a Pro.",
+      "updatePayment": "Aggiorna pagamento"
+    },
+    "history": {
+      "couldNotLoadTitle": "Impossibile caricare la cronologia",
+      "couldNotLoadDescription": "Si è verificato un errore nel caricamento delle trascrizioni. Chiudi e riapri l'app.",
+      "copiedTitle": "Copiato!",
+      "copiedDescription": "Testo copiato negli appunti",
+      "couldNotCopyTitle": "Impossibile copiare",
+      "couldNotCopyDescription": "Si è verificato un errore durante la copia. Riprova.",
+      "deleteTitle": "Elimina trascrizione",
+      "deleteDescription": "Questa trascrizione verrà rimossa definitivamente.",
+      "couldNotDeleteTitle": "Impossibile eliminare",
+      "couldNotDeleteDescription": "Questa trascrizione potrebbe essere già stata rimossa.",
+      "couldNotDeleteDescriptionGeneric": "Qualcosa è andato storto. Riprova.",
+      "empty": "Nessuna trascrizione",
+      "dataRetentionDisabled": "La conservazione dei dati è disattivata. Trascrizioni e audio non vengono salvati nella cronologia.",
+      "press": "Premi",
+      "toStart": "per iniziare",
+      "dateGroups": {
+        "today": "Oggi",
+        "yesterday": "Ieri"
+      },
+      "transcriptionFailed": "La trascrizione è fallita",
+      "failedCtaSettings": "Configura il tuo provider di trascrizione",
+      "failedCtaAndRetry": "poi clicca su riprova",
+      "failedCtaSettingsOnly": "Configura il tuo provider di trascrizione nelle Impostazioni",
+      "clearAll": "Cancella tutto",
+      "clearAllTitle": "Cancella tutte le trascrizioni",
+      "clearAllDescription": "Tutte le trascrizioni e i file audio verranno rimossi definitivamente.",
+      "clearAllSuccess": "Cronologia cancellata",
+      "clearAllErrorTitle": "Impossibile cancellare la cronologia",
+      "clearAllErrorDescription": "Qualcosa è andato storto. Riprova.",
+      "copyText": "Copia testo",
+      "deleteItem": "Elimina",
+      "viewRawTranscript": "Visualizza trascrizione grezza",
+      "showInFolder": "Mostra nel Finder",
+      "showInFolderWindows": "Mostra in Esplora file",
+      "showInFolderLinux": "Mostra nel gestore file",
+      "retryTranscription": "Ritrascrivi",
+      "retrying": "Ritrascrizione in corso…",
+      "retrySuccess": "Trascrizione aggiornata",
+      "retryError": "Ritrascrizione non riuscita",
+      "audioNotFound": "File audio non trovato o scaduto",
+      "noAiProcessing": "Nessuna elaborazione IA applicata a questa trascrizione",
+      "rawTranscript": "Trascrizione grezza"
+    },
+    "cloudMigration": {
+      "title": "Benvenuto in BarkFlow Pro",
+      "description": "La tua prova gratuita di 7 giorni è attiva! Abbiamo spostato la trascrizione su BarkFlow Cloud per risultati più rapidi e accurati. Le impostazioni precedenti sono state salvate: puoi tornare indietro in qualsiasi momento dalle Impostazioni.",
+      "viewSettings": "Apri impostazioni"
+    },
+    "aiCta": {
+      "title": "Migliora le tue trascrizioni con l'IA",
+      "description": "Corregge automaticamente grammatica, punteggiatura e formattazione mentre parli.",
+      "enable": "Attiva miglioramento IA"
+    },
+    "loading": "Caricamento...",
+    "gpu": {
+      "bannerTitle": "Accelerazione GPU disponibile",
+      "bannerDescription": "Attiva l'accelerazione GPU per prestazioni più veloci.",
+      "enableButton": "Attiva GPU",
+      "dismissButton": "Non ora"
+    },
+    "backToNotes": "Torna alle note"
+  },
+  "reasoning": {
+    "mode": {
+      "cloud": "Cloud",
+      "local": "Locale",
+      "localDescription": "Funziona sul tuo dispositivo. Privacy completa, funziona offline.",
+      "cloudDescription": "Modelli avanzati via API. Veloci e potenti, richiedono internet."
+    },
+    "custom": {
+      "endpointWithProtocol": "Inserisci un URL base completo di protocollo (ad esempio, https://server/v1).",
+      "httpsRequired": "HTTPS richiesto (HTTP consentito solo in rete locale).",
+      "endpointUnauthorized": "L'endpoint ha rifiutato la richiesta (401/403). Aggiungi una chiave API o modifica le impostazioni di autenticazione del server.",
+      "endpointTitle": "URL endpoint",
+      "endpointExamples": "Esempi:",
+      "ollama": "(Ollama)",
+      "localAi": "(LocalAI)",
+      "apiKeyOptional": "Chiave API (opzionale)",
+      "apiKeyHelp": "Opzionale. Inviata come token Bearer per l'autenticazione. Separata dalla chiave API OpenAI.",
+      "applyAndRefresh": "Applica e aggiorna",
+      "queryPrefix": "Interrogheremo",
+      "querySuffix": "per i modelli disponibili.",
+      "modelsReloadHint": "I modelli verranno ricaricati quando esci dal campo URL o fai clic su \"Applica e aggiorna\".",
+      "enterEndpoint": "Inserisci un URL endpoint qui sopra per caricare i modelli.",
+      "fetchingModels": "Recupero elenco modelli dall'endpoint...",
+      "noModels": "Nessun modello restituito. Controlla l'URL dell'endpoint.",
+      "providerName": "Personalizzato",
+      "ownerLabel": "Proprietario: {{owner}}",
+      "unableToLoadModels": "Impossibile caricare i modelli dall'endpoint."
+    },
+    "getApiKey": "Ottieni la chiave API ->",
+    "selectModel": "Seleziona modello",
+    "availableModels": "Modelli disponibili"
+  },
+  "transcription": {
+    "deleteModel": {
+      "title": "Elimina modello",
+      "description": "Vuoi davvero eliminare questo modello? Per usarlo di nuovo dovrai riscaricarlo."
+    },
+    "parakeet": {
+      "multilingual": "25 lingue",
+      "english": "Inglese"
+    },
+    "apiKeyOptional": "Chiave API (opzionale)",
+    "getKey": "Ottieni chiave ->",
+    "endpointUrl": "URL endpoint",
+    "customProvider": "Personalizzato",
+    "fallback": {
+      "whisperModelDescription": "Modello",
+      "parakeetModelDescription": "Modello NVIDIA Parakeet"
+    },
+    "whisperModels": "Modelli Whisper"
+  },
+  "hooks": {
+    "audioRecording": {
+      "errorTitles": {
+        "sessionExpired": "Sessione scaduta",
+        "offline": "Sei offline",
+        "dailyLimitReached": "Limite giornaliero raggiunto"
+      },
+      "fallback": {
+        "title": "Modalità fallback",
+        "description": "Whisper locale non riuscito. Utilizzata l'API OpenAI."
+      },
+      "noAudio": {
+        "title": "Nessun audio rilevato",
+        "description": "La registrazione non contiene audio rilevabile. Riprova."
+      }
+    },
+    "clipboard": {
+      "pasteFailed": {
+        "title": "Incollaggio dagli appunti non riuscito",
+        "description": "Impossibile incollare dagli appunti. Prova a digitare o usa Cmd+V/Ctrl+V."
+      }
+    },
+    "hotkeyRegistration": {
+      "titles": {
+        "invalidHotkey": "Scorciatoia non valida",
+        "notRegistered": "Scorciatoia non registrata",
+        "saved": "Scorciatoia salvata",
+        "error": "Errore scorciatoia"
+      },
+      "errors": {
+        "enterValidHotkey": "Inserisci una scorciatoia valida",
+        "unsupportedShortcut": "Questa scorciatoia non è supportata.",
+        "couldNotRegister": "Questo tasto non può essere registrato. Scegline un altro.",
+        "failedToRegister": "Registrazione scorciatoia non riuscita. Riprova."
+      },
+      "messages": {
+        "nowUsing": "{{hotkey}} impostata per la dettatura"
+      }
+    },
+    "modelDownload": {
+      "errors": {
+        "timeout": "Timeout del download. Controlla la connessione e riprova.",
+        "notFound": "Impossibile raggiungere il server di download. Controlla la connessione.",
+        "corrupted": "Download incompleto o corrotto. Riprova.",
+        "rateLimited": "Il server limita le richieste. Attendi qualche minuto e riprova.",
+        "server": "Errore server ({{error}}). Riprova più tardi.",
+        "generic": "Download non riuscito: {{error}}",
+        "extractionFailed": "Modello scaricato, ma l'installazione non è riuscita. Clicca su scarica per ritentare l'installazione senza riscaricare.",
+        "unknown": "Errore sconosciuto"
+      },
+      "downloadFailed": {
+        "title": "Download non riuscito"
+      },
+      "installationFailed": {
+        "title": "Installazione non riuscita"
+      },
+      "downloadInProgress": {
+        "title": "Download in corso",
+        "description": "Attendi che il download attuale finisca o annullalo prima."
+      },
+      "modelDeleted": {
+        "title": "Modello eliminato",
+        "descriptionWithSpace": "Modello eliminato con successo! Liberati {{sizeMb}}MB di spazio.",
+        "description": "Modello eliminato con successo!"
+      },
+      "deleteFailed": {
+        "title": "Eliminazione non riuscita",
+        "description": "Impossibile eliminare il modello: {{error}}"
+      },
+      "downloadCancelled": {
+        "title": "Download annullato",
+        "description": "Il download è stato annullato."
+      }
+    },
+    "permissions": {
+      "paths": {
+        "windowsMicrophone": "Impostazioni -> Privacy -> Microfono",
+        "linuxSound": "le impostazioni audio di sistema",
+        "defaultSound": "Impostazioni di sistema -> Audio -> Ingresso",
+        "linuxPrivacy": "le impostazioni privacy di sistema",
+        "defaultPrivacy": "Impostazioni di sistema -> Privacy e sicurezza -> Microfono"
+      },
+      "micErrors": {
+        "accessFailed": "Accesso al microfono non riuscito. Riprova.",
+        "noMicrophones": "Nessun microfono rilevato. Collega o seleziona un microfono in {{settingsPath}}.",
+        "permissionDenied": "Permesso negato. Apri {{privacyPath}} e consenti BarkFlow.",
+        "couldNotStart": "Impossibile avviare il microfono selezionato. Scegli un dispositivo in {{settingsPath}} e ripeti il test.",
+        "noActiveInput": "Nessun ingresso audio attivo trovato. Scegli un microfono in {{settingsPath}}.",
+        "unknown": "Accesso al microfono non riuscito: {{error}}. Seleziona un altro dispositivo e riprova.",
+        "unknownFallback": "Errore sconosciuto"
+      },
+      "settingsTitles": {
+        "microphone": "Impostazioni microfono",
+        "sound": "Impostazioni audio",
+        "accessibility": "Impostazioni accessibilità"
+      },
+      "settingsErrors": {
+        "unableToOpenMicrophone": "Impossibile aprire le impostazioni del microfono. Apri manualmente le impostazioni di sistema.",
+        "unableToOpenSound": "Impossibile aprire le impostazioni audio. Apri manualmente le impostazioni di sistema.",
+        "unableToOpenAccessibility": "Impossibile aprire le impostazioni di accessibilità. Apri manualmente le impostazioni di sistema."
+      },
+      "micUnavailable": "Le API del microfono non sono disponibili in questo ambiente. Riavvia l'app.",
+      "titles": {
+        "microphoneUnavailable": "Microfono non disponibile",
+        "microphonePermissionRequired": "Permesso microfono richiesto",
+        "accessibilityNeeded": "Permessi di accessibilità necessari",
+        "readyToGo": "Tutto pronto!",
+        "waylandClipboardMode": "Modalità appunti su Wayland",
+        "optionalPasteTool": "Opzionale: installa strumento di incollaggio"
+      },
+      "descriptions": {
+        "accessibilityNeeded": "Concedi i permessi di accessibilità nelle impostazioni di sistema per abilitare l'incollaggio automatico.",
+        "windowsReady": "Windows non richiede permessi speciali per l'incollaggio automatico. È tutto pronto!",
+        "linuxReadyWithMethod": "L'incollaggio automatico è disponibile tramite {{method}}. È tutto pronto!",
+        "waylandClipboardMode": "L'incollaggio automatico non è disponibile in questa sessione Wayland. BarkFlow copierà il testo negli appunti e potrai incollare con Ctrl+V.",
+        "optionalPasteTool": "Per l'incollaggio automatico, installa {{tool}}:\n\n{{installCmd}}{{waylandNote}}\n\nAnche senza questo puoi usare BarkFlow: il testo verrà copiato negli appunti e potrai incollare con Ctrl+V."
+      },
+      "alerts": {
+        "accessibilityNeeded": "Permessi di accessibilità necessari! Concedili nelle impostazioni di sistema."
+      },
+      "notes": {
+        "waylandWtype": "\n\nNota: per le app XWayland, funziona anche xdotool.",
+        "waylandXwaylandOnly": "\n\nNota: l'incollaggio automatico funziona solo per le app XWayland."
+      },
+      "labels": {
+        "defaultPasteTool": "xdotool",
+        "xdotoolXwayland": "xdotool (app XWayland)"
+      },
+      "accessibilityTestText": "Test accessibilità BarkFlow",
+      "warning": {
+        "messages": {
+          "macos": "Controlla le impostazioni Audio per selezionare il dispositivo di ingresso",
+          "windows": "Controlla le impostazioni di Windows per selezionare il dispositivo di ingresso",
+          "linux": "Controlla le impostazioni audio di sistema per selezionare il dispositivo di ingresso"
+        },
+        "soundLabel": "Audio",
+        "privacyLabel": "Privacy"
+      }
+    }
+  },
+  "auth": {
+    "sessionExpired": "Sessione scaduta",
+    "cloudNotConfigured": "Cloud non configurato",
+    "common": {
+      "back": "Indietro",
+      "continue": "Continua",
+      "or": "o"
+    },
+    "emailStep": {
+      "continueWithEmail": "Continua con l'e-mail",
+      "continueWithoutAccount": "Continua senza account",
+      "emailPlaceholder": "tu@esempio.com"
+    },
+    "errors": {
+      "accountExistsSignIn": "Esiste già un account con questa e-mail. Accedi.",
+      "accountNotFoundCreate": "Nessun account trovato con questa e-mail. Crea un account.",
+      "authNotConfigured": "L'autenticazione non è configurata",
+      "createAccountFailed": "Creazione account non riuscita",
+      "failedProviderSignIn": "Accesso con {{provider}} non riuscito",
+      "failedUserCheck": "Verifica dell'account utente non riuscita",
+      "generic": "Qualcosa è andato storto. Riprova.",
+      "invalidCredentials": "E-mail o password non valide",
+      "plusAliasUnsupported": "Gli alias e-mail con '+' non sono supportati"
+    },
+    "getStarted": "Inizia",
+    "legal": {
+      "and": "e",
+      "prefix": "Continuando, accetti i nostri",
+      "privacy": "Informativa sulla privacy",
+      "suffix": "",
+      "terms": "Termini di servizio"
+    },
+    "passwordForm": {
+      "createAccount": "Crea un account",
+      "createAccountButton": "Crea account",
+      "createAccountLink": "Crea account",
+      "createPasswordPlaceholder": "Crea una password",
+      "creatingAccount": "Creazione account...",
+      "enterPasswordPlaceholder": "Inserisci la password",
+      "forgotPassword": "Password dimenticata?",
+      "fullNamePlaceholder": "Nome completo",
+      "haveAccount": "Hai già un account?",
+      "newHere": "Nuovo qui?",
+      "passwordMinLength": "La password deve essere di almeno 8 caratteri",
+      "signIn": "Accedi",
+      "signInLink": "Accedi",
+      "signingIn": "Accesso in corso...",
+      "welcomeBack": "Bentornato"
+    },
+    "signedIn": {
+      "ready": "Pronto",
+      "welcomeBack": "Bentornato",
+      "welcomeBackName": "Bentornato, {{name}}"
+    },
+    "social": {
+      "completeInBrowser": "Completa l'accesso nel browser",
+      "continueWithGoogle": "Continua con Google"
+    },
+    "welcomeSubtitle": "Detta ovunque usando la tua voce",
+    "welcomeTitle": "Benvenuto in BarkFlow"
+  },
+  "cleanupPrompt": "Correzione",
+  "developerSection": {
+    "currentLogFile": "File di log corrente",
+    "debugMode": {
+      "disabledDescription": "Attiva per acquisire informazioni diagnostiche dettagliate",
+      "enabledDescription": "Registrazione di elaborazione audio, richieste API e operazioni di sistema",
+      "label": "Modalità debug"
+    },
+    "description": "Acquisisci log dettagliati per diagnosticare i problemi",
+    "openLogsFolder": "Apri cartella log",
+    "performanceNote": {
+      "description": "Il logging di debug scrive su disco continuamente e potrebbe influire leggermente sulle prestazioni. Disattivalo quando non stai risolvendo problemi.",
+      "label": "Nota"
+    },
+    "sharing": {
+      "footer": "I log non contengono chiavi API o dati sensibili",
+      "steps": {
+        "0": "Riproduci il problema con la modalità debug attiva",
+        "1": "Fai clic su \"Apri cartella log\" qui sopra",
+        "2": "Allega il file di log più recente alla segnalazione"
+      },
+      "title": "Condivisione dei log per il supporto"
+    },
+    "title": "Log di debug",
+    "toasts": {
+      "copied": {
+        "description": "Percorso del file di log copiato negli appunti",
+        "title": "Copiato"
+      },
+      "copyFailed": {
+        "description": "Si è verificato un errore durante la copia negli appunti.",
+        "title": "Impossibile copiare"
+      },
+      "debugDisabled": {
+        "description": "Il logging di debug è stato disattivato",
+        "title": "Log di debug disattivato"
+      },
+      "debugEnabled": {
+        "description": "I log dettagliati vengono ora scritti su disco",
+        "title": "Log di debug attivato"
+      },
+      "loadFailed": {
+        "description": "Qualcosa è andato storto. Prova a riaprire le Impostazioni.",
+        "title": "Impossibile caricare le impostazioni di debug"
+      },
+      "openLogsFailed": {
+        "description": "Si è verificato un errore nell'apertura della cartella dei log.",
+        "title": "Impossibile aprire la cartella dei log"
+      },
+      "updateFailed": {
+        "description": "Qualcosa è andato storto. Riprova.",
+        "title": "Impossibile aggiornare il logging di debug"
+      }
+    },
+    "whatGetsLogged": {
+      "items": {
+        "apiRequests": "Richieste API",
+        "audioProcessing": "Elaborazione audio",
+        "errorDetails": "Dettagli errori",
+        "ffmpegOperations": "Operazioni FFmpeg",
+        "systemDiagnostics": "Diagnostica di sistema",
+        "transcriptionPipeline": "Pipeline di trascrizione"
+      },
+      "title": "Cosa viene registrato"
+    }
+  },
+  "dictionarySuffix": "Suffisso dizionario",
+  "emailVerification": {
+    "checkEmailDescription": "Abbiamo inviato un link di verifica a",
+    "checkEmailTitle": "Controlla la tua e-mail",
+    "errors": {
+      "resendFailed": "Non è stato possibile reinviare l'e-mail. Riprova.",
+      "serverUnreachable": "Impossibile raggiungere il server. Controlla la connessione e riprova."
+    },
+    "resendButton": "Reinvia e-mail di verifica",
+    "resendIn": "Reinvia tra {{seconds}}s",
+    "verifiedDescription": "Il tuo account è pronto.",
+    "verifiedTitle": "E-mail verificata",
+    "waiting": "In attesa della verifica..."
+  },
+  "errorBoundary": {
+    "description": "Si è verificato un errore imprevisto. Ricarica per riprovare.",
+    "reload": "Ricarica",
+    "title": "Qualcosa è andato storto"
+  },
+  "forgotPassword": {
+    "back": "Indietro",
+    "backToSignIn": "Torna all'accesso",
+    "emailPlaceholder": "Inserisci la tua e-mail",
+    "goBack": "Torna indietro",
+    "notConfigured": "L'autenticazione non è ancora configurata.",
+    "sendResetLink": "Invia link di reimpostazione",
+    "sending": "Invio...",
+    "subtitle": "Inserisci la tua e-mail e ti invieremo un link di reimpostazione",
+    "success": {
+      "description": "Abbiamo inviato un link di reimpostazione della password a",
+      "help": "Non hai ricevuto l'e-mail? Controlla la cartella spam o riprova.",
+      "title": "Controlla la tua e-mail",
+      "tryAnother": "Prova con un'altra e-mail"
+    },
+    "title": "Reimposta la password"
+  },
+  "actionPrompt": "Prompt di azione",
+  "hotkeyGuidance": {
+    "blockedDescription": "Queste scorciatoie sono bloccate perché comunemente usate dal sistema.",
+    "blockedTitle": "Scorciatoie bloccate",
+    "description": "Usa queste regole per scegliere una scorciatoia che non entri in conflitto con il sistema.",
+    "examplesTitle": "Esempi validi",
+    "platforms": {
+      "linux": "Linux",
+      "macos": "macOS",
+      "windows": "Windows"
+    },
+    "recommended": {
+      "linux": {
+        "0": "Ctrl+Alt+Space",
+        "1": "Super+S",
+        "2": "Ctrl+Alt+D",
+        "3": "Ctrl+Shift+J",
+        "4": "Alt+Space"
+      },
+      "macos": {
+        "0": "⌥Space",
+        "1": "⌃⌥S",
+        "2": "⌃⌥D",
+        "3": "Fn",
+        "4": "⌘⇧J"
+      },
+      "windows": {
+        "0": "Ctrl+Alt+Space",
+        "1": "Ctrl+Shift+S",
+        "2": "Ctrl+Alt+D",
+        "3": "Win+Alt+K"
+      }
+    },
+    "recommendedTitle": "Scorciatoie consigliate",
+    "rulesTitle": "Regole per le scorciatoie",
+    "showAll": "Mostra tutto",
+    "showFewer": "Mostra meno",
+    "title": "Guida alle scorciatoie",
+    "validationRules": {
+      "0": "È necessario almeno un tasto modificatore (Ctrl, Alt, Shift, ecc.)",
+      "1": "Non è possibile usare scorciatoie riservate dal sistema",
+      "2": "I tasti singoli non sono consentiti",
+      "3": "Alcune combinazioni potrebbero entrare in conflitto con altre app"
+    }
+  },
+  "hotkeyInput": {
+    "ariaLabel": "Premi una combinazione di tasti per impostare la scorciatoia",
+    "clickToChange": "Fai clic per cambiare",
+    "clickToChangeLower": "fai clic per cambiare",
+    "clickToSet": "Fai clic per impostare la scorciatoia",
+    "fnCaptureHint": "Premi un tasto da combinare, o rilascia per Globe",
+    "fnHeldHint": "+ tasto o rilascia per Globe",
+    "globe": "Globe",
+    "hotkeyLabel": "Scorciatoia",
+    "keyHint": "+ tasto",
+    "listening": "In ascolto...",
+    "pressAnyKey": "Premi un tasto qualsiasi o Ctrl+Shift+K",
+    "pressAnyKeyMac": "Premi un tasto qualsiasi o ⌘⇧K",
+    "recording": "Registrazione",
+    "tryShortcut": "Prova Ctrl+Shift+K",
+    "tryShortcutMac": "Prova ⌘⇧K"
+  },
+  "languageSelector": {
+    "noLanguagesFound": "Nessuna lingua trovata",
+    "searchPlaceholder": "Cerca..."
+  },
+  "microphoneSettings": {
+    "builtIn": "(Integrato)",
+    "errors": {
+      "unableToAccess": "Impossibile accedere al microfono. Verifica i permessi."
+    },
+    "helpText": "Seleziona un microfono specifico o usa l'impostazione predefinita di sistema.",
+    "inputDevice": "Dispositivo di ingresso",
+    "noBuiltInDetected": "Nessun microfono integrato rilevato. Verrà usato quello predefinito di sistema.",
+    "preferBuiltIn": {
+      "description": "I microfoni esterni possono causare latenza o ridurre la qualità della trascrizione",
+      "label": "Preferisci microfono integrato"
+    },
+    "selectPlaceholder": "Seleziona un microfono",
+    "systemDefault": "Predefinito di sistema",
+    "unknownDevice": "Dispositivo sconosciuto",
+    "using": "In uso: {{device}}"
+  },
+  "pasteToolsInfo": {
+    "checking": "Verifica delle funzionalità di sistema...",
+    "installCommands": {
+      "archLinux": "# Arch Linux",
+      "debianUbuntu": "# Debian / Ubuntu",
+      "debianUbuntuMint": "# Debian / Ubuntu / Mint",
+      "fedoraRhel": "# Fedora / RHEL"
+    },
+    "installPrefix": "Per l'incollaggio automatico del testo, installa",
+    "methodReady": "per l'incollaggio automatico del testo",
+    "noteXwaylandAlso": "Nota: per le app XWayland, funziona anche xdotool.",
+    "noteXwaylandOnly": "Nota: l'incollaggio automatico funziona solo per le app XWayland.",
+    "optionalEnableTitle": "Opzionale: abilita l'incollaggio automatico",
+    "readyTitle": "Incollaggio automatico pronto",
+    "recheck": "Ricontrolla",
+    "recheckChecking": "Verifica...",
+    "title": "Incollaggio automatico",
+    "usingMethodPrefix": "In uso",
+    "waylandClipboardDescription": "L'incollaggio automatico non è disponibile in questa sessione Wayland. BarkFlow copierà il testo negli appunti, così potrai incollare manualmente con Ctrl+V.",
+    "waylandClipboardTitle": "Modalità appunti su Wayland",
+    "windowsReady": "Windows supporta l'incollaggio automatico senza configurazione aggiuntiva!",
+    "withoutToolPrefix": "Senza questo strumento, BarkFlow copierà il testo negli appunti. Potrai poi incollare manualmente con Ctrl+V.",
+    "xwaylandAppsOnly": "l'incollaggio automatico funziona solo per le app XWayland"
+  },
+  "promptStudio": {
+    "common": {
+      "copied": "Copiato",
+      "copy": "Copia",
+      "reset": "Reimposta",
+      "save": "Salva"
+    },
+    "defaultTestInput": "Ehi Whispr, che tempo fa oggi?",
+    "dialogs": {
+      "reset": {
+        "description": "Il prompt è stato reimpostato al valore predefinito.",
+        "title": "Reimpostazione completata"
+      },
+      "saved": {
+        "description": "Il tuo prompt personalizzato verrà usato per tutta l'elaborazione IA futura.",
+        "title": "Prompt salvato"
+      }
+    },
+    "edit": {
+      "agentNameLabel": "Nome dell'agente:",
+      "cautionLabel": "Attenzione",
+      "cautionTextPrefix": "La modifica di questo prompt potrebbe influire sulla qualità della trascrizione.",
+      "cautionTextSuffix": "Mantieni il segnaposto {{agentName}} per preservare il rilevamento dell'agente.",
+      "placeholder": "Inserisci il tuo prompt di sistema personalizzato..."
+    },
+    "tabs": {
+      "customize": "Personalizza",
+      "test": "Test",
+      "view": "Visualizza"
+    },
+    "test": {
+      "addressHint": "Prova a rivolgerti a \"{{agentName}}\" per testare la modalità istruzione",
+      "aiModels": "Modelli IA",
+      "baseUrlMissing": "URL base di {{provider}} mancante. Aggiungilo nelle impostazioni Modelli IA.",
+      "cleanup": "Correzione",
+      "disabledInSettingsPrefix": "Il miglioramento testo con IA è disattivato.",
+      "disabledInSettingsSuffix": "Attivalo in Modelli IA per testare i prompt.",
+      "disabledReasoning": "Il miglioramento testo con IA è disattivato. Attivalo in Modelli IA per testare i prompt.",
+      "failed": "Test fallito: {{error}}",
+      "inputLabel": "Input",
+      "inputPlaceholder": "Inserisci il testo da testare...",
+      "instruction": "Istruzione",
+      "modelLabel": "Modello",
+      "noModelSelected": "Nessun modello selezionato",
+      "none": "Nessuno",
+      "outputLabel": "Output",
+      "processing": "Elaborazione...",
+      "openwhisprCloud": "BarkFlow Cloud",
+      "providerLabel": "Provider",
+      "run": "Esegui test",
+      "customEndpoint": "Endpoint personalizzato"
+    },
+    "view": {
+      "customPrompt": "Prompt personalizzato",
+      "defaultPrompt": "Prompt predefinito",
+      "modes": {
+        "agent": {
+          "description": "Attivato da \"{{agentName}}\" — esegue comandi, risponde a domande, compone contenuti",
+          "label": "Agente"
+        },
+        "cleanup": {
+          "description": "Percorso rapido — rimuove parole superflue, corregge grammatica e punteggiatura",
+          "label": "Correzione"
+        }
+      },
+      "modified": "Modificato"
+    }
+  },
+  "resetPassword": {
+    "backToSignIn": "Torna all'accesso",
+    "confirmPasswordPlaceholder": "Conferma la nuova password",
+    "continue": "Continua",
+    "errors": {
+      "passwordMinLength": "La password deve essere di almeno 8 caratteri",
+      "passwordsDoNotMatch": "Le password non corrispondono"
+    },
+    "goBack": "Torna indietro",
+    "newPasswordPlaceholder": "Nuova password",
+    "notConfigured": "L'autenticazione non è configurata.",
+    "passwordMinLength": "La password deve essere di almeno 8 caratteri",
+    "resetButton": "Reimposta password",
+    "resetting": "Reimpostazione...",
+    "subtitle": "Inserisci la nuova password qui sotto",
+    "success": {
+      "description": "La password è stata aggiornata. Hai effettuato l'accesso.",
+      "title": "Password reimpostata con successo"
+    },
+    "title": "Crea nuova password"
+  },
+  "settingsModal": {
+    "groups": {
+      "account": "Account",
+      "app": "App",
+      "speechAi": "Voce & IA",
+      "system": "Sistema"
+    },
+    "sections": {
+      "account": {
+        "description": "Profilo e accesso",
+        "label": "Account"
+      },
+      "plansBilling": {
+        "description": "Piani, utilizzo e fatturazione",
+        "label": "Piani e fatturazione"
+      },
+      "general": {
+        "description": "Aspetto, suoni e avvio",
+        "label": "Preferenze"
+      },
+      "hotkeys": {
+        "description": "Scorciatoia di dettatura e attivazione",
+        "label": "Scorciatoie"
+      },
+      "transcription": {
+        "description": "Motore di riconoscimento vocale",
+        "label": "Trascrizione"
+      },
+      "intelligence": {
+        "description": "Modelli IA, agente e prompt",
+        "label": "Intelligenza"
+      },
+      "privacyData": {
+        "description": "Privacy, permessi e analisi",
+        "label": "Privacy e dati"
+      },
+      "system": {
+        "description": "Aggiornamenti, archiviazione e strumenti di sviluppo",
+        "label": "Sistema"
+      },
+      "agentMode": {
+        "label": "Modalità Agente",
+        "description": "Assistente vocale chat"
+      }
+    },
+    "title": "Impostazioni"
+  },
+  "settingsPage": {
+    "account": {
+      "badges": {
+        "free": "Gratuito",
+        "limitReached": "Limite raggiunto",
+        "pastDue": "Scaduto",
+        "pro": "Pro",
+        "business": "Business",
+        "trial": "Prova"
+      },
+      "billing": {
+        "couldNotOpenDescription": "Si è verificato un problema nell'apertura della pagina di fatturazione. Riprova.",
+        "couldNotOpenTitle": "Impossibile aprire la fatturazione",
+        "manageBilling": "Gestisci fatturazione",
+        "opening": "Apertura...",
+        "updatePaymentMethod": "Aggiorna metodo di pagamento"
+      },
+      "checkout": {
+        "couldNotOpenDescription": "Si è verificato un problema nell'apertura della pagina di pagamento. Riprova.",
+        "couldNotOpenTitle": "Impossibile aprire il pagamento",
+        "opening": "Apertura...",
+        "upgradeToPro": "Passa a Pro"
+      },
+      "disabled": "Disabilitato",
+      "featuresDisabled": "Funzionalità account disabilitate",
+      "featuresDisabledDescription": "Imposta VITE_NEON_AUTH_URL nel file .env per abilitare le funzionalità dell'account.",
+      "notConfigured": "L'autenticazione non è configurata",
+      "notSignedIn": "Non hai effettuato l'accesso",
+      "notSignedInDescription": "Crea un account per sbloccare le funzionalità premium.",
+      "offline": "Offline",
+      "pastDue": {
+        "description": "Sei nel piano gratuito per ora. Aggiorna il metodo di pagamento per tornare a Pro.",
+        "title": "Non siamo riusciti a elaborare il pagamento"
+      },
+      "planDescriptions": {
+        "freeUsage": "{{used}} / {{limit}} parole questa settimana",
+        "nextBilling": "Prossima fatturazione: {{date}}",
+        "pastDue": "{{used}} / {{limit}} parole gratuite questa settimana — aggiorna il pagamento per ripristinare Pro",
+        "trial": "{{days}} giorni rimanenti — trascrizioni illimitate",
+        "unlimited": "Illimitato"
+      },
+      "planLabels": {
+        "free": "Gratuito",
+        "pro": "Pro",
+        "business": "Business",
+        "trial": "Prova"
+      },
+      "planTitle": "Piano",
+      "rollingWeeklyLimit": "Limite settimanale progressivo",
+      "signOut": {
+        "failedDescription": "Qualcosa è andato storto durante la disconnessione. Riprova.",
+        "failedTitle": "Impossibile disconnettersi",
+        "signOut": "Disconnetti",
+        "signingOut": "Disconnessione..."
+      },
+      "signedIn": "Accesso effettuato",
+      "title": "Account",
+      "toasts": {
+        "approachingLimit": {
+          "description": "Hai usato {{used}} di {{limit}} parole gratuite questa settimana. Passa a Pro per un uso illimitato.",
+          "title": "Prossimo al limite settimanale"
+        }
+      },
+      "trialCta": {
+        "button": "Crea account gratuito",
+        "description": "Trascrizioni illimitate, elaborazione prioritaria e altro ancora.",
+        "title": "Prova Pro gratis per 7 giorni"
+      },
+      "pricing": {
+        "title": "Piani",
+        "billedYearly": "Fatturazione annuale",
+        "free": {
+          "name": "Free",
+          "price": "$0",
+          "period": "per sempre",
+          "features": [
+            "## BarkFlow Cloud",
+            "2,000 words/week transcription",
+            "5 hours of meeting recordings/month",
+            "## Always free",
+            "Unlimited local AI models",
+            "Unlimited cloud transcription with your own API keys",
+            "100+ languages supported",
+            "Custom dictionary",
+            "Zero data retention",
+            "Community support"
+          ]
+        },
+        "pro": {
+          "name": "Pro",
+          "monthlyPrice": "$8",
+          "monthlyPeriod": "/mese",
+          "annualPrice": "$80",
+          "annualPeriod": "/anno",
+          "annualEquivalent": "$6.67",
+          "includesPrefix": "Tutte le funzionalità Free +",
+          "features": [
+            "Unlimited cloud transcription",
+            "20 hours of meeting recordings/month",
+            "Mobile app (iOS Coming Soon)",
+            "Email support"
+          ],
+          "cta": "Inizia",
+          "switchToAnnual": "Passa all'annuale"
+        },
+        "business": {
+          "name": "Business",
+          "monthlyPrice": "$20",
+          "monthlyPeriod": "/mese",
+          "annualPrice": "$200",
+          "annualPeriod": "/anno",
+          "annualEquivalent": "$16.67",
+          "includesPrefix": "Tutte le funzionalità Pro +",
+          "badge": "Più popolare",
+          "features": [
+            "Unlimited meeting recordings",
+            "Agent mode",
+            "Chat over your data (Coming Soon)",
+            "Priority support"
+          ],
+          "cta": "Inizia",
+          "switchToAnnual": "Passa all'annuale"
+        },
+        "enterprise": {
+          "name": "Enterprise",
+          "price": "Personalizzato",
+          "subtitle": "For advanced security & support",
+          "includesPrefix": "Tutte le funzionalità Business +",
+          "features": [
+            "Managed API credits",
+            "Cloud sync across devices",
+            "Team features & admin",
+            "SSO & compliance",
+            "Dedicated support"
+          ],
+          "cta": "Contact Sales"
+        },
+        "currentPlan": "Piano attuale",
+        "upgrade": "Upgrade",
+        "downgrade": "Downgrade",
+        "planSwitched": "Piano aggiornato con successo",
+        "confirmSwitch": {
+          "title": "Conferma cambio piano",
+          "description": "Passa a {{plan}} ({{interval}})",
+          "monthly": "mensile",
+          "yearly": "annuale",
+          "chargeToday": "Addebito oggi",
+          "accountCredit": "Credito sull'account",
+          "newPrice": "Nuovo prezzo",
+          "nextBilling": "Prossima fatturazione",
+          "mo": "mo",
+          "yr": "yr",
+          "cancel": "Annulla",
+          "confirm": "Conferma"
+        }
+      },
+      "signedOutPlans": {
+        "button": "Crea account gratuito"
+      },
+      "user": "Utente",
+      "wordsRemaining": "{{remaining}} rimanenti",
+      "deleteAccount": {
+        "label": "Elimina account",
+        "labelDescription": "Elimina permanentemente il tuo account, tutti i dati cloud e i dati locali. Questa azione non può essere annullata.",
+        "button": "Elimina il mio account",
+        "deleting": "Eliminazione...",
+        "title": "Eliminare il tuo account?",
+        "description": "Questo eliminerà permanentemente il tuo account BarkFlow, tutte le note sincronizzate nel cloud e tutti i dati locali, incluse trascrizioni, registrazioni audio, modelli scaricati, connessioni calendario e impostazioni. Questa azione non può essere annullata.",
+        "confirmText": "Elimina tutto",
+        "successTitle": "Account eliminato",
+        "successDescription": "Il tuo account e tutti i dati sono stati eliminati. L'app si ricaricherà ora.",
+        "failedTitle": "Eliminazione fallita",
+        "failedDescription": "Qualcosa è andato storto durante l'eliminazione del tuo account. I tuoi dati locali potrebbero essere stati parzialmente rimossi. Riprova."
+      }
+    },
+    "agentConfig": {
+      "agentName": "Nome dell'agente",
+      "cleanupExample": "Correzione",
+      "cleanupMode": "Modalità correzione",
+      "description": "Dai un nome al tuo assistente IA per rivolgerti direttamente a lui durante la dettatura",
+      "dialogs": {
+        "updatedDescription": "Il tuo agente ora si chiama \"{{name}}\". Rivolgiti a lui dicendo \"Ehi {{name}}\" seguito dalle tue istruzioni.",
+        "updatedTitle": "Nome dell'agente aggiornato"
+      },
+      "examplesTitle": "Esempi",
+      "helper": "Scegli qualcosa di breve e naturale da dire ad alta voce",
+      "howItWorksDescription": "Quando dici \"Ehi {{agentName}}\" seguito da un'istruzione, l'IA passa dalla modalità correzione alla modalità istruzione. Senza la frase di attivazione, si limita a correggere la tua dettatura.",
+      "howItWorksTitle": "Come funziona",
+      "instructionMode": "Istruzione",
+      "placeholder": "es. Jarvis, Nova, Atlas...",
+      "save": "Salva",
+      "title": "Agente vocale",
+      "examples": {
+        "formalEmail": "Hey {{agentName}}, scrivi un'email formale sul budget",
+        "professional": "Hey {{agentName}}, rendi questo più professionale",
+        "bulletPoints": "Hey {{agentName}}, converti questo in elenco puntato"
+      }
+    },
+    "aiModels": {
+      "customSetup": "Configurazione personalizzata",
+      "customSetupDescription": "Usa il tuo provider e la tua chiave API.",
+      "description": "Correggi le trascrizioni, gestisci i comandi e risolvi gli errori preservando il tuo tono.",
+      "enableTextCleanup": "Attiva correzione testo",
+      "enableTextCleanupDescription": "L'IA migliora la qualità della trascrizione",
+      "openwhisprCloud": "BarkFlow Cloud",
+      "openwhisprCloudDescription": "Funziona subito. Nessuna configurazione necessaria.",
+      "title": "Miglioramento testo con IA",
+      "toasts": {
+        "switchedCloud": {
+          "description": "Il miglioramento del testo userà il servizio cloud di BarkFlow.",
+          "title": "Passato a BarkFlow Cloud"
+        },
+        "switchedCustom": {
+          "description": "Configura il tuo provider e la tua chiave API.",
+          "title": "Passato a configurazione personalizzata"
+        }
+      }
+    },
+    "developer": {
+      "clearCache": "Svuota cache",
+      "dataManagementDescription": "Gestisci i modelli in cache e i dati dell'app",
+      "dataManagementTitle": "Gestione dati",
+      "modelCache": "Cache dei modelli",
+      "open": "Apri",
+      "removeModels": {
+        "confirmText": "Elimina modelli",
+        "description": "Questa operazione elimina tutti i modelli Whisper memorizzati nella cache locale ({{path}}) e libera spazio su disco. Puoi scaricarli di nuovo dal selettore modelli.",
+        "failedDescription": "Qualcosa è andato storto nella rimozione dei modelli. Riprova.",
+        "failedDescriptionShort": "Impossibile rimuovere i modelli in cache.",
+        "failedTitle": "Impossibile rimuovere i modelli",
+        "successDescription": "Tutti i modelli in cache sono stati rimossi.",
+        "successTitle": "Modelli rimossi",
+        "title": "Rimuovere i modelli scaricati?"
+      },
+      "removing": "Rimozione...",
+      "resetAll": {
+        "confirmText": "Elimina tutto",
+        "description": "Questo eliminerà permanentemente tutte le impostazioni locali, trascrizioni, registrazioni audio, modelli IA scaricati, connessioni calendario e dati memorizzati nella cache. I dati cloud e il tuo account non saranno interessati. L'app si ricaricherà dopo il ripristino.",
+        "failedDescription": "Qualcosa è andato storto. Riprova o reinstalla l'app.",
+        "failedTitle": "Impossibile reimpostare",
+        "successDescription": "Tutto è stato reimpostato. L'app si ricaricherà ora.",
+        "successTitle": "Tutto fatto",
+        "title": "Reimposta tutti i dati dell'app"
+      },
+      "resetAppData": "Reimposta dati app",
+      "resetAppDataDescription": "Eliminare permanentemente tutte le impostazioni locali, trascrizioni, registrazioni audio, modelli scaricati e dati memorizzati nella cache"
+    },
+    "dictionary": {
+      "title": "Dizionario personalizzato",
+      "description": "Insegna all'IA il tuo vocabolario — nomi, gergo e termini che potrebbe altrimenti non riconoscere",
+      "addWordOrPhrase": "Aggiungi parola o frase",
+      "placeholder": "Aggiungi una parola o frase...",
+      "add": "Aggiungi",
+      "pressEnterToAdd": "Premi Invio per aggiungere",
+      "autoLearnTitle": "Apprendimento automatico dalle correzioni",
+      "autoLearnDescription": "Quando correggi una trascrizione nell'app di destinazione, la parola corretta viene aggiunta automaticamente al tuo dizionario.",
+      "yourWords": "Le tue parole",
+      "clearDictionaryTitle": "Svuotare il dizionario?",
+      "clearDictionaryDescription": "Verranno rimosse tutte le parole dal tuo dizionario personalizzato. Questa azione non può essere annullata.",
+      "clearAll": "Cancella tutto",
+      "agentNameAutoManaged": "Gestito automaticamente — sincronizzato con il nome dell'agente",
+      "removeWord": "Rimuovi parola",
+      "noWords": "Nessuna parola ancora",
+      "wordsAppearHere": "Le parole aggiunte appariranno qui",
+      "howItWorksTitle": "Come funziona",
+      "howItWorksDescription": "Le parole vengono fornite come suggerimenti di contesto al modello vocale, aiutandolo a riconoscere termini poco comuni. Per parole difficili, prova ad aggiungere contesto come \"The word is Synty\" insieme alla parola stessa.",
+      "tipLabel": "Suggerimento",
+      "tipDescription": "Separa più parole con le virgole. Aggiungi frasi di contesto come \"The word is Synty\" per un migliore riconoscimento."
+    },
+    "general": {
+      "appearance": {
+        "auto": "Automatico",
+        "dark": "Scuro",
+        "description": "Personalizza l'aspetto di BarkFlow",
+        "light": "Chiaro",
+        "theme": "Tema",
+        "themeDescription": "Scegli chiaro, scuro o in base al sistema",
+        "title": "Aspetto"
+      },
+      "floatingIcon": {
+        "autoHide": "Nascondi automaticamente quando inattivo",
+        "autoHideDescription": "Mantieni l'icona nascosta finché non inizi a dettare",
+        "description": "Controlla quando l'icona di dettatura è visibile sullo schermo",
+        "title": "Icona flottante",
+        "startPosition": "Posizione iniziale",
+        "startPositionDescription": "Dove appare il pannello di registrazione vocale sullo schermo",
+        "bottomRight": "In basso a destra",
+        "center": "In basso al centro",
+        "bottomLeft": "In basso a sinistra"
+      },
+      "hotkey": {
+        "activationMode": "Modalità di attivazione",
+        "description": "La combinazione di tasti che avvia e ferma la dettatura vocale",
+        "resetToDefault": "Ripristina a {{hotkey}}",
+        "title": "Scorciatoia di dettatura"
+      },
+      "meetingHotkey": {
+        "title": "Scorciatoia modalità meeting",
+        "description": "Avvia la modalità meeting e posiziona il pannello a lato dello schermo",
+        "clear": "Rimuovi scorciatoia"
+      },
+      "microphone": {
+        "description": "Seleziona il dispositivo di ingresso da usare per la dettatura",
+        "title": "Microfono"
+      },
+      "soundEffects": {
+        "dictationSounds": "Suoni di dettatura",
+        "dictationSoundsDescription": "Riproduci un tono quando la registrazione inizia e finisce",
+        "pauseMedia": "Pausa multimedia",
+        "pauseMediaDescription": "Metti automaticamente in pausa la musica quando inizia la dettatura",
+        "title": "Effetti sonori"
+      },
+      "clipboard": {
+        "title": "Appunti",
+        "keepInClipboard": "Mantieni la trascrizione negli appunti",
+        "keepInClipboardDescription": "Mantieni il testo dettato negli appunti per poterlo incollare manualmente se necessario"
+      },
+      "startup": {
+        "launchAtLogin": "Avvia all'accesso",
+        "launchAtLoginDescription": "Avvia BarkFlow automaticamente all'accesso",
+        "title": "Avvio",
+        "description": "Controlla il comportamento di BarkFlow all'avvio",
+        "startMinimized": "Avvia ridotto a icona",
+        "startMinimizedDescription": "Avvia senza mostrare la finestra del pannello di controllo"
+      },
+      "waylandPaste": {
+        "title": "Configurazione incolla su Wayland",
+        "description": "L'incolla automatico su Wayland richiede ydotool. Controlla lo stato di ogni componente qui sotto.",
+        "allGoodDesc": "L'incolla automatico è pronto.",
+        "recheck": "Ricontrolla",
+        "copy": "Copia",
+        "ydotoolDesc": "Strumento di automazione input per Wayland",
+        "ydotooldDesc": "Daemon per ydotool (pacchetto separato su Ubuntu/Pop!_OS)",
+        "uinputDesc": "Accesso al dispositivo di input del kernel",
+        "uinputRuleFound": "Regola presente ma non attiva. Un riavvio dovrebbe risolvere.",
+        "uinputRuleMissing": "nessuna regola udev trovata",
+        "inputGroup": "gruppo input",
+        "inputGroupDesc": "L'utente deve far parte del gruppo input (richiede un nuovo accesso)",
+        "service": "servizio systemd",
+        "serviceDesc": "File di servizio utente per l'avvio automatico di ydotoold",
+        "daemon": "daemon ydotoold",
+        "daemonDesc": "Il servizio in background deve essere in esecuzione",
+        "guide": {
+          "open": "Guida",
+          "ydotool": {
+            "step1Title": "Installa ydotool",
+            "step1Desc": "Usa il gestore pacchetti della tua distribuzione per installare ydotool.",
+            "step2Title": "Verifica l'installazione",
+            "step2Desc": "Controlla che ydotool sia disponibile nel tuo PATH."
+          },
+          "ydotoold": {
+            "step1Title": "Installa ydotoold",
+            "step1Desc": "Su Ubuntu e Pop!_OS, ydotoold è un pacchetto separato. Su Fedora è incluso in ydotool."
+          },
+          "uinput": {
+            "ruleFoundTitle": "Regola udev già configurata",
+            "ruleFoundDesc": "La regola udev per /dev/uinput è già presente nel sistema ma non è ancora attiva. Prova a ricaricarla:",
+            "rebootTitle": "Se il ricaricamento non ha funzionato, riavvia",
+            "rebootDesc": "Su alcune distribuzioni, le modifiche udev si applicano solo dopo un riavvio completo. Riavvia il computer e torna qui per ricontrollare.",
+            "step1Title": "Crea una regola udev",
+            "step1Desc": "Questa regola concede l'accesso a /dev/uinput agli utenti del gruppo input.",
+            "step2Title": "Ricarica le regole udev",
+            "step2Desc": "Applica la nuova regola senza riavviare."
+          },
+          "group": {
+            "step1Title": "Aggiungi il tuo utente al gruppo input",
+            "step2Title": "Esci e rientra",
+            "step2Desc": "Le modifiche ai gruppi hanno effetto solo dopo un nuovo accesso. Esci dal desktop, accedi di nuovo e riapri BarkFlow."
+          },
+          "service": {
+            "step1Title": "Crea la cartella del servizio",
+            "step2Title": "Crea il file del servizio",
+            "step2Desc": "Crea un servizio systemd a livello utente che avvia ydotoold automaticamente all'accesso.",
+            "step3Title": "Ricarica e abilita"
+          },
+          "daemon": {
+            "step1Title": "Avvia il daemon",
+            "step1Desc": "Avvia ydotoold e abilitalo per l'esecuzione a ogni accesso.",
+            "step2Title": "Verifica che sia in esecuzione"
+          },
+          "xclip": {
+            "step1Title": "Installa xclip"
+          }
+        },
+        "xclipDesc": "Strumento appunti per incollare in KDE Wayland (xclip o xsel)"
+      },
+      "updates": {
+        "badges": {
+          "dev": "Dev",
+          "latest": "Aggiornato",
+          "update": "Aggiornamento"
+        },
+        "checkForUpdates": "Controlla aggiornamenti",
+        "checking": "Verifica...",
+        "currentVersion": "Versione corrente",
+        "devMode": "In esecuzione in modalità sviluppo",
+        "dialogs": {
+          "almostThere": {
+            "description": "L'aggiornamento è quasi pronto. Attendi un momento.",
+            "title": "Quasi fatto"
+          },
+          "checkFailed": {
+            "description": "Si è verificato un problema durante la verifica degli aggiornamenti. Riprova più tardi.",
+            "title": "Impossibile verificare gli aggiornamenti"
+          },
+          "downloadFailed": {
+            "description": "Si è verificato un problema durante il download dell'aggiornamento. Riprova.",
+            "title": "Impossibile scaricare l'aggiornamento"
+          },
+          "installFailed": {
+            "description": "Si è verificato un problema durante l'installazione dell'aggiornamento. Riprova.",
+            "title": "Impossibile installare l'aggiornamento"
+          },
+          "installUpdate": {
+            "confirmText": "Installa e riavvia",
+            "description": "BarkFlow verrà riavviato per applicare l'aggiornamento.",
+            "title": "Installa aggiornamento"
+          },
+          "noUpdates": {
+            "description": "Hai già l'ultima versione.",
+            "title": "Nessun aggiornamento"
+          },
+          "updateAvailable": {
+            "description": "Aggiornamento disponibile: v{{version}}",
+            "title": "Aggiornamento disponibile"
+          },
+          "updateError": {
+            "description": "Qualcosa è andato storto con l'aggiornamento. Riprova.",
+            "title": "Errore di aggiornamento"
+          }
+        },
+        "downloadUpdate": "Scarica aggiornamento {{version}}",
+        "downloading": "Download in corso... {{progress}}%",
+        "installAndRestart": "Installa e riavvia",
+        "latestVersion": "Hai già l'ultima versione",
+        "newVersion": "È disponibile una versione più recente",
+        "newVersionAvailable": "Nuova versione disponibile",
+        "restarting": "Riavvio...",
+        "title": "Aggiornamenti",
+        "versionPlaceholder": "—",
+        "whatsNew": "Novità nella v{{version}}"
+      }
+    },
+    "permissions": {
+      "accessibilityDescription": "Necessario per l'incollaggio automatico dopo la trascrizione",
+      "accessibilityTitle": "Accessibilità",
+      "description": "Testa e gestisci i permessi di sistema necessari per il corretto funzionamento di BarkFlow",
+      "microphoneDescription": "Cattura la tua voce per la dettatura e la trascrizione",
+      "microphoneTitle": "Microfono",
+      "resetAccessibility": {
+        "description": "Questa operazione rimuoverà BarkFlow dai permessi di accessibilità. Dovrai concedere nuovamente l'accesso in Impostazioni di sistema > Privacy e sicurezza > Accessibilità.",
+        "label": "Reimposta permessi di accessibilità",
+        "rowDescription": "Risolvi i problemi dopo la reinstallazione o ricompilazione dell'app rimuovendo e riaggiungendo BarkFlow nelle Impostazioni di sistema",
+        "title": "Reimposta permessi di accessibilità"
+      },
+      "optional": "Facoltativo",
+      "systemAudioTitle": "Audio di Sistema",
+      "systemAudioDescription": "Cattura l'audio degli altri partecipanti durante chiamate e riunioni",
+      "grantAccess": "Concedi accesso",
+      "test": "Test",
+      "testAndGrant": "Testa e concedi",
+      "title": "Permessi",
+      "troubleshoot": "Risoluzione problemi",
+      "troubleshootingTitle": "Risoluzione problemi"
+    },
+    "privacy": {
+      "cloudBackup": "Backup cloud",
+      "cloudBackupDescription": "Salva trascrizioni e note nel cloud per un accesso senza interruzioni da tutti i dispositivi.",
+      "cloudNotesMigration": "Backup delle note in corso… {{done}} / {{total}}",
+      "cloudNotesMigrationDone": "Tutte le note salvate nel cloud",
+      "description": "Controlla quali dati escono dal tuo dispositivo. Tutto è disattivato per impostazione predefinita.",
+      "title": "Privacy",
+      "usageAnalytics": "Analisi dell'utilizzo",
+      "usageAnalyticsDescription": "Aiutaci a migliorare BarkFlow condividendo metriche di prestazione anonime. Non inviamo mai il contenuto delle trascrizioni, solo dati su tempi ed errori.",
+      "dataRetention": "Conservazione dei dati",
+      "dataRetentionDescription": "Salva trascrizioni e audio localmente nella cronologia. Se disattivato, le trascrizioni vengono incollate ma non salvate.",
+      "audioRetention": "Conservazione audio",
+      "audioRetentionDescription": "Salva le registrazioni audio localmente per la ritrascrizione e il download. I file vengono eliminati automaticamente al termine del periodo di conservazione.",
+      "audioRetentionDisabled": "Disattivato",
+      "audioRetentionDays": "{{count}} giorni",
+      "audioStorageUsage": "Spazio utilizzato",
+      "audioStorageUsageDescription": "File audio salvati su questo dispositivo",
+      "audioStorageFiles": "{{count}} file, {{size}}",
+      "audioStorageEmpty": "Nessun file audio salvato",
+      "clearAllAudio": "Elimina tutti i file audio",
+      "clearAllAudioConfirm": "Eliminare tutti i file audio salvati? Questa azione è irreversibile."
+    },
+    "prompts": {
+      "description": "Visualizza, personalizza e testa il prompt di sistema unificato che gestisce la correzione del testo e il rilevamento delle istruzioni",
+      "title": "Prompt Studio"
+    },
+    "transcription": {
+      "customSetup": "Configurazione personalizzata",
+      "customSetupDescription": "Usa il tuo provider e la tua chiave API.",
+      "description": "Scegli come BarkFlow trascrive la tua voce",
+      "openwhisprCloud": "BarkFlow Cloud",
+      "openwhisprCloudDescription": "Funziona subito. Nessuna configurazione necessaria.",
+      "title": "Riconoscimento vocale",
+      "toasts": {
+        "switchedCloud": {
+          "description": "La trascrizione userà il servizio cloud di BarkFlow.",
+          "title": "Passato a BarkFlow Cloud"
+        },
+        "switchedCustom": {
+          "description": "Configura il tuo provider e la tua chiave API.",
+          "title": "Passato a configurazione personalizzata"
+        }
+      }
+    }
+  },
+  "models": {
+    "descriptions": {
+      "parakeet": {
+        "parakeet_tdt_0_6b_v3": "ASR multilingue veloce con rilevamento automatico della lingua (25 lingue)"
+      },
+      "whisper": {
+        "tiny": "Il più veloce, qualità inferiore",
+        "base": "Buon equilibrio",
+        "small": "Qualità migliore, più lento",
+        "medium": "Alta qualità",
+        "large": "Migliore qualità, il più lento",
+        "turbo": "Veloce con buona qualità"
+      },
+      "transcription": {
+        "openai_gpt_4o_mini_transcribe": "Trascrizione rapida e accurata",
+        "openai_gpt_4o_transcribe": "Trascrizione più accurata",
+        "openai_whisper_1": "Modello Whisper originale",
+        "groq_whisper_large_v3_turbo": "Velocità 216x in tempo reale",
+        "groq_whisper_large_v3": "Modello Large v3, veloce e preciso",
+        "mistral_voxtral_mini_latest": "Trascrizione multilingue veloce"
+      },
+      "cloud": {
+        "openai_gpt_5_4": "Modello frontier per ragionamento complesso",
+        "openai_gpt_5_2": "Modello di ragionamento potente",
+        "openai_gpt_5_mini": "Veloce ed efficiente nei costi",
+        "openai_gpt_5_nano": "Ultra-veloce, bassa latenza",
+        "openai_gpt_4_1": "Base solida, contesto da 1M",
+        "openai_gpt_4_1_mini": "Modello GPT-4.1 più piccolo",
+        "openai_gpt_4_1_nano": "GPT-4.1 con la latenza più bassa",
+        "anthropic_claude_sonnet_4_5": "Prestazioni bilanciate",
+        "anthropic_claude_haiku_4_5": "Veloce con intelligenza quasi da frontiera",
+        "anthropic_claude_opus_4_5": "Modello Claude più capace",
+        "gemini_gemini_3_pro_preview": "Modello di punta di nuova generazione per ragionamento complesso",
+        "gemini_gemini_3_flash_preview": "Modello di nuova generazione ultra-veloce e ad alta capacità",
+        "gemini_gemini_2_5_flash_lite": "Latenza e costo minimi",
+        "groq_qwen_qwen3_32b": "Potente modello di ragionamento, contesto 131K",
+        "groq_openai_gpt_oss_120b": "Ammiraglia open source di OpenAI, 500 T/sec",
+        "groq_openai_gpt_oss_20b": "Modello open source veloce, 1000 T/sec",
+        "groq_llama_3_3_70b_versatile": "Modello versatile di Meta, 280 T/sec",
+        "groq_llama_3_1_8b_instant": "Ultra-veloce 560 T/sec, contesto 131K",
+        "groq_llama_4_scout": "Multimodale efficiente di Meta, 750 T/sec",
+        "groq_compound": "Sistema compound di Groq, 450 T/sec",
+        "groq_compound_mini": "Sistema compound veloce, 3x latenza ridotta",
+        "groq_kimi_k2_0905": "Moonshot AI 1T MoE, contesto 256K"
+      },
+      "local": {
+        "qwen_qwen3_5_9b_q4_k_m": "Modello ibrido potente",
+        "qwen_qwen3_5_4b_q4_k_m": "Qwen3.5 bilanciato per uso generale",
+        "qwen_qwen3_5_2b_q4_k_m": "Qwen3.5 compatto per attività rapide",
+        "qwen_qwen3_8b_q4_k_m": "Ultimo Qwen3 con supporto alla modalità pensiero",
+        "qwen_qwen3_8b_q5_k_m": "Qwen3 di qualità superiore con modalità pensiero",
+        "qwen_qwen3_4b_q4_k_m": "Qwen3 compatto con capacità di ragionamento",
+        "qwen_qwen3_1_7b_q8_0": "Modello Qwen3 piccolo ma capace",
+        "qwen_qwen3_32b_q4_k_m": "Il Qwen3 locale più potente con ragionamento profondo",
+        "qwen_qwen2_5_1_5b_instruct_q5_k_m": "Modello piccolo, buono per attività di base",
+        "qwen_qwen2_5_3b_instruct_q5_k_m": "Modello bilanciato per uso generale",
+        "qwen_qwen2_5_7b_instruct_q4_k_m": "Modello grande con alta qualità (Q4_K_M)",
+        "qwen_qwen2_5_7b_instruct_q5_k_m": "Modello grande, ragionamento di alta qualità (Q5_K_M)",
+        "mistral_mistral_7b_instruct_v0_3_q4_k_m": "Modello instruction veloce ed efficiente",
+        "mistral_mistral_7b_instruct_v0_3_q5_k_m": "Modello instruction di qualità superiore",
+        "mistral_nemo_12b_instruct_q4_k_m": "Modello 12B di Mistral, buone prestazioni multilingue",
+        "llama_llama_3_2_1b_instruct_q4_k_m": "Modello minuscolo per dispositivi edge",
+        "llama_llama_3_2_3b_instruct_q4_k_m": "Modello multilingue piccolo ma capace",
+        "llama_llama_3_1_8b_instruct_q4_k_m": "Modello potente con ottime prestazioni",
+        "openai_oss_gpt_oss_20b_mxfp4": "Modello open-weight di OpenAI per hardware consumer",
+        "gemma_gemma_3_4b_it_q4_k_m": "Modello open-weight di Google, ottimo equilibrio tra velocità e qualità",
+        "gemma_gemma_3_12b_it_q4_k_m": "Modello di fascia media di Google, ragionamento solido",
+        "gemma_gemma_3_1b_it_q4_k_m": "Modello Google ultraveloce, ideale per la pulizia di brevi dettature"
+      }
+    }
+  },
+  "referral": {
+    "modalTitle": "Invita un amico",
+    "title": "Invita e ottieni ricompense",
+    "subtitle": "Regala un mese. Ricevi un mese.",
+    "tabs": {
+      "refer": "Invita",
+      "pastInvites": "Inviti passati"
+    },
+    "howItWorks": {
+      "shareLink": "Condividi il tuo link di invito",
+      "theySignUp": "Si iscrivono e ottengono un ",
+      "freeMonthOfPro": "mese gratuito di Pro",
+      "youGet": "Tu ottieni un ",
+      "freeMonth": "mese gratuito",
+      "whenTheyDictate": " quando dettano 2.000 parole"
+    },
+    "inviteLink": {
+      "title": "Il tuo link di invito",
+      "copy": "Copia",
+      "copied": "Copiato"
+    },
+    "sendInvites": {
+      "title": "Invia inviti",
+      "placeholder": "friend@example.com",
+      "send": "Invia",
+      "sending": "Invio in corso"
+    },
+    "stats": {
+      "referred": "Invitati",
+      "converted": "Convertiti",
+      "monthsEarned": "Mesi guadagnati"
+    },
+    "status": {
+      "converted": "Convertito",
+      "opened": "Aperto",
+      "failed": "Non riuscito",
+      "sent": "Inviato"
+    },
+    "empty": {
+      "title": "Nessun invito inviato",
+      "description": "Condividi il tuo link o invia un invito per iniziare"
+    },
+    "toasts": {
+      "copiedTitle": "Copiato!",
+      "copiedDescription": "Link di invito copiato negli appunti",
+      "copyFailedTitle": "Copia non riuscita",
+      "copyFailedDescription": "Impossibile copiare il link negli appunti",
+      "invalidEmailTitle": "Email non valida",
+      "invalidEmailDescription": "Inserisci un indirizzo email valido",
+      "inviteSentTitle": "Invito inviato!",
+      "inviteSentDescription": "Invito inviato a {{email}}",
+      "sendFailedTitle": "Invio non riuscito",
+      "sendFailedDescription": "Impossibile inviare l'invito. Riprova."
+    },
+    "errors": {
+      "unableToLoad": "Impossibile caricare i dati degli inviti",
+      "unableToLoadStats": "Impossibile caricare le statistiche degli inviti. Riprova più tardi."
+    },
+    "tryAgain": "Riprova",
+    "card": {
+      "brand": "BarkFlow",
+      "signalId": "Signal ID",
+      "audioSignature": "La tua firma audio",
+      "stop": "Ferma",
+      "playSignal": "Riproduci segnale"
+    },
+    "friends": {
+      "title": "Amici",
+      "completed": "Completato",
+      "sentInvites": "Inviti inviati"
+    }
+  },
+  "notes": {
+    "folders": {
+      "title": "Cartelle",
+      "soon": "Presto",
+      "folderName": "Nome cartella",
+      "couldNotCreate": "Impossibile creare la cartella",
+      "couldNotRename": "Impossibile rinominare la cartella",
+      "couldNotDelete": "Impossibile eliminare la cartella"
+    },
+    "list": {
+      "title": "Note",
+      "newNote": "Nuova nota",
+      "untitled": "Senza titolo",
+      "untitledNote": "Nota senza titolo",
+      "timeNow": "Adesso",
+      "minutesAgo": "{{count}}m",
+      "hoursAgo": "{{count}}h",
+      "daysAgo": "{{count}}g"
+    },
+    "editor": {
+      "untitled": "Senza titolo",
+      "noteTitle": "Titolo della nota",
+      "stop": "Ferma",
+      "transcribe": "Trascrivi",
+      "processing": "Elaborazione...",
+      "export": "Esporta",
+      "asMarkdown": "Come Markdown",
+      "asPlainText": "Come testo semplice",
+      "raw": "Originale",
+      "enhanced": "Migliorato",
+      "saving": "Salvataggio",
+      "wordsCount": "{{count}} parole",
+      "startWriting": "Inizia a scrivere...",
+      "staleIndicator": "Il contenuto è cambiato dall'ultimo miglioramento",
+      "live": "Dal vivo",
+      "transcript": "Trascrizione",
+      "notes": "Note",
+      "conversationWillAppear": "La conversazione apparirà qui..."
+    },
+    "upload": {
+      "title": "Carica audio",
+      "using": "Utilizzando {{model}}",
+      "dropOrBrowse": "Trascina un file audio o clicca per sfogliare",
+      "supportedFormats": "MP3, WAV, M4A, WebM, OGG, FLAC, AAC",
+      "dropToUpload": "Rilascia per caricare",
+      "transcribe": "Trascrivi",
+      "cancel": "Annulla",
+      "transcribingCloud": "Trascrizione nel cloud...",
+      "transcribingLocal": "Trascrizione locale...",
+      "transcribingProvider": "Trascrizione tramite {{provider}}...",
+      "transcriptionComplete": "Trascrizione completata",
+      "openNote": "Apri nota",
+      "uploadAnother": "Carica un altro",
+      "retry": "Riprova",
+      "startOver": "Ricomincia",
+      "transcriptionSettings": "Impostazioni di trascrizione",
+      "newFolder": "Nuova cartella",
+      "folderName": "Nome cartella",
+      "create": "Crea",
+      "setupTitle": "Configura la trascrizione",
+      "setupDescription": "Scegli come trascrivere il tuo audio. Questo si applica anche alla dettatura dal vivo.",
+      "continue": "Continua",
+      "openwhisprCloud": "BarkFlow Cloud",
+      "custom": "Personalizzato",
+      "selectFolder": "Seleziona cartella",
+      "transcriptionFailed": "Trascrizione non riuscita",
+      "errorOccurred": "Si è verificato un errore",
+      "noProviderTitle": "Nessun provider di trascrizione configurato",
+      "noProviderDescription": "Aggiungi una chiave API o scarica un modello locale per iniziare a trascrivere.",
+      "noProviderAction": "Apri impostazioni di trascrizione",
+      "fileTooLarge": "Questo file supera il limite di 500 MB.",
+      "largeFileNote": "I file di grandi dimensioni vengono suddivisi e trascritti in parallelo.",
+      "chunkProgress": "Trascrizione parte {{completed}} di {{total}}...",
+      "paidPlanRequired": "La trascrizione cloud per file superiori a 25 MB richiede un piano a pagamento. I file di grandi dimensioni vengono elaborati con BarkFlow Cloud per risultati affidabili e di alta qualità.",
+      "byokTooLarge": "Le chiavi API di terze parti supportano solo file fino a 25 MB.",
+      "byokTooLargeDetail": "Per file superiori a 25 MB, BarkFlow Cloud gestisce la suddivisione, l'elaborazione parallela e il riassemblaggio — per risultati affidabili senza dipendere dai limiti dei provider di terze parti.",
+      "byokTooLargeNeedsAccount": "Crea un account e passa a un piano a pagamento per trascrivere file più grandi con BarkFlow Cloud.",
+      "byokTooLargeNeedsUpgrade": "Passa a un piano a pagamento per trascrivere file più grandi con BarkFlow Cloud.",
+      "switchToCloudForLargeFiles": "Passa a BarkFlow Cloud per trascrivere questo file.",
+      "createAccount": "Crea account",
+      "upgrade": "Aggiorna",
+      "switchToCloud": "BarkFlow Cloud"
+    },
+    "meeting": {
+      "title": "Note delle riunioni",
+      "description": "Trascrizioni e riassunti strutturati",
+      "comingSoon": "Prossimamente",
+      "back": "Indietro"
+    },
+    "context": {
+      "moveToFolder": "Sposta nella cartella",
+      "delete": "Elimina",
+      "rename": "Rinomina",
+      "searchFolders": "Cerca cartelle...",
+      "noResults": "Nessuna cartella trovata",
+      "newFolder": "Nuova cartella"
+    },
+    "actions": {
+      "manage": "Gestisci azioni...",
+      "manageTitle": "Azioni personalizzate",
+      "addAction": "Nuova azione",
+      "editAction": "Modifica azione",
+      "namePlaceholder": "Nome dell'azione",
+      "descriptionPlaceholder": "Descrizione breve (facoltativo)",
+      "promptPlaceholder": "Cosa deve fare l'IA con il contenuto della nota?",
+      "builtIn": "Integrata",
+      "save": "Salva",
+      "update": "Aggiorna",
+      "cancel": "Annulla",
+      "noActions": "Nessuna azione personalizzata ancora",
+      "runAction": "Esegui {{name}}",
+      "selectAction": "Seleziona azione",
+      "done": "Fatto",
+      "builtin": {
+        "generateNotes": {
+          "name": "Genera note",
+          "description": "Pulire, strutturare e migliorare le note"
+        }
+      },
+      "errors": {
+        "noModel": "Nessun modello IA selezionato. Configurane uno nelle Impostazioni.",
+        "actionFailed": "Azione non riuscita"
+      }
+    },
+    "empty": {
+      "title": "Ancora nessuna nota qui",
+      "description": "Crea la tua prima nota per iniziare a scrivere",
+      "selectTitle": "Seleziona una nota",
+      "selectDescription": "Scegli una nota dalla barra laterale",
+      "createNote": "Crea nota",
+      "emptyFolder": "Nessuna nota in questa cartella"
+    },
+    "addToFolder": {
+      "title": "Aggiungi note",
+      "searchPlaceholder": "Cerca note da aggiungere...",
+      "addExisting": "Aggiungi esistenti",
+      "addCount": "Aggiungi {{count}} note",
+      "noResults": "Nessuna nota corrispondente",
+      "noNotesAvailable": "Nessun'altra nota disponibile"
+    },
+    "onboarding": {
+      "llm": {
+        "title": "Configura un modello IA",
+        "description": "Le azioni usano l'IA per trasformare le tue note. Configura un modello linguistico per iniziare.",
+        "configured": "Modello IA configurato"
+      },
+      "actions": {
+        "title": "Azioni basate sull'IA",
+        "description": "Le azioni trasformano le tue note: correggono le trascrizioni, riassumono le riunioni e altro ancora. Usa le azioni integrate o creane di tue.",
+        "builtInLabel": "Integrata",
+        "createTitle": "Crea la tua azione",
+        "createDescription": "Definisci un'azione personalizzata con il tuo prompt IA. Puoi sempre modificarle o aggiungerne altre nelle impostazioni.",
+        "created": "Creata!"
+      },
+      "getStarted": "Inizia",
+      "systemAudio": {
+        "title": "Audio di sistema",
+        "description": "Cattura l'audio delle riunioni e di altre app insieme al microfono.",
+        "grant": "Concedi permesso",
+        "enabled": "Attivato"
+      }
+    },
+    "realtimeBanner": {
+      "message": "Trascrizione in tempo reale disponibile con Pro",
+      "upgrade": "Passa a Pro"
+    },
+    "enhance": {
+      "title": "Errore di miglioramento"
+    },
+    "speaker": {
+      "you": "Tu",
+      "them": "Loro"
+    }
+  },
+  "dictionary": {
+    "addWord": "Aggiungi parola",
+    "removeWord": "Rimuovi {{word}}",
+    "clearAll": "Cancella tutto",
+    "howItWorks": "Come funziona",
+    "howItWorksDetail": "Le parole aggiunte vengono incluse nel prompt dell'IA, in modo che il modello sappia cercare e preservare questi termini durante la correzione della trascrizione.",
+    "autoManaged": "Gestito automaticamente",
+    "inputHint": "Premi Invio per aggiungere",
+    "title": "Dizionario personalizzato",
+    "description": "Insegna all'IA il tuo vocabolario — nomi, gergo e termini che potrebbe altrimenti non riconoscere",
+    "clearTitle": "Svuotare il dizionario?",
+    "clearDescription": "Verranno rimossi tutti i termini dal tuo dizionario personalizzato. Questa azione non può essere annullata.",
+    "addPlaceholder": "Aggiungi una parola o una frase..."
+  },
+  "sidebar": {
+    "home": "Home",
+    "notes": "Note",
+    "upload": "Carica",
+    "dictionary": "Dizionario",
+    "referral": "Ottieni un mese gratis",
+    "settings": "Impostazioni",
+    "support": "Assistenza",
+    "limitReached": "Limite settimanale raggiunto",
+    "limitReachedDescription": "Passa a Pro per trascrizioni illimitate.",
+    "upgradeToPro": "Passa a Pro",
+    "upgradeTitle": "Passa a Pro",
+    "upgradeDescription": "Trascrizioni illimitate e funzionalità avanzate.",
+    "learnMore": "Scopri di più",
+    "integrations": "Integrazioni",
+    "defaultUser": "Utente",
+    "notSignedIn": "Non hai effettuato l'accesso"
+  },
+  "usage": {
+    "approachingLimit": "Limite settimanale quasi raggiunto",
+    "approachingLimitDescription": "Hai usato {{wordsUsed}} di {{limit}} parole gratuite questa settimana.",
+    "yourPlan": "Il tuo piano",
+    "trial": "Prova ({{days}} giorno rimanente)",
+    "trial_other": "Prova ({{days}} giorni rimanenti)",
+    "pro": "Pro",
+    "business": "Business",
+    "unlimitedTrial": "Trascrizioni illimitate durante il periodo di prova",
+    "unlimited": "Trascrizioni illimitate",
+    "manageSubscription": "Gestisci abbonamento",
+    "weeklyUsage": "Utilizzo settimanale",
+    "limitReached": "Limite raggiunto",
+    "free": "Gratuito",
+    "wordsRemaining": "{{remaining}} parole rimanenti",
+    "rollingLimit": "Limite settimanale mobile",
+    "upgradeToPro": "Passa a Pro",
+    "useYourOwnKey": "Usa la tua chiave API",
+    "upgradeUnlimited": "Passa a Pro — trascrizioni illimitate"
+  },
+  "support": {
+    "joinDiscord": "Unisciti a Discord",
+    "contactSupport": "Contatta il supporto",
+    "submitBug": "Segnala un bug"
+  },
+  "apiKeyInput": {
+    "placeholder": "Incolla la tua chiave API",
+    "label": "Chiave API",
+    "save": "Salva",
+    "cancelEdit": "Annulla modifica",
+    "edit": "Modifica",
+    "add": "Aggiungi",
+    "editButton": "Modifica",
+    "addButton": "Aggiungi"
+  },
+  "gpu": {
+    "transcriptionBanner": "Velocizza la trascrizione con la GPU",
+    "reasoningBanner": "Velocizza l'elaborazione IA con la GPU",
+    "enableButton": "Attiva GPU",
+    "active": "Accelerazione GPU attiva",
+    "ready": "Accelerazione GPU pronta",
+    "activating": "Attivazione GPU...",
+    "activationFailed": "Impossibile attivare la GPU",
+    "retry": "Riprova",
+    "remove": "Rimuovi",
+    "dismiss": "Non ora",
+    "cancel": "Annulla"
+  },
+  "app": {
+    "toasts": {
+      "hotkeyChanged": {
+        "title": "Scorciatoia modificata"
+      },
+      "hotkeyUnavailable": {
+        "title": "Scorciatoia non disponibile",
+        "description": "Non è stato possibile registrare la scorciatoia selezionata. Scegline un’altra nelle impostazioni."
+      },
+      "addedToDict": "{{words}} aggiunto al tuo dizionario",
+      "undo": "Annulla",
+      "accessibilityMissing": {
+        "title": "Autorizzazioni di accessibilità richieste",
+        "description": "BarkFlow necessita delle autorizzazioni di accessibilità per rilevare il tasto di scelta rapida e incollare il testo. Abilitale nel Pannello di controllo."
+      }
+    },
+    "mic": {
+      "hotkeyToSpeak": "{{hotkey}} per parlare",
+      "recording": "Registrazione...",
+      "processing": "Elaborazione...",
+      "clickToSpeak": "Clicca per parlare"
+    },
+    "buttons": {
+      "cancelRecording": "Annulla registrazione",
+      "cancelProcessing": "Annulla elaborazione"
+    },
+    "commandMenu": {
+      "stopListening": "Smetti di ascoltare",
+      "startListening": "Inizia ad ascoltare",
+      "hideForNow": "Nascondi per ora"
+    },
+    "oauth": {
+      "redirectTitle": "Reindirizzamento all'app...",
+      "closeTab": "Puoi chiudere questa scheda."
+    }
+  },
+  "agentMode": {
+    "settings": {
+      "title": "Modalità Agente",
+      "description": "Assistente vocale chat con un modello IA separato",
+      "enabled": "Abilita Modalità Agente",
+      "enabledDescription": "Usa un tasto di scelta rapida separato per aprire un overlay di chat vocale",
+      "hotkey": "Tasto Agente",
+      "hotkeyDescription": "Tasto di scelta rapida per alternare l'overlay agente",
+      "model": "Modello Agente",
+      "modelDescription": "Modello IA utilizzato per le conversazioni agente",
+      "systemPrompt": "Prompt di Sistema",
+      "systemPromptDescription": "Istruzioni personalizzate per l'agente",
+      "systemPromptPlaceholder": "Inserisci un prompt di sistema personalizzato...",
+      "openwhisprCloud": "BarkFlow Cloud",
+      "openwhisprCloudDescription": "Usa l'IA cloud di BarkFlow per le conversazioni agente",
+      "customSetup": "Configurazione personalizzata (BYOK)",
+      "customSetupDescription": "Usa le tue chiavi API e scegli il modello che preferisci"
+    },
+    "chat": {
+      "placeholder": "Premi {{hotkey}} per parlare",
+      "thinking": "Pensando...",
+      "transcribing": "Trascrivendo...",
+      "listening": "Ascoltando...",
+      "newConversation": "Nuovo",
+      "copyToClipboard": "Copia negli appunti",
+      "copied": "Copiato!",
+      "emptyState": "Tieni premuto {{hotkey}} per iniziare una conversazione",
+      "errorPrefix": "Errore"
+    },
+    "titleBar": {
+      "label": "Agente",
+      "newChat": "Nuova conversazione",
+      "close": "Chiudi"
+    },
+    "input": {
+      "holdToSpeak": "Tieni premuto per parlare",
+      "toClose": "chiudi",
+      "listening": "Ascolto...",
+      "transcribing": "Trascrizione...",
+      "thinking": "Pensiero..."
+    }
+  },
+  "integrations": {
+    "title": "Integrazioni",
+    "description": "Collega servizi per potenziare il tuo flusso di lavoro",
+    "googleCalendar": {
+      "title": "Google Calendar",
+      "description": "Collega il tuo calendario per rilevare automaticamente le riunioni e registrare le trascrizioni.",
+      "connect": "Collega Google Calendar",
+      "connecting": "Connessione...",
+      "connected": "Connesso",
+      "addAnother": "Aggiungi un altro calendario",
+      "disconnect": "Disconnetti",
+      "disconnectConfirm": "Disconnettere {{email}}?",
+      "disconnectDescription": "Le note delle riunioni non saranno più registrate da questo calendario.",
+      "systemAudioRequired": "Autorizzazione Audio di Sistema richiesta",
+      "systemAudioDescription": "Per trascrivere le riunioni, BarkFlow necessita dell'autorizzazione Audio di Sistema per catturare l'audio degli altri partecipanti. Non registriamo mai il tuo schermo. Verrai reindirizzato alle Impostazioni di Sistema per attivarla.",
+      "openSettings": "Apri Impostazioni di Sistema"
+    },
+    "plan": {
+      "title": "Il tuo Piano",
+      "current": "Attuale",
+      "free": "Gratis",
+      "freeLimit": "5 riunioni / mese",
+      "essential": "Essential",
+      "essentialLimit": "20 riunioni / mese",
+      "pro": "Pro",
+      "proLimit": "Illimitato",
+      "upgrade": "Aggiorna"
+    },
+    "beta": {
+      "title": "La registrazione delle riunioni è in beta",
+      "description": "Stiamo ancora lavorando su come integrare al meglio questa funzionalità. Il tuo feedback è molto apprezzato!",
+      "freeTier": "Piano gratuito: 5 ore / mese",
+      "proTier": "Piano Pro: 20 ore / mese",
+      "feedback": "Hai bisogno di più di 20 ore? Contatta gabe@openwhispr.com"
+    },
+    "notABot": {
+      "title": "BarkFlow è un registratore di riunioni, non un bot",
+      "description": "BarkFlow cattura l'audio direttamente dal tuo sistema — non entra mai nelle tue riunioni come partecipante. Basta collegare il calendario e prendere appunti normalmente."
+    }
+  },
+  "calendar": {
+    "title": "Google Calendar",
+    "status": "Stato",
+    "connected": "Connesso",
+    "disconnected": "Disconnesso",
+    "notConnectedDescription": "Connetti per rilevare e registrare le riunioni",
+    "connectCta": {
+      "title": "Integrazione Calendario",
+      "description": "Rileva automaticamente le riunioni e registra le trascrizioni"
+    },
+    "connect": "Connetti Google Calendar",
+    "connecting": "Connessione...",
+    "disconnect": "Disconnetti",
+    "disconnecting": "Disconnessione...",
+    "sync": "Sincronizza",
+    "syncing": "Sincronizzazione...",
+    "calendarsTitle": "Calendari",
+    "upcomingTitle": "In programma",
+    "noUpcoming": "Nessun evento in programma",
+    "meetingStarting": "La riunione inizia ora",
+    "today": "Oggi",
+    "tomorrow": "Domani",
+    "detection": {
+      "title": "Rilevamento Riunioni",
+      "description": "Rileva automaticamente quando sei in una riunione",
+      "processDetection": "Rilevamento Applicazioni",
+      "processDescription": "Identifica quale app stai usando quando viene rilevata una riunione",
+      "audioDetection": "Rilevamento Audio",
+      "audioDescription": "Notifica quando viene rilevata un'attività microfono prolungata"
+    }
+  },
+  "upcoming": {
+    "title": "Riunioni in programma",
+    "transcriptions": "Trascrizioni",
+    "tomorrow": "Domani",
+    "noMoreMeetings": "Nessun'altra riunione oggi",
+    "now": "In corso",
+    "join": "Partecipa",
+    "untitledEvent": "Evento senza titolo",
+    "systemAudioRequired": "L'autorizzazione Audio di Sistema è necessaria per catturare l'audio degli altri partecipanti.",
+    "openSettings": "Apri Impostazioni di Sistema",
+    "signInRequired": "Accedi per utilizzare la registrazione delle riunioni",
+    "signInDescription": "Crea un account o accedi per registrare e trascrivere le riunioni.",
+    "connectCalendar": "Collega il tuo calendario",
+    "connectCalendarDescription": "Collega il tuo Google Calendar per vedere le prossime riunioni e registrare note automaticamente.",
+    "notABot": "BarkFlow registra usando l'audio del tuo sistema — non entra mai nelle riunioni come bot.",
+    "connectCalendarButton": "Collega calendario"
+  },
+  "notesView": {
+    "searchPlaceholder": "Cerca note…",
+    "newNote": "Nuova nota",
+    "empty": {
+      "title": "Nessuna nota ancora",
+      "description": "Crea la tua prima nota per iniziare."
+    },
+    "searchEmpty": {
+      "title": "Nessun risultato",
+      "description": "Nessuna nota trovata per «{{query}}»."
+    },
+    "noteType": {
+      "personal": "personale",
+      "meeting": "riunione",
+      "upload": "caricamento"
+    }
+  },
+  "noteEditor": {
+    "saved": "Salvato",
+    "deleteNote": "Elimina nota",
+    "deleteConfirmTitle": "Eliminare la nota?",
+    "deleteConfirmDescription": "Questa nota verrà eliminata definitivamente e non potrà essere recuperata.",
+    "deleteConfirm": "Elimina"
+  },
+  "commandSearch": {
+    "title": "Cerca",
+    "description": "Cerca tra note e trascrizioni",
+    "shortPlaceholder": "Cerca",
+    "placeholder": "Cerca note e trascrizioni…",
+    "sections": {
+      "notes": "Note",
+      "transcripts": "Trascrizioni"
+    },
+    "noResults": "Nessun risultato",
+    "emptyState": "Inizia a digitare per cercare",
+    "footer": {
+      "navigate": "Naviga",
+      "open": "Apri",
+      "dismiss": "Chiudi"
+    }
+  },
+  "updateNotification": {
+    "title": "Aggiornamento BarkFlow disponibile",
+    "body": "La versione {{version}} è pronta per il download",
+    "cta": "Aggiorna ora"
+  },
+  "permissionsGate": {
+    "title": "Autorizzazioni necessarie",
+    "description": "BarkFlow ha bisogno di alcune autorizzazioni per funzionare su questo computer.",
+    "continue": "Continua"
+  }
+}
