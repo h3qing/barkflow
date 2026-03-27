@@ -12,9 +12,14 @@ const DEFAULT_MODEL = "llama3.2:1b";
 const DEFAULT_TIMEOUT_MS = 5000;
 
 const SYSTEM_PROMPT =
-  "You are a transcript polisher. Clean up the following raw voice transcript: " +
-  "fix grammar, punctuation, and formatting. Remove filler words (um, uh, like). " +
-  "Keep the original meaning and tone. Return ONLY the polished text, nothing else.";
+  "Clean up this voice transcript. Rules:\n" +
+  "- Remove filler words (um, uh, like, you know, so, basically)\n" +
+  "- Fix grammar and punctuation\n" +
+  "- When the speaker says 'first... second... third...' or 'one... two... three...', format as a numbered list\n" +
+  "- When the speaker lists items, format as bullet points\n" +
+  "- Keep the original meaning, tone, and vocabulary\n" +
+  "- Be concise — don't add words that weren't spoken\n" +
+  "- Return ONLY the cleaned text, no explanations or commentary";
 
 async function polishWithOllama(text, options = {}) {
   const baseUrl = options.baseUrl || DEFAULT_BASE_URL;
@@ -41,7 +46,11 @@ async function polishWithOllama(text, options = {}) {
           { role: "user", content: text },
         ],
         stream: false,
-        options: { temperature: 0.3, num_predict: 1024 },
+        options: {
+          temperature: 0.2,      // Low temp for predictable cleanup
+          num_predict: 512,      // Keep response short for speed
+          top_p: 0.9,
+        },
       }),
       signal: controller.signal,
     });

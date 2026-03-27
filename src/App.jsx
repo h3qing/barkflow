@@ -10,32 +10,55 @@ import { useWindowDrag } from "./hooks/useWindowDrag";
 import { useAudioRecording } from "./hooks/useAudioRecording";
 import { useSettingsStore } from "./stores/settingsStore";
 
-// Dog Ear Icon Component (BarkFlow brand indicator)
-const DogEarIcon = ({ pose = 'relaxed', size = 24, animated = false }) => {
-  const earRotation = {
-    relaxed: { left: -15, right: 15 },
-    perked: { left: -5, right: 5 },
-    tilted: { left: -25, right: 10 },
-    drooped: { left: -30, right: 30 },
+// BarkFlow Indicator — flat waveform bar with small ears on top
+const BarkFlowIndicator = ({ state = 'idle', size = 32, animated = false }) => {
+  // Ear positions shift based on state
+  const earStyle = {
+    idle: { leftY: 4, rightY: 4 },
+    recording: { leftY: 2, rightY: 2 },     // ears perk up
+    processing: { leftY: 3, rightY: 5 },    // asymmetric (curious tilt)
+    error: { leftY: 6, rightY: 6 },         // ears droop
   };
-  const rot = earRotation[pose] || earRotation.relaxed;
+  const ears = earStyle[state] || earStyle.idle;
+
+  // Waveform bar heights animate during recording
+  const barHeights = state === 'recording'
+    ? [6, 10, 14, 10, 6]      // active waveform
+    : state === 'processing'
+      ? [4, 8, 12, 8, 4]      // thinking pulse
+      : [3, 5, 7, 5, 3];      // idle/subtle
 
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={animated ? 'animate-pulse' : ''}>
-      {/* Left ear */}
+    <svg width={size} height={size} viewBox="0 0 32 24" fill="none">
+      {/* Left ear — small triangle on top-left of bar */}
       <path
-        d="M 8 14 L 5 4 L 12 10 Z"
+        d={`M 4 ${ears.leftY + 8} L 7 ${ears.leftY} L 10 ${ears.leftY + 8} Z`}
         fill="#D97706"
-        style={{ transform: `rotate(${rot.left}deg)`, transformOrigin: '8px 14px', transition: 'transform 0.3s ease' }}
+        opacity={state === 'idle' ? 0.6 : 0.9}
+        style={{ transition: 'all 0.3s ease' }}
       />
-      {/* Right ear */}
+      {/* Right ear — small triangle on top-right of bar */}
       <path
-        d="M 16 14 L 19 4 L 12 10 Z"
+        d={`M 22 ${ears.rightY + 8} L 25 ${ears.rightY} L 28 ${ears.rightY + 8} Z`}
         fill="#D97706"
-        style={{ transform: `rotate(${rot.right}deg)`, transformOrigin: '16px 14px', transition: 'transform 0.3s ease' }}
+        opacity={state === 'idle' ? 0.6 : 0.9}
+        style={{ transition: 'all 0.3s ease' }}
       />
-      {/* Head circle (subtle) */}
-      <circle cx="12" cy="16" r="6" fill="#D97706" opacity="0.3" />
+      {/* Waveform bars — centered, 5 bars */}
+      {barHeights.map((h, i) => (
+        <rect
+          key={i}
+          x={8 + i * 4}
+          y={12 + (14 - h) / 2}
+          width={2.5}
+          rx={1.25}
+          height={h}
+          fill="white"
+          opacity={animated ? undefined : 0.9}
+          className={animated ? 'animate-pulse' : ''}
+          style={animated ? { animationDelay: `${i * 0.1}s`, animationDuration: '0.8s' } : {}}
+        />
+      ))}
     </svg>
   );
 };
@@ -423,11 +446,11 @@ export default function App() {
 
               {/* Dynamic content based on state */}
               {micState === "idle" || micState === "hover" ? (
-                <DogEarIcon pose="relaxed" size={20} />
+                <BarkFlowIndicator state="idle" size={28} />
               ) : micState === "recording" ? (
-                <DogEarIcon pose="perked" size={22} animated={true} />
+                <BarkFlowIndicator state="recording" size={30} animated={true} />
               ) : micState === "processing" ? (
-                <DogEarIcon pose="tilted" size={20} animated={true} />
+                <BarkFlowIndicator state="processing" size={28} animated={true} />
               ) : null}
 
               {/* State indicator ring for recording */}
