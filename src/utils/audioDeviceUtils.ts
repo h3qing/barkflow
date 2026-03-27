@@ -15,13 +15,26 @@ export function isBuiltInMicrophone(label: string): boolean {
     lowerLabel.includes("built-in") ||
     lowerLabel.includes("internal") ||
     lowerLabel.includes("macbook") ||
-    lowerLabel.includes("integrated")
+    lowerLabel.includes("integrated") ||
+    lowerLabel.includes("laptop") ||
+    lowerLabel.includes("default") // BarkFlow: catch "Default" labeled devices
+  ) {
+    return true;
+  }
+
+  // macOS-specific patterns (Apple Silicon Macs)
+  if (
+    lowerLabel.includes("macbook") ||
+    lowerLabel.includes("imac") ||
+    lowerLabel.includes("mac mini") ||
+    lowerLabel.includes("mac studio") ||
+    lowerLabel.includes("mac pro")
   ) {
     return true;
   }
 
   // Generic "microphone" without external device indicators
-  if (lowerLabel.includes("microphone")) {
+  if (lowerLabel.includes("microphone") || lowerLabel.includes("mic")) {
     const externalIndicators = [
       "bluetooth",
       "airpods",
@@ -32,6 +45,14 @@ export function isBuiltInMicrophone(label: string): boolean {
       "webcam",
       "iphone",
       "ipad",
+      "beats",
+      "jabra",
+      "logitech",
+      "blue yeti",
+      "rode",
+      "audio-technica",
+      "samsung",
+      "sony",
     ];
     return !externalIndicators.some((indicator) => lowerLabel.includes(indicator));
   }
