@@ -10,13 +10,15 @@
  */
 
 const crypto = require("crypto");
-const { app } = require("electron");
+const { app, clipboard } = require("electron");
 const Database = require("better-sqlite3");
 const path = require("path");
 const debugLogger = require("../../helpers/debugLogger");
 
 let initialized = false;
 let barkflowDb = null;
+let clipboardInterval = null;
+let lastClipboardText = "";
 
 function createBarkFlowTables(db) {
   db.exec(`
@@ -89,6 +91,56 @@ function createFtsTables(db) {
   `);
 }
 
+function startClipboardMonitor() {
+  // Poll every 500ms for clipboard changes
+  lastClipboardText = clipboard.readText() || "";
+
+  clipboardInterval = setInterval(() => {
+    try {
+      const currentText = clipboard.readText() || "";
+
+      // Skip if same as last capture
+      if (currentText === lastClipboardText) return;
+      // Skip if empty
+      if (!currentText.trim()) return;
+      // Skip very short text (likely accidental)
+      if (currentText.trim().length < 2) return;
+
+      lastClipboardText = currentText;
+
+      // Save to bf_entries
+      saveBarkFlowEntry({
+        source: "clipboard",
+        rawText: currentText,
+        polished: null,
+        routedTo: null,
+        hotkeyUsed: null,
+        durationMs: null,
+        projectId: null,
+        audioPath: null,
+        metadata: {},
+      });
+
+      debugLogger.debug("[BarkFlow] Clipboard entry captured", {
+        length: currentText.length,
+      });
+    } catch (err) {
+      // Never crash the poll loop
+      debugLogger.debug("[BarkFlow] Clipboard poll error", { error: err.message });
+    }
+  }, 500);
+
+  debugLogger.log("[BarkFlow] Clipboard monitoring started");
+}
+
+function stopClipboardMonitor() {
+  if (clipboardInterval) {
+    clearInterval(clipboardInterval);
+    clipboardInterval = null;
+    debugLogger.log("[BarkFlow] Clipboard monitoring stopped");
+  }
+}
+
 async function initializeBarkFlow() {
   if (initialized) return;
 
@@ -115,16 +167,19 @@ async function initializeBarkFlow() {
 
   // TODO: Start OllamaService (detect, auto-start)
   // TODO: Register BarkFlow hotkey routes
-  // TODO: Start ClipboardMonitor
+
+  startClipboardMonitor();
 
   initialized = true;
-  debugLogger.log("[BarkFlow] Initialized (Phase 1a — StorageProvider ready, other subsystems pending)");
+  debugLogger.log("[BarkFlow] Initialized (Phase 1a — StorageProvider ready, clipboard monitoring active)");
 }
 
 async function shutdownBarkFlow() {
   if (!initialized) return;
 
   debugLogger.log("[BarkFlow] Shutting down...");
+
+  stopClipboardMonitor();
 
   // Close the BarkFlow database connection
   if (barkflowDb) {
@@ -136,8 +191,6 @@ async function shutdownBarkFlow() {
     }
     barkflowDb = null;
   }
-
-  // TODO: Stop ClipboardMonitor
 
   initialized = false;
   debugLogger.log("[BarkFlow] Shutdown complete");
@@ -201,4 +254,6 @@ module.exports = {
   getBarkFlowEntries,
   searchBarkFlowEntries,
   deleteBarkFlowEntry,
+  startClipboardMonitor,
+  stopClipboardMonitor,
 };

@@ -678,4 +678,5 @@ contextBridge.exposeInMainWorld("electronAPI", {
   barkflowGetEntries: (limit, offset) => ipcRenderer.invoke("barkflow-get-entries", limit, offset),
   barkflowSearchEntries: (query, limit) => ipcRenderer.invoke("barkflow-search-entries", query, limit),
   barkflowDeleteEntry: (id) => ipcRenderer.invoke("barkflow-delete-entry", id),
+  barkflowClipboardToggle: (enabled) => ipcRenderer.invoke("barkflow-clipboard-toggle", enabled),
 });

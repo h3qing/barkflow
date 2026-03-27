@@ -1835,6 +1835,22 @@ class IPCHandlers {
       }
     });
 
+    // BarkFlow: Toggle clipboard monitoring on/off
+    ipcMain.handle("barkflow-clipboard-toggle", async (_event, enabled) => {
+      try {
+        const { startClipboardMonitor, stopClipboardMonitor } = require("../barkflow/bridge/app-init");
+        if (enabled) {
+          startClipboardMonitor();
+        } else {
+          stopClipboardMonitor();
+        }
+        return { success: true, enabled };
+      } catch (error) {
+        debugLogger.log(`[BarkFlow] clipboard-toggle failed: ${error.message}`);
+        return { success: false, error: error.message };
+      }
+    });
+
     ipcMain.handle(
       "process-anthropic-reasoning",
       async (event, text, modelId, _agentName, config) => {
