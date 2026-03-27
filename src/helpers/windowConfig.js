@@ -120,9 +120,9 @@ const NOTIFICATION_WINDOW_CONFIG = {
 };
 
 class WindowPositionUtil {
-  static getMainWindowPosition(display, customSize = null, position = "bottom-right") {
+  static getMainWindowPosition(display, customSize = null, position = "center") {
     const { width, height } = customSize || WINDOW_SIZES.BASE;
-    const MARGIN = 4;
+    const MARGIN = 48; // BarkFlow: 48px from bottom edge per design spec
     const workArea = display.workArea || display.bounds;
 
     let x, y;

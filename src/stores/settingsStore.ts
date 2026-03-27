@@ -303,9 +303,9 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
   meetingProcessDetection: readBoolean("meetingProcessDetection", true),
   meetingAudioDetection: readBoolean("meetingAudioDetection", true),
   panelStartPosition: (() => {
-    const v = readString("panelStartPosition", "bottom-right");
+    const v = readString("panelStartPosition", "center"); // BarkFlow: center by default
     if (v === "bottom-right" || v === "center" || v === "bottom-left") return v;
-    return "bottom-right" as const;
+    return "center" as const; // BarkFlow: center by default
   })(),
   keepTranscriptionInClipboard: readBoolean("keepTranscriptionInClipboard", false),
   isSignedIn: readBoolean("isSignedIn", false),

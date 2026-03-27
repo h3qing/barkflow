@@ -10,40 +10,33 @@ import { useWindowDrag } from "./hooks/useWindowDrag";
 import { useAudioRecording } from "./hooks/useAudioRecording";
 import { useSettingsStore } from "./stores/settingsStore";
 
-// Sound Wave Icon Component (for idle/hover states)
-const SoundWaveIcon = ({ size = 16 }) => {
-  return (
-    <div className="flex items-center justify-center gap-1">
-      <div
-        className={`bg-white rounded-full`}
-        style={{ width: size * 0.25, height: size * 0.6 }}
-      ></div>
-      <div className={`bg-white rounded-full`} style={{ width: size * 0.25, height: size }}></div>
-      <div
-        className={`bg-white rounded-full`}
-        style={{ width: size * 0.25, height: size * 0.6 }}
-      ></div>
-    </div>
-  );
-};
+// Dog Ear Icon Component (BarkFlow brand indicator)
+const DogEarIcon = ({ pose = 'relaxed', size = 24, animated = false }) => {
+  const earRotation = {
+    relaxed: { left: -15, right: 15 },
+    perked: { left: -5, right: 5 },
+    tilted: { left: -25, right: 10 },
+    drooped: { left: -30, right: 30 },
+  };
+  const rot = earRotation[pose] || earRotation.relaxed;
 
-// Voice Wave Animation Component (for processing state)
-const VoiceWaveIndicator = ({ isListening }) => {
   return (
-    <div className="flex items-center justify-center gap-0.5">
-      {[...Array(4)].map((_, i) => (
-        <div
-          key={i}
-          className={`w-0.5 bg-white rounded-full transition-[height] duration-150 ${
-            isListening ? "animate-pulse h-4" : "h-2"
-          }`}
-          style={{
-            animationDelay: isListening ? `${i * 0.1}s` : "0s",
-            animationDuration: isListening ? `${0.6 + i * 0.1}s` : "0s",
-          }}
-        />
-      ))}
-    </div>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={animated ? 'animate-pulse' : ''}>
+      {/* Left ear */}
+      <path
+        d="M 8 14 L 5 4 L 12 10 Z"
+        fill="#D97706"
+        style={{ transform: `rotate(${rot.left}deg)`, transformOrigin: '8px 14px', transition: 'transform 0.3s ease' }}
+      />
+      {/* Right ear */}
+      <path
+        d="M 16 14 L 19 4 L 12 10 Z"
+        fill="#D97706"
+        style={{ transform: `rotate(${rot.right}deg)`, transformOrigin: '16px 14px', transition: 'transform 0.3s ease' }}
+      />
+      {/* Head circle (subtle) */}
+      <circle cx="12" cy="16" r="6" fill="#D97706" opacity="0.3" />
+    </svg>
   );
 };
 
@@ -280,28 +273,28 @@ export default function App() {
 
   const getMicButtonProps = () => {
     const baseClasses =
-      "rounded-full w-10 h-10 flex items-center justify-center relative overflow-hidden border-2 border-white/70 cursor-pointer";
+      "rounded-full w-12 h-12 flex items-center justify-center relative overflow-hidden border-2 border-white/70 cursor-pointer";
 
     switch (micState) {
       case "idle":
       case "hover":
         return {
-          className: `${baseClasses} bg-black/50 cursor-pointer`,
+          className: `${baseClasses} bg-black/40 cursor-pointer`,
           tooltip: formatHotkeyLabel(hotkey),
         };
       case "recording":
         return {
-          className: `${baseClasses} bg-primary cursor-pointer`,
+          className: `${baseClasses} bg-amber-600 cursor-pointer`,
           tooltip: t("app.mic.recording"),
         };
       case "processing":
         return {
-          className: `${baseClasses} bg-accent cursor-not-allowed`,
+          className: `${baseClasses} bg-amber-700 cursor-not-allowed`,
           tooltip: t("app.mic.processing"),
         };
       default:
         return {
-          className: `${baseClasses} bg-black/50 cursor-pointer`,
+          className: `${baseClasses} bg-black/40 cursor-pointer`,
           style: { transform: "scale(0.8)" },
           tooltip: t("app.mic.clickToSpeak"),
         };
@@ -430,21 +423,21 @@ export default function App() {
 
               {/* Dynamic content based on state */}
               {micState === "idle" || micState === "hover" ? (
-                <SoundWaveIcon size={micState === "idle" ? 12 : 14} />
+                <DogEarIcon pose="relaxed" size={20} />
               ) : micState === "recording" ? (
-                <LoadingDots />
+                <DogEarIcon pose="perked" size={22} animated={true} />
               ) : micState === "processing" ? (
-                <VoiceWaveIndicator isListening={true} />
+                <DogEarIcon pose="tilted" size={20} animated={true} />
               ) : null}
 
               {/* State indicator ring for recording */}
               {micState === "recording" && (
-                <div className="absolute inset-0 rounded-full border-2 border-primary/50 animate-pulse"></div>
+                <div className="absolute inset-0 rounded-full border-2 border-amber-500/50 animate-pulse"></div>
               )}
 
               {/* State indicator ring for processing */}
               {micState === "processing" && (
-                <div className="absolute inset-0 rounded-full border-2 border-primary/30 opacity-50"></div>
+                <div className="absolute inset-0 rounded-full border-2 border-amber-500/30 opacity-50"></div>
               )}
             </button>
           </Tooltip>
