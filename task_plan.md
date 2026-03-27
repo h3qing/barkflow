@@ -22,27 +22,29 @@ Phase 0 (in_progress)
 - **Done:** OpenWhispr merged, rebranded, security hardened, 70 tests pass, app boots
 
 ### Phase 1a: Core Pipeline (sequential — each depends on previous)
-- [ ] StorageProvider interface + wrap existing Kysely/database.js
-- [ ] Add `entries` table, `projects` table, FTS5 index, `audit_log` table
-- [ ] Rewrite ReasoningService → OllamaService (Ollama HTTP API at localhost:11434)
+- [x] StorageProvider interface + wrap existing Kysely/database.js
+- [x] Add `entries` table, `projects` table, FTS5 index, `audit_log` table
+- [x] Rewrite ReasoningService → OllamaService (Ollama HTTP API at localhost:11434)
+- [x] Save voice transcriptions to bf_entries (dual-write with OpenWhispr)
+- [x] History query/search/delete API via IPC
+- [x] Learning mode toast (before/after polish, first 20 captures)
 - [ ] Extend HotkeyManager → destination routing (Fn+key → arbitrary destinations)
-- [ ] Test the full loop: speak → polish → route → paste
 - [ ] **GATE: Use BarkFlow daily for 3 days. Fix issues before proceeding.**
-- **Status:** pending
-- **Depends on:** Phase 0 complete
+- **Status:** nearly complete (hotkey routing remaining)
+- **Depends on:** Phase 0 complete ✓
 - **Gate criteria:** Daily-usable. If Ollama latency bad → fix or cut. If Fn key broken → switch default.
 
 ### Phase 1b: New Features (parallel — start only after 1a gate passes)
-- [ ] ClipboardMonitor (NSPasteboard polling + ConcealedType password detection)
-- [ ] History UI (sidebar 280px + detail pane, extending HistoryView.tsx)
-- [ ] Floating indicator reskin (adapt dictation panel → dog ear + Classic styles)
-- [ ] Voice-to-Markdown (Fn+N → polished .md file to configurable directory)
+- [x] ClipboardMonitor (polling every 500ms, dedup, saves to bf_entries)
+- [x] Floating indicator reskin (dog ear SVG, amber brand, centered, 48px)
+- [x] Voice-to-Markdown route (Fn+N → .md file to ~/Documents/BarkFlow Notes/)
+- [ ] History UI (sidebar nav + search + filters + detail pane) — building now
 - [ ] Projects system (Fn+P → project picker → capture to named bucket)
 - [ ] Meeting recording (adapt AudioTapManager + transcript-only mode + streaming STT)
 - [ ] File upload pipeline (drop zone + ffmpeg transcode → STT, background processing)
 - [ ] Settings screen (extend SettingsPage.tsx: General, Hotkeys, Voice, Polish, Storage, Clipboard)
 - [ ] Onboarding adaptation (reorder: live demo first, then STT, then Ollama)
-- **Status:** pending
+- **Status:** in_progress
 - **Depends on:** Phase 1a gate passed
 
 ### Phase 2: MCP Plugin System

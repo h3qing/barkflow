@@ -33,6 +33,7 @@ const DictionaryView = React.lazy(() => import("./DictionaryView"));
 const UploadAudioView = React.lazy(() => import("./notes/UploadAudioView"));
 const IntegrationsView = React.lazy(() => import("./IntegrationsView"));
 const CommandSearch = React.lazy(() => import("./CommandSearch"));
+const BarkFlowHistory = React.lazy(() => import("../barkflow/ui/history/BarkFlowHistory"));
 
 export default function ControlPanel() {
   const { t } = useTranslation();
@@ -658,6 +659,11 @@ export default function ControlPanel() {
             {activeView === "integrations" && (
               <Suspense fallback={null}>
                 <IntegrationsView />
+              </Suspense>
+            )}
+            {activeView === "barkflow-history" && (
+              <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading...</span></div>}>
+                <BarkFlowHistory />
               </Suspense>
             )}
           </div>
