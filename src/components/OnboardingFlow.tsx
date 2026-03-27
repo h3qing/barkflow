@@ -26,7 +26,6 @@ import { useSystemAudioPermission } from "../hooks/useSystemAudioPermission";
 import { useSettings } from "../hooks/useSettings";
 import LanguageSelector from "./ui/LanguageSelector";
 import AuthenticationStep from "./AuthenticationStep";
-import EmailVerificationStep from "./EmailVerificationStep";
 import { setAgentName as saveAgentName } from "../utils/agentName";
 import { formatHotkeyLabel, getDefaultHotkey, isGlobeLikeHotkey } from "../utils/hotkeys";
 import { useAuth } from "../hooks/useAuth";
@@ -93,7 +92,6 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
   const [hotkey, setHotkey] = useState(dictationKey || getDefaultHotkey());
   const [agentName, setAgentName] = useState("BarkFlow");
   const [skipAuth, setSkipAuth] = useState(false);
-  const [pendingVerificationEmail, setPendingVerificationEmail] = useState<string | null>(null);
   const [isModelDownloaded, setIsModelDownloaded] = useState(false);
   const [isUsingNativeShortcut, setIsUsingNativeShortcut] = useState(false);
   const readableHotkey = formatHotkeyLabel(hotkey);
@@ -319,29 +317,12 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
 
   const renderStep = () => {
     switch (currentStep) {
-      case 0: // Authentication (with Welcome)
-        if (pendingVerificationEmail) {
-          return (
-            <EmailVerificationStep
-              email={pendingVerificationEmail}
-              onVerified={() => {
-                setPendingVerificationEmail(null);
-                nextStep();
-              }}
-            />
-          );
-        }
+      case 0: // Welcome
         return (
           <AuthenticationStep
             onContinueWithoutAccount={() => {
               setSkipAuth(true);
               nextStep();
-            }}
-            onAuthComplete={() => {
-              nextStep();
-            }}
-            onNeedsVerification={(email) => {
-              setPendingVerificationEmail(email);
             }}
           />
         );

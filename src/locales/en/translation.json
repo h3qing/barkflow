@@ -177,15 +177,15 @@
     },
     "activation": {
       "title": "Activation Setup",
-      "description": "Configure how you trigger dictation",
+      "description": "Set your hotkey to start voice capture — BarkFlow transcribes, polishes, and routes it for you",
       "hotkey": "Hotkey",
       "mode": "Mode",
       "tapDescription": "Press to start/stop",
       "holdDescription": "Hold while speaking",
-      "test": "Test",
+      "test": "Try it out",
       "hotkeyToStartStop": "{{hotkey}} to start/stop",
       "holdHotkey": "Hold {{hotkey}}",
-      "textareaPlaceholder": "Click here and use your hotkey to dictate..."
+      "textareaPlaceholder": "Your transcribed text will appear here..."
     }
   },
   "controlPanel": {

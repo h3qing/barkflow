@@ -13,6 +13,7 @@ import {
   Search,
   Clock,
   FolderOpen,
+  Sparkles,
 } from "lucide-react";
 import logoIcon from "../assets/icon.png";
 import { useTranslation } from "react-i18next";
@@ -22,7 +23,7 @@ import { getCachedPlatform } from "../utils/platform";
 
 const platform = getCachedPlatform();
 
-export type ControlPanelView = "home" | "personal-notes" | "dictionary" | "upload" | "integrations" | "barkflow-history" | "barkflow-projects";
+export type ControlPanelView = "home" | "personal-notes" | "dictionary" | "upload" | "integrations" | "barkflow-history" | "barkflow-projects" | "barkflow-settings";
 
 interface ControlPanelSidebarProps {
   activeView: ControlPanelView;
@@ -244,6 +245,19 @@ export default function ControlPanelSidebar({
         >
           <FolderOpen size={15} className="shrink-0 text-foreground/60" />
           <span className="text-xs text-foreground/80">Projects</span>
+        </button>
+
+        <button
+          onClick={() => onViewChange("barkflow-settings")}
+          aria-label="BarkFlow Settings"
+          className={`group flex items-center gap-2.5 w-full h-8 px-2.5 rounded-md text-left outline-none ${
+            activeView === "barkflow-settings"
+              ? "bg-foreground/8 dark:bg-white/8"
+              : "hover:bg-foreground/4 dark:hover:bg-white/4"
+          } focus-visible:ring-1 focus-visible:ring-primary/30 transition-colors duration-150`}
+        >
+          <Sparkles size={15} className="shrink-0 text-foreground/60" />
+          <span className="text-xs text-foreground/80">BarkFlow</span>
         </button>
 
         <button

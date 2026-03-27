@@ -35,6 +35,7 @@ const IntegrationsView = React.lazy(() => import("./IntegrationsView"));
 const CommandSearch = React.lazy(() => import("./CommandSearch"));
 const BarkFlowHistory = React.lazy(() => import("../barkflow/ui/history/BarkFlowHistory"));
 const BarkFlowProjects = React.lazy(() => import("../barkflow/ui/projects/BarkFlowProjects"));
+const BarkFlowSettings = React.lazy(() => import("../barkflow/ui/settings/BarkFlowSettings"));
 
 export default function ControlPanel() {
   const { t } = useTranslation();
@@ -670,6 +671,11 @@ export default function ControlPanel() {
             {activeView === "barkflow-projects" && (
               <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading...</span></div>}>
                 <BarkFlowProjects />
+              </Suspense>
+            )}
+            {activeView === "barkflow-settings" && (
+              <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading...</span></div>}>
+                <BarkFlowSettings />
               </Suspense>
             )}
           </div>

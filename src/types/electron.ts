@@ -1210,6 +1210,17 @@ declare global {
       } | null>;
       updateNotificationReady?: () => Promise<void>;
       updateNotificationRespond?: (action: string) => Promise<{ success: boolean }>;
+
+      // BarkFlow — History
+      barkflowGetEntries: (limit: number, offset: number) => Promise<any[]>;
+      barkflowSearchEntries: (query: string, limit: number) => Promise<any[]>;
+      barkflowDeleteEntry: (id: string) => Promise<void>;
+
+      // BarkFlow — Projects
+      barkflowGetProjects: () => Promise<any[]>;
+      barkflowCreateProject: (name: string) => Promise<any>;
+      barkflowDeleteProject: (id: string) => Promise<void>;
+      barkflowGetProjectEntries: (projectId: string, limit: number) => Promise<any[]>;
     };
 
     api?: {

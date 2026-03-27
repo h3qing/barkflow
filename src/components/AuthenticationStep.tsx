@@ -4,8 +4,10 @@ import logoIcon from "../assets/icon.png";
 
 interface AuthenticationStepProps {
   onContinueWithoutAccount: () => void;
-  onAuthComplete: () => void;
-  onNeedsVerification: (email: string) => void;
+  /** @deprecated Kept for interface compatibility; BarkFlow removed cloud auth. */
+  onAuthComplete?: () => void;
+  /** @deprecated Kept for interface compatibility; BarkFlow removed cloud auth. */
+  onNeedsVerification?: (email: string) => void;
 }
 
 /**
