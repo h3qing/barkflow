@@ -10,91 +10,103 @@ import { useWindowDrag } from "./hooks/useWindowDrag";
 import { useAudioRecording } from "./hooks/useAudioRecording";
 import { useSettingsStore } from "./stores/settingsStore";
 
-// BarkFlow Indicator — Mando's tall pointed shepherd ears + waveform
-// Inspired by Mando (Heqing's dog) — tall upright ears, slightly angled outward
-const BarkFlowIndicator = ({ state = 'idle', size = 36, animated = false }) => {
-  // Ear rotation shifts based on state (Mando's ears are expressive!)
-  const earAngle = {
-    idle: { left: -8, right: 8 },         // relaxed, slightly out
-    recording: { left: -3, right: 3 },     // perked up, alert
-    processing: { left: -12, right: 5 },   // curious head tilt
-    error: { left: -20, right: 20 },       // drooped/sad
-  };
-  const rot = earAngle[state] || earAngle.idle;
-
-  // Waveform bar heights
-  const bars = state === 'recording'
-    ? [5, 9, 13, 9, 5]
-    : state === 'processing'
-      ? [4, 7, 11, 7, 4]
-      : [3, 5, 7, 5, 3];
+// BarkFlow Indicator — horizontal soundbar with Mando's dog head on top
+// The bar sits at the bottom of the screen. Mando's head + ears sit on top,
+// partially peeking above. Ears perk up when the user is actively speaking.
+const BarkFlowIndicator = ({ state = 'idle', size = 48, animated = false, speaking = false }) => {
+  // Ears respond to SPEAKING (voice activity), not just mic on/off
+  const earPerk = speaking ? -2 : (state === 'recording' ? -5 : -8);
+  const earSpread = speaking ? 4 : (state === 'recording' ? 6 : 10);
 
   return (
-    <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
-      {/* Left ear — tall pointed, Mando-style (shepherd ear shape) */}
+    <svg width={size * 3} height={size} viewBox="0 0 144 48" fill="none">
+      {/* === Soundbar (bottom half) === */}
+      <rect x="0" y="28" width="144" height="20" rx="10" fill="rgba(0,0,0,0.5)" />
+
+      {/* Waveform bars inside the soundbar */}
+      {[12, 20, 28, 36, 44, 52, 60, 68, 76, 84, 92, 100, 108, 116, 124].map((x, i) => {
+        const baseH = [3, 5, 7, 9, 11, 13, 11, 13, 11, 9, 7, 9, 7, 5, 3][i];
+        const activeH = speaking
+          ? baseH + Math.sin(i * 0.8) * 4 + 4  // more dynamic when speaking
+          : state === 'recording'
+            ? baseH + 2
+            : baseH;
+        const h = Math.max(3, Math.min(16, activeH));
+
+        return (
+          <rect
+            key={i}
+            x={x}
+            y={28 + (20 - h) / 2}
+            width={4}
+            rx={2}
+            height={h}
+            fill="white"
+            opacity={speaking ? 0.95 : 0.6}
+            className={animated && state === 'recording' ? 'animate-pulse' : ''}
+            style={animated ? { animationDelay: `${i * 0.05}s`, animationDuration: '0.6s' } : {}}
+          />
+        );
+      })}
+
+      {/* === Dog head (sits on top of soundbar) === */}
+      {/* Head shape */}
+      <ellipse cx="72" cy="24" rx="16" ry="14" fill="#D97706" opacity="0.85" />
+      {/* Snout */}
+      <ellipse cx="72" cy="30" rx="8" ry="5" fill="#C2740C" opacity="0.6" />
+      {/* Nose */}
+      <ellipse cx="72" cy="28" rx="3" ry="2" fill="#1a1a1a" opacity="0.8" />
+      {/* Eyes */}
+      <circle cx="65" cy="22" r="2" fill="#1a1a1a" opacity="0.9" />
+      <circle cx="79" cy="22" r="2" fill="#1a1a1a" opacity="0.9" />
+      {/* Eye highlights */}
+      <circle cx="65.7" cy="21.3" r="0.7" fill="white" opacity="0.8" />
+      <circle cx="79.7" cy="21.3" r="0.7" fill="white" opacity="0.8" />
+
+      {/* === Mando's ears (tall pointed, perk when speaking) === */}
+      {/* Left ear */}
       <path
-        d="M 14 28 C 14 28 10 12 8 6 C 7.5 4.5 8.5 3.5 9.5 4 C 11 5 17 16 18 28 Z"
+        d={`M 58 18 C 58 18 54 ${earPerk + 6} 52 ${earPerk} C 51.5 ${earPerk - 1.5} 52.5 ${earPerk - 2} 53.5 ${earPerk - 1} C 55 ${earPerk + 1} 60 12 62 18 Z`}
         fill="#D97706"
-        opacity={state === 'idle' ? 0.6 : 0.9}
         style={{
-          transform: `rotate(${rot.left}deg)`,
-          transformOrigin: '14px 28px',
-          transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+          transform: `rotate(${-earSpread}deg)`,
+          transformOrigin: '58px 18px',
+          transition: 'all 0.2s ease-out',
         }}
       />
-      {/* Left ear inner highlight */}
+      {/* Left ear inner */}
       <path
-        d="M 14.5 26 C 14.5 26 11.5 14 10 8 C 9.8 7.2 10.3 6.8 10.8 7.2 C 11.8 8 15.5 17 16.5 26 Z"
+        d={`M 58.5 17 C 58.5 17 55.5 ${earPerk + 8} 54 ${earPerk + 3} C 53.8 ${earPerk + 2} 54.5 ${earPerk + 2} 55 ${earPerk + 3} C 56 ${earPerk + 4} 59 13 60 17 Z`}
         fill="#F59E0B"
-        opacity={state === 'idle' ? 0.2 : 0.35}
+        opacity="0.4"
         style={{
-          transform: `rotate(${rot.left}deg)`,
-          transformOrigin: '14px 28px',
-          transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+          transform: `rotate(${-earSpread}deg)`,
+          transformOrigin: '58px 18px',
+          transition: 'all 0.2s ease-out',
         }}
       />
 
-      {/* Right ear — mirror of left */}
+      {/* Right ear */}
       <path
-        d="M 34 28 C 34 28 38 12 40 6 C 40.5 4.5 39.5 3.5 38.5 4 C 37 5 31 16 30 28 Z"
+        d={`M 86 18 C 86 18 90 ${earPerk + 6} 92 ${earPerk} C 92.5 ${earPerk - 1.5} 91.5 ${earPerk - 2} 90.5 ${earPerk - 1} C 89 ${earPerk + 1} 84 12 82 18 Z`}
         fill="#D97706"
-        opacity={state === 'idle' ? 0.6 : 0.9}
         style={{
-          transform: `rotate(${rot.right}deg)`,
-          transformOrigin: '34px 28px',
-          transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+          transform: `rotate(${earSpread}deg)`,
+          transformOrigin: '86px 18px',
+          transition: 'all 0.2s ease-out',
         }}
       />
-      {/* Right ear inner highlight */}
+      {/* Right ear inner */}
       <path
-        d="M 33.5 26 C 33.5 26 36.5 14 38 8 C 38.2 7.2 37.7 6.8 37.2 7.2 C 36.2 8 32.5 17 31.5 26 Z"
+        d={`M 85.5 17 C 85.5 17 88.5 ${earPerk + 8} 90 ${earPerk + 3} C 90.2 ${earPerk + 2} 89.5 ${earPerk + 2} 89 ${earPerk + 3} C 88 ${earPerk + 4} 85 13 84 17 Z`}
         fill="#F59E0B"
-        opacity={state === 'idle' ? 0.2 : 0.35}
+        opacity="0.4"
         style={{
-          transform: `rotate(${rot.right}deg)`,
-          transformOrigin: '34px 28px',
-          transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+          transform: `rotate(${earSpread}deg)`,
+          transformOrigin: '86px 18px',
+          transition: 'all 0.2s ease-out',
         }}
       />
-
-      {/* Subtle head shape connecting ears */}
-      <ellipse cx="24" cy="35" rx="10" ry="8" fill="#D97706" opacity="0.1" />
-
-      {/* Waveform bars between the ears */}
-      {bars.map((h, i) => (
-        <rect
-          key={i}
-          x={19 + i * 3}
-          y={32 + (13 - h) / 2}
-          width={2}
-          rx={1}
-          height={h}
-          fill="white"
-          opacity={0.9}
-          className={animated ? 'animate-pulse' : ''}
-          style={animated ? { animationDelay: `${i * 0.08}s`, animationDuration: '0.7s' } : {}}
-        />
-      ))}
     </svg>
   );
 };
@@ -332,7 +344,7 @@ export default function App() {
 
   const getMicButtonProps = () => {
     const baseClasses =
-      "rounded-full w-12 h-12 flex items-center justify-center relative overflow-hidden border-2 border-white/70 cursor-pointer";
+      "rounded-full w-auto h-12 px-2 flex items-center justify-center relative overflow-visible cursor-pointer";
 
     switch (micState) {
       case "idle":
@@ -480,13 +492,13 @@ export default function App() {
                 }}
               ></div>
 
-              {/* Dynamic content based on state */}
+              {/* Dynamic content based on state — dog head + soundbar */}
               {micState === "idle" || micState === "hover" ? (
-                <BarkFlowIndicator state="idle" size={28} />
+                <BarkFlowIndicator state="idle" size={16} />
               ) : micState === "recording" ? (
-                <BarkFlowIndicator state="recording" size={30} animated={true} />
+                <BarkFlowIndicator state="recording" size={16} animated={true} speaking={isRecording} />
               ) : micState === "processing" ? (
-                <BarkFlowIndicator state="processing" size={28} animated={true} />
+                <BarkFlowIndicator state="processing" size={16} animated={true} />
               ) : null}
 
               {/* State indicator ring for recording */}

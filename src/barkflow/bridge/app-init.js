@@ -20,6 +20,19 @@ let barkflowDb = null;
 let clipboardInterval = null;
 let lastClipboardText = "";
 
+// Dedup: track recent voice transcriptions so clipboard monitor skips them.
+// When voice text is pasted at cursor, it appears on clipboard — we don't want
+// to capture it again as a "clipboard" entry.
+const recentVoiceTexts = new Set();
+const VOICE_DEDUP_TTL_MS = 5000; // forget after 5 seconds
+
+function markAsVoiceTranscription(text) {
+  if (!text) return;
+  const trimmed = text.trim();
+  recentVoiceTexts.add(trimmed);
+  setTimeout(() => recentVoiceTexts.delete(trimmed), VOICE_DEDUP_TTL_MS);
+}
+
 function createBarkFlowTables(db) {
   db.exec(`
     CREATE TABLE IF NOT EXISTS bf_entries (
@@ -105,6 +118,12 @@ function startClipboardMonitor() {
       if (!currentText.trim()) return;
       // Skip very short text (likely accidental)
       if (currentText.trim().length < 2) return;
+      // BarkFlow dedup: skip if this text was just voice-transcribed
+      // (pasting voice text puts it on clipboard — don't double-capture)
+      if (recentVoiceTexts.has(currentText.trim())) {
+        lastClipboardText = currentText;
+        return;
+      }
 
       lastClipboardText = currentText;
 
@@ -206,6 +225,12 @@ async function shutdownBarkFlow() {
 
 function saveBarkFlowEntry({ source, rawText, polished, routedTo, hotkeyUsed, durationMs, projectId, audioPath, metadata }) {
   if (!barkflowDb) return null;
+
+  // Dedup: mark voice text so clipboard monitor skips it
+  if (source === "voice") {
+    if (polished) markAsVoiceTranscription(polished);
+    if (rawText) markAsVoiceTranscription(rawText);
+  }
 
   const id = crypto.randomUUID();
   const createdAt = new Date().toISOString();
