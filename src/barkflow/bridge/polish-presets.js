@@ -31,13 +31,15 @@ const PRESETS = {
   clean: {
     id: "clean",
     name: "Clean",
-    description: "Remove filler words, fix grammar, format lists. Default.",
+    description: "Remove filler words, fix grammar, add punctuation, format lists. Default.",
     prompt:
       "Clean up this voice transcript. Rules:\n" +
-      "- Remove filler words (um, uh, like, you know, so, basically, actually, right)\n" +
-      "- Fix grammar and punctuation\n" +
-      "- When the speaker says 'first... second... third...' or 'one... two... three...', format as a numbered list\n" +
-      "- When the speaker lists items, format as bullet points\n" +
+      "- ALWAYS add proper punctuation: periods at end of sentences, commas for pauses, question marks for questions\n" +
+      "- Break into clear sentences — voice transcripts often run on without any punctuation\n" +
+      "- Capitalize the first word of each sentence\n" +
+      "- Remove filler words (um, uh, like, you know, so, basically, actually, right, I mean, I guess)\n" +
+      "- Fix grammar errors\n" +
+      "- When the speaker says 'first... second... third...' or lists items, format as a numbered or bulleted list\n" +
       "- Keep the original meaning, tone, and vocabulary\n" +
       "- Be concise — don't add words that weren't spoken\n" +
       "- Return ONLY the cleaned text, no explanations",
