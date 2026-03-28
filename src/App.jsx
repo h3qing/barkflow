@@ -10,103 +10,72 @@ import { useWindowDrag } from "./hooks/useWindowDrag";
 import { useAudioRecording } from "./hooks/useAudioRecording";
 import { useSettingsStore } from "./stores/settingsStore";
 
-// BarkFlow Indicator — horizontal soundbar with Mando's dog head on top
-// The bar sits at the bottom of the screen. Mando's head + ears sit on top,
-// partially peeking above. Ears perk up when the user is actively speaking.
+// BarkFlow Indicator — soundbar with Mando's ears poking up from edges
+// Clean and minimal: just the bar + two pointed ear silhouettes on top
 const BarkFlowIndicator = ({ state = 'idle', size = 48, animated = false, speaking = false }) => {
-  // Ears respond to SPEAKING (voice activity), not just mic on/off
-  const earPerk = speaking ? -2 : (state === 'recording' ? -5 : -8);
-  const earSpread = speaking ? 4 : (state === 'recording' ? 6 : 10);
+  // Ear height: ears perk up when speaking, relax otherwise
+  const earH = speaking ? 14 : (state === 'recording' ? 10 : 7);
+  const earOpacity = state === 'idle' ? 0.5 : 0.85;
 
   return (
     <svg width={size * 3} height={size} viewBox="0 0 144 48" fill="none">
-      {/* === Soundbar (bottom half) === */}
-      <rect x="0" y="28" width="144" height="20" rx="10" fill="rgba(0,0,0,0.5)" />
+      {/* Left ear — pokes up from the left end of the bar */}
+      <path
+        d={`M 10 28 L 18 ${28 - earH} L 26 28 Z`}
+        fill="#D97706"
+        opacity={earOpacity}
+        style={{ transition: 'all 0.2s ease-out' }}
+      />
+      {/* Left ear inner */}
+      <path
+        d={`M 13 28 L 18 ${31 - earH} L 23 28 Z`}
+        fill="#F59E0B"
+        opacity={earOpacity * 0.4}
+        style={{ transition: 'all 0.2s ease-out' }}
+      />
 
-      {/* Waveform bars inside the soundbar */}
-      {[12, 20, 28, 36, 44, 52, 60, 68, 76, 84, 92, 100, 108, 116, 124].map((x, i) => {
-        const baseH = [3, 5, 7, 9, 11, 13, 11, 13, 11, 9, 7, 9, 7, 5, 3][i];
-        const activeH = speaking
-          ? baseH + Math.sin(i * 0.8) * 4 + 4  // more dynamic when speaking
+      {/* Right ear — pokes up from the right end of the bar */}
+      <path
+        d={`M 118 28 L 126 ${28 - earH} L 134 28 Z`}
+        fill="#D97706"
+        opacity={earOpacity}
+        style={{ transition: 'all 0.2s ease-out' }}
+      />
+      {/* Right ear inner */}
+      <path
+        d={`M 121 28 L 126 ${31 - earH} L 131 28 Z`}
+        fill="#F59E0B"
+        opacity={earOpacity * 0.4}
+        style={{ transition: 'all 0.2s ease-out' }}
+      />
+
+      {/* Soundbar */}
+      <rect x="4" y="28" width="136" height="18" rx="9" fill="rgba(0,0,0,0.55)" />
+
+      {/* Waveform bars */}
+      {[14, 22, 30, 38, 46, 54, 62, 70, 78, 86, 94, 102, 110, 118, 126].map((x, i) => {
+        const baseH = [3, 5, 6, 8, 10, 12, 10, 12, 10, 8, 6, 8, 6, 5, 3][i];
+        const h = speaking
+          ? Math.min(14, baseH + Math.sin(i * 0.9 + Date.now() * 0.003) * 3 + 3)
           : state === 'recording'
-            ? baseH + 2
+            ? baseH + 1
             : baseH;
-        const h = Math.max(3, Math.min(16, activeH));
 
         return (
           <rect
             key={i}
             x={x}
-            y={28 + (20 - h) / 2}
-            width={4}
-            rx={2}
-            height={h}
+            y={28 + (18 - h) / 2}
+            width={3.5}
+            rx={1.75}
+            height={Math.max(2, h)}
             fill="white"
-            opacity={speaking ? 0.95 : 0.6}
+            opacity={speaking ? 0.9 : state === 'recording' ? 0.7 : 0.5}
             className={animated && state === 'recording' ? 'animate-pulse' : ''}
             style={animated ? { animationDelay: `${i * 0.05}s`, animationDuration: '0.6s' } : {}}
           />
         );
       })}
-
-      {/* === Dog head (sits on top of soundbar) === */}
-      {/* Head shape */}
-      <ellipse cx="72" cy="24" rx="16" ry="14" fill="#D97706" opacity="0.85" />
-      {/* Snout */}
-      <ellipse cx="72" cy="30" rx="8" ry="5" fill="#C2740C" opacity="0.6" />
-      {/* Nose */}
-      <ellipse cx="72" cy="28" rx="3" ry="2" fill="#1a1a1a" opacity="0.8" />
-      {/* Eyes */}
-      <circle cx="65" cy="22" r="2" fill="#1a1a1a" opacity="0.9" />
-      <circle cx="79" cy="22" r="2" fill="#1a1a1a" opacity="0.9" />
-      {/* Eye highlights */}
-      <circle cx="65.7" cy="21.3" r="0.7" fill="white" opacity="0.8" />
-      <circle cx="79.7" cy="21.3" r="0.7" fill="white" opacity="0.8" />
-
-      {/* === Mando's ears (tall pointed, perk when speaking) === */}
-      {/* Left ear */}
-      <path
-        d={`M 58 18 C 58 18 54 ${earPerk + 6} 52 ${earPerk} C 51.5 ${earPerk - 1.5} 52.5 ${earPerk - 2} 53.5 ${earPerk - 1} C 55 ${earPerk + 1} 60 12 62 18 Z`}
-        fill="#D97706"
-        style={{
-          transform: `rotate(${-earSpread}deg)`,
-          transformOrigin: '58px 18px',
-          transition: 'all 0.2s ease-out',
-        }}
-      />
-      {/* Left ear inner */}
-      <path
-        d={`M 58.5 17 C 58.5 17 55.5 ${earPerk + 8} 54 ${earPerk + 3} C 53.8 ${earPerk + 2} 54.5 ${earPerk + 2} 55 ${earPerk + 3} C 56 ${earPerk + 4} 59 13 60 17 Z`}
-        fill="#F59E0B"
-        opacity="0.4"
-        style={{
-          transform: `rotate(${-earSpread}deg)`,
-          transformOrigin: '58px 18px',
-          transition: 'all 0.2s ease-out',
-        }}
-      />
-
-      {/* Right ear */}
-      <path
-        d={`M 86 18 C 86 18 90 ${earPerk + 6} 92 ${earPerk} C 92.5 ${earPerk - 1.5} 91.5 ${earPerk - 2} 90.5 ${earPerk - 1} C 89 ${earPerk + 1} 84 12 82 18 Z`}
-        fill="#D97706"
-        style={{
-          transform: `rotate(${earSpread}deg)`,
-          transformOrigin: '86px 18px',
-          transition: 'all 0.2s ease-out',
-        }}
-      />
-      {/* Right ear inner */}
-      <path
-        d={`M 85.5 17 C 85.5 17 88.5 ${earPerk + 8} 90 ${earPerk + 3} C 90.2 ${earPerk + 2} 89.5 ${earPerk + 2} 89 ${earPerk + 3} C 88 ${earPerk + 4} 85 13 84 17 Z`}
-        fill="#F59E0B"
-        opacity="0.4"
-        style={{
-          transform: `rotate(${earSpread}deg)`,
-          transformOrigin: '86px 18px',
-          transition: 'all 0.2s ease-out',
-        }}
-      />
     </svg>
   );
 };
