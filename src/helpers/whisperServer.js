@@ -328,11 +328,26 @@ class WhisperServerManager extends EventEmitter {
     while (Date.now() - startTime < STARTUP_TIMEOUT_MS) {
       if (!this.process || this.process.killed) {
         const info = getProcessInfo ? getProcessInfo() : {};
-        const stderr = info.stderr ? info.stderr.trim().slice(0, 200) : "";
+        const stderr = info.stderr ? info.stderr.trim().slice(0, 500) : "";
         const details = stderr || (info.exitCode !== null ? `exit code: ${info.exitCode}` : "");
-        throw new Error(
-          `whisper-server process died during startup${details ? `: ${details}` : ""}`
-        );
+
+        // BarkFlow: use model advisor for friendly, actionable error messages
+        let userMessage;
+        try {
+          const { getModelFailureAdvice } = require("../barkflow/bridge/model-advisor");
+          const modelName = this.modelPath ? require("path").basename(this.modelPath).replace("ggml-", "").replace(".bin", "") : "unknown";
+          const advice = getModelFailureAdvice(modelName, stderr);
+          userMessage = `${advice.title}\n\n${advice.message}`;
+        } catch {
+          userMessage = `whisper-server process died during startup`;
+          if (stderr.includes("loading model")) {
+            userMessage = "Model may be too large for your system. Try a smaller model.";
+          } else if (details) {
+            userMessage += `: ${details}`;
+          }
+        }
+
+        throw new Error(userMessage);
       }
 
       pollCount++;

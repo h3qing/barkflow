@@ -1,0 +1,126 @@
+{
+  "version": 1,
+  "description": "BarkFlow transcription + polish evaluation set",
+  "cases": [
+    {
+      "id": "filler-removal-basic",
+      "category": "filler-removal",
+      "spoken": "um so like I need to buy milk and uh eggs from the store",
+      "expectedTranscription": "um so like I need to buy milk and uh eggs from the store",
+      "expectedPolish": {
+        "clean": "I need to buy milk and eggs from the store.",
+        "professional": "I need to buy milk and eggs from the store.",
+        "casual": "I need to buy milk and eggs from the store",
+        "minimal": "I need to buy milk and eggs from the store",
+        "structured": "I need to buy milk and eggs from the store."
+      },
+      "audioFile": "filler-removal-basic.wav",
+      "tags": ["filler", "simple"]
+    },
+    {
+      "id": "numbered-list",
+      "category": "list-detection",
+      "spoken": "um so first I need to go to the store and then second I need to pick up the kids and third I need to make dinner tonight",
+      "expectedTranscription": "um so first I need to go to the store and then second I need to pick up the kids and third I need to make dinner tonight",
+      "expectedPolish": {
+        "clean": "1. Go to the store\n2. Pick up the kids\n3. Make dinner tonight",
+        "professional": "1. Go to the store\n2. Pick up the kids\n3. Make dinner tonight.",
+        "casual": "First, go to the store, then pick up the kids, and make dinner tonight",
+        "minimal": "first I need to go to the store and then second I need to pick up the kids and third I need to make dinner tonight",
+        "structured": "## Tasks\n1. Go to the store\n2. Pick up the kids\n3. Make dinner tonight"
+      },
+      "audioFile": "numbered-list.wav",
+      "tags": ["list", "numbered"]
+    },
+    {
+      "id": "bullet-list",
+      "category": "list-detection",
+      "spoken": "I need to get a few things um apples bananas milk bread and uh cheese",
+      "expectedTranscription": "I need to get a few things um apples bananas milk bread and uh cheese",
+      "expectedPolish": {
+        "clean": "I need to get a few things:\n- Apples\n- Bananas\n- Milk\n- Bread\n- Cheese",
+        "professional": "Items needed:\n- Apples\n- Bananas\n- Milk\n- Bread\n- Cheese",
+        "casual": "I need to get apples, bananas, milk, bread, and cheese",
+        "minimal": "I need to get a few things apples bananas milk bread and cheese",
+        "structured": "## Shopping List\n- Apples\n- Bananas\n- Milk\n- Bread\n- Cheese"
+      },
+      "audioFile": "bullet-list.wav",
+      "tags": ["list", "bullet"]
+    },
+    {
+      "id": "action-items",
+      "category": "action",
+      "spoken": "hey can you um remind me to call Sarah about Friday's meeting and also I need to you know check the budget numbers",
+      "expectedTranscription": "hey can you um remind me to call Sarah about Friday's meeting and also I need to you know check the budget numbers",
+      "expectedPolish": {
+        "clean": "Remind me to call Sarah about Friday's meeting. Also, I need to check the budget numbers.",
+        "professional": "Action items:\n1. Call Sarah regarding Friday's meeting\n2. Review budget numbers",
+        "casual": "Remind me to call Sarah about Friday's meeting, and check the budget numbers",
+        "minimal": "hey can you remind me to call Sarah about Friday's meeting and also I need to check the budget numbers",
+        "structured": "## Action Items\n- Call Sarah about Friday's meeting\n- Check the budget numbers"
+      },
+      "audioFile": "action-items.wav",
+      "tags": ["action", "reminder"]
+    },
+    {
+      "id": "short-command",
+      "category": "command",
+      "spoken": "add milk to groceries",
+      "expectedTranscription": "add milk to groceries",
+      "expectedPolish": {
+        "clean": "Add milk to groceries.",
+        "professional": "Add milk to groceries.",
+        "casual": "Add milk to groceries",
+        "minimal": "add milk to groceries",
+        "structured": "Add milk to groceries."
+      },
+      "audioFile": "short-command.wav",
+      "tags": ["short", "command"]
+    },
+    {
+      "id": "long-dictation",
+      "category": "dictation",
+      "spoken": "so basically what I'm thinking is that we should um you know redesign the landing page because like the current one isn't really converting well and uh I think if we add some social proof and like testimonials it would help a lot",
+      "expectedTranscription": "so basically what I'm thinking is that we should um you know redesign the landing page because like the current one isn't really converting well and uh I think if we add some social proof and like testimonials it would help a lot",
+      "expectedPolish": {
+        "clean": "I'm thinking we should redesign the landing page because the current one isn't converting well. If we add some social proof and testimonials, it would help a lot.",
+        "professional": "I recommend redesigning the landing page, as the current version is underperforming in conversions. Adding social proof and testimonials would likely improve results.",
+        "casual": "I think we should redesign the landing page because the current one isn't really converting well. Adding some social proof and testimonials would help a lot.",
+        "minimal": "what I'm thinking is that we should redesign the landing page because the current one isn't really converting well and I think if we add some social proof and testimonials it would help a lot",
+        "structured": "## Proposal: Landing Page Redesign\n\n**Problem:** Current landing page isn't converting well.\n\n**Solution:**\n- Redesign the landing page\n- Add social proof\n- Add testimonials"
+      },
+      "audioFile": "long-dictation.wav",
+      "tags": ["long", "dictation", "suggestion"]
+    },
+    {
+      "id": "technical-terms",
+      "category": "technical",
+      "spoken": "we need to update the API endpoint from version 2 to version 3 and make sure the JSON schema validates correctly",
+      "expectedTranscription": "we need to update the API endpoint from version 2 to version 3 and make sure the JSON schema validates correctly",
+      "expectedPolish": {
+        "clean": "We need to update the API endpoint from version 2 to version 3 and make sure the JSON schema validates correctly.",
+        "professional": "Update the API endpoint from v2 to v3 and verify JSON schema validation.",
+        "casual": "We need to update the API endpoint from version 2 to version 3 and make sure the JSON schema validates correctly",
+        "minimal": "we need to update the API endpoint from version 2 to version 3 and make sure the JSON schema validates correctly",
+        "structured": "## API Update\n- Update endpoint: v2 → v3\n- Verify JSON schema validation"
+      },
+      "audioFile": "technical-terms.wav",
+      "tags": ["technical", "api"]
+    },
+    {
+      "id": "mixed-languages",
+      "category": "edge-case",
+      "spoken": "send an email to John at john@example.com about the meeting at 3 PM",
+      "expectedTranscription": "send an email to John at john@example.com about the meeting at 3 PM",
+      "expectedPolish": {
+        "clean": "Send an email to John at john@example.com about the meeting at 3 PM.",
+        "professional": "Send an email to John (john@example.com) regarding the 3 PM meeting.",
+        "casual": "Send an email to John at john@example.com about the meeting at 3 PM",
+        "minimal": "send an email to John at john@example.com about the meeting at 3 PM",
+        "structured": "**Action:** Send email to John (john@example.com) about the 3 PM meeting."
+      },
+      "audioFile": "email-address.wav",
+      "tags": ["email", "time", "edge-case"]
+    }
+  ]
+}

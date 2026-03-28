@@ -32,6 +32,8 @@ export default function LocalWhisperPicker({
 }: LocalWhisperPickerProps) {
   const { t } = useTranslation();
   const [models, setModels] = useState<WhisperModel[]>([]);
+  const [recommendedModel, setRecommendedModel] = useState<string | null>(null);
+  const [systemRAM, setSystemRAM] = useState<number | null>(null);
   const hasLoadedRef = useRef(false);
   const downloadingModelRef = useRef<string | null>(null);
   const selectedModelRef = useRef(selectedModel);
@@ -79,6 +81,13 @@ export default function LocalWhisperPicker({
     if (!hasLoadedRef.current) {
       hasLoadedRef.current = true;
       loadModels();
+      // BarkFlow: get smart model recommendation based on system memory
+      (window as any).electronAPI?.barkflowGetModelRecommendation?.().then((rec: any) => {
+        if (rec?.recommended) {
+          setRecommendedModel(rec.recommended);
+          setSystemRAM(rec.systemRAM);
+        }
+      }).catch(() => {});
     }
   }, [loadModels]);
 
@@ -150,7 +159,12 @@ export default function LocalWhisperPicker({
       {progressDisplay}
 
       <div className="p-4">
-        <h5 className={`${styles.header} mb-3`}>{t("transcription.whisperModels")}</h5>
+        <h5 className={`${styles.header} mb-2`}>{t("transcription.whisperModels")}</h5>
+        {systemRAM !== null && recommendedModel && (
+          <p className="text-[11px] text-muted-foreground mb-3">
+            Your Mac has {systemRAM}GB RAM — we recommend <strong>{recommendedModel.charAt(0).toUpperCase() + recommendedModel.slice(1)}</strong> for the best balance of speed and accuracy.
+          </p>
+        )}
 
         <ModelCardList
           models={models.map((model): ModelCardOption => {
@@ -167,7 +181,7 @@ export default function LocalWhisperPicker({
               description: model.size_mb ? `${model.size_mb}MB` : info.size,
               icon: whisperIcon,
               invertInDark: true,
-              recommended: info.recommended,
+              recommended: recommendedModel ? modelId === recommendedModel : info.recommended,
               isDownloaded: model.downloaded,
               isDownloading: isDownloadingModel(modelId),
             };

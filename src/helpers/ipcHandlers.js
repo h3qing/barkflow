@@ -1903,6 +1903,25 @@ class IPCHandlers {
       }
     });
 
+    // BarkFlow: Model advisor — recommend model based on system memory
+    ipcMain.handle("barkflow-get-model-recommendation", async () => {
+      try {
+        const { getRecommendedModel } = require("../barkflow/bridge/model-advisor");
+        return getRecommendedModel();
+      } catch (error) {
+        return { recommended: "small", systemRAM: 8, models: [] };
+      }
+    });
+
+    ipcMain.handle("barkflow-get-model-failure-advice", async (_event, failedModel, stderr) => {
+      try {
+        const { getModelFailureAdvice } = require("../barkflow/bridge/model-advisor");
+        return getModelFailureAdvice(failedModel, stderr);
+      } catch {
+        return { title: "Model failed", message: "Try a smaller model.", recommendation: "small" };
+      }
+    });
+
     // BarkFlow: File import — upload audio files for transcription
     ipcMain.handle("barkflow-import-audio", async (_event, filePath) => {
       try {
@@ -2036,6 +2055,48 @@ class IPCHandlers {
         const meeting = getActiveMeeting();
         return { success: true, active: meeting !== null, meeting };
       } catch (error) {
+        return { success: false, error: error.message };
+      }
+    });
+
+    // BarkFlow: Plugin management (MCP server plugins)
+    ipcMain.handle("barkflow-get-plugins", async () => {
+      try {
+        const { getPlugins } = require("../barkflow/bridge/plugin-bridge");
+        return getPlugins();
+      } catch (error) {
+        debugLogger.log(`[BarkFlow] get-plugins failed: ${error.message}`);
+        return [];
+      }
+    });
+
+    ipcMain.handle("barkflow-update-plugin", async (_event, id, updates) => {
+      try {
+        const { updatePlugin } = require("../barkflow/bridge/plugin-bridge");
+        return updatePlugin(id, updates);
+      } catch (error) {
+        debugLogger.log(`[BarkFlow] update-plugin failed: ${error.message}`);
+        return null;
+      }
+    });
+
+    ipcMain.handle("barkflow-add-plugin", async (_event, config) => {
+      try {
+        const { addPlugin } = require("../barkflow/bridge/plugin-bridge");
+        return addPlugin(config);
+      } catch (error) {
+        debugLogger.log(`[BarkFlow] add-plugin failed: ${error.message}`);
+        return null;
+      }
+    });
+
+    ipcMain.handle("barkflow-remove-plugin", async (_event, id) => {
+      try {
+        const { removePlugin } = require("../barkflow/bridge/plugin-bridge");
+        removePlugin(id);
+        return { success: true };
+      } catch (error) {
+        debugLogger.log(`[BarkFlow] remove-plugin failed: ${error.message}`);
         return { success: false, error: error.message };
       }
     });

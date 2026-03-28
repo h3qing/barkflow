@@ -36,6 +36,8 @@ const CommandSearch = React.lazy(() => import("./CommandSearch"));
 const BarkFlowHistory = React.lazy(() => import("../barkflow/ui/history/BarkFlowHistory"));
 const BarkFlowProjects = React.lazy(() => import("../barkflow/ui/projects/BarkFlowProjects"));
 const BarkFlowSettings = React.lazy(() => import("../barkflow/ui/settings/BarkFlowSettings"));
+const BarkFlowPlugins = React.lazy(() => import("../barkflow/ui/plugins/BarkFlowPlugins"));
+const CommandBar = React.lazy(() => import("../barkflow/ui/command-bar/CommandBar"));
 
 export default function ControlPanel() {
   const { t } = useTranslation();
@@ -48,6 +50,7 @@ export default function ControlPanel() {
   );
   const [showReferrals, setShowReferrals] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
+  const [showCommandBar, setShowCommandBar] = useState(false);
   const [activeView, setActiveView] = useState<ControlPanelView>("home");
   const [isMeetingMode, setIsMeetingMode] = useState(false);
   const [meetingRecordingRequest, setMeetingRecordingRequest] = useState<{
@@ -101,7 +104,8 @@ export default function ControlPanel() {
       const mod = platform === "darwin" ? e.metaKey : e.ctrlKey;
       if (mod && e.key === "k") {
         e.preventDefault();
-        setShowSearch(true);
+        // BarkFlow: Cmd+K opens command bar instead of search
+        setShowCommandBar((prev: boolean) => !prev);
       }
     };
     window.addEventListener("keydown", handleKeyDown);
@@ -492,6 +496,11 @@ export default function ControlPanel() {
         </Suspense>
       )}
 
+      {/* BarkFlow: Command Bar (Cmd+K) */}
+      <Suspense fallback={null}>
+        <CommandBar isOpen={showCommandBar} onClose={() => setShowCommandBar(false)} />
+      </Suspense>
+
       <div className="flex flex-1 overflow-hidden">
         <div
           className="shrink-0 overflow-hidden transition-[width] duration-300 ease-out"
@@ -671,6 +680,11 @@ export default function ControlPanel() {
             {activeView === "barkflow-projects" && (
               <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading...</span></div>}>
                 <BarkFlowProjects />
+              </Suspense>
+            )}
+            {activeView === "barkflow-plugins" && (
+              <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading...</span></div>}>
+                <BarkFlowPlugins />
               </Suspense>
             )}
             {activeView === "barkflow-settings" && (
