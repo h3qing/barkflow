@@ -30,7 +30,7 @@ interface BarkFlowHistoryProps {
 
 function truncate(text: string, max: number): string {
   if (text.length <= max) return text;
-  return text.slice(0, max).trimEnd() + "\u2026";
+  return text.slice(0, max).trimEnd() + "…";
 }
 
 function relativeTime(iso: string): string {
@@ -518,7 +518,7 @@ export default function BarkFlowHistory({ className }: BarkFlowHistoryProps) {
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search entries\u2026"
+              placeholder="Search entries…"
               className="h-8 pl-8 text-xs"
             />
           </div>
@@ -537,7 +537,7 @@ export default function BarkFlowHistory({ className }: BarkFlowHistoryProps) {
         >
           {isLoading && filteredEntries.length === 0 && (
             <div className="flex items-center justify-center py-8">
-              <span className="text-xs text-muted-foreground">Loading\u2026</span>
+              <span className="text-xs text-muted-foreground">Loading…</span>
             </div>
           )}
 
@@ -576,7 +576,7 @@ export default function BarkFlowHistory({ className }: BarkFlowHistoryProps) {
 
           {isLoadingMore && (
             <div className="flex items-center justify-center py-3">
-              <span className="text-xs text-muted-foreground">Loading more\u2026</span>
+              <span className="text-xs text-muted-foreground">Loading more…</span>
             </div>
           )}
         </div>

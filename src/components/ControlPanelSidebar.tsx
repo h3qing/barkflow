@@ -70,7 +70,7 @@ export default function ControlPanelSidebar({
     label: string;
     icon: React.ComponentType<{ size?: number; className?: string }>;
   }[] = [
-    { id: "barkflow-history", label: t("sidebar.home"), icon: Home }, // BarkFlow: Home = unified history
+    { id: "home", label: t("sidebar.home"), icon: Home },
     { id: "personal-notes", label: t("sidebar.notes"), icon: NotebookPen },
     { id: "upload", label: t("sidebar.upload"), icon: Upload },
     { id: "dictionary", label: t("sidebar.dictionary"), icon: BookOpen },
@@ -216,7 +216,20 @@ export default function ControlPanelSidebar({
 
         {/* BarkFlow: Referral system removed — cloud-only feature */}
 
-        {/* BarkFlow: History merged into Home — no separate History button needed */}
+        <button
+          onClick={() => onViewChange("barkflow-history")}
+          aria-label="BarkFlow History"
+          className={cn(
+            "group flex items-center gap-2.5 w-full h-8 px-2.5 rounded-md text-left outline-none transition-colors duration-150",
+            "focus-visible:ring-1 focus-visible:ring-primary/30",
+            activeView === "barkflow-history"
+              ? "bg-foreground/8 dark:bg-white/8"
+              : "hover:bg-foreground/4 dark:hover:bg-white/4"
+          )}
+        >
+          <Clock size={15} className="shrink-0 text-foreground/60" />
+          <span className="text-xs text-foreground/80">History</span>
+        </button>
 
         <button
           onClick={() => onViewChange("barkflow-projects")}
