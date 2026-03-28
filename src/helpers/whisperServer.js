@@ -328,11 +328,20 @@ class WhisperServerManager extends EventEmitter {
     while (Date.now() - startTime < STARTUP_TIMEOUT_MS) {
       if (!this.process || this.process.killed) {
         const info = getProcessInfo ? getProcessInfo() : {};
-        const stderr = info.stderr ? info.stderr.trim().slice(0, 200) : "";
+        const stderr = info.stderr ? info.stderr.trim().slice(0, 500) : "";
         const details = stderr || (info.exitCode !== null ? `exit code: ${info.exitCode}` : "");
-        throw new Error(
-          `whisper-server process died during startup${details ? `: ${details}` : ""}`
-        );
+
+        // BarkFlow: detect common failure modes and give actionable messages
+        let userMessage = `whisper-server process died during startup`;
+        if (stderr.includes("loading model") && stderr.includes("use gpu")) {
+          userMessage = "Model too large for available GPU memory. Try a smaller model (Small or Base), or disable GPU acceleration in Settings.";
+        } else if (stderr.includes("No such file")) {
+          userMessage = "Whisper model file not found. Please re-download the model.";
+        } else if (details) {
+          userMessage += `: ${details}`;
+        }
+
+        throw new Error(userMessage);
       }
 
       pollCount++;

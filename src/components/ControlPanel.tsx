@@ -36,6 +36,7 @@ const CommandSearch = React.lazy(() => import("./CommandSearch"));
 const BarkFlowHistory = React.lazy(() => import("../barkflow/ui/history/BarkFlowHistory"));
 const BarkFlowProjects = React.lazy(() => import("../barkflow/ui/projects/BarkFlowProjects"));
 const BarkFlowSettings = React.lazy(() => import("../barkflow/ui/settings/BarkFlowSettings"));
+const BarkFlowPlugins = React.lazy(() => import("../barkflow/ui/plugins/BarkFlowPlugins"));
 const CommandBar = React.lazy(() => import("../barkflow/ui/command-bar/CommandBar"));
 
 export default function ControlPanel() {
@@ -679,6 +680,11 @@ export default function ControlPanel() {
             {activeView === "barkflow-projects" && (
               <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading...</span></div>}>
                 <BarkFlowProjects />
+              </Suspense>
+            )}
+            {activeView === "barkflow-plugins" && (
+              <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading...</span></div>}>
+                <BarkFlowPlugins />
               </Suspense>
             )}
             {activeView === "barkflow-settings" && (

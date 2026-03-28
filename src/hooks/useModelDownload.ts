@@ -103,10 +103,19 @@ export function useModelDownload({
         const now = Date.now();
         if (now - lastProgressUpdateRef.current < PROGRESS_THROTTLE_MS) return;
         lastProgressUpdateRef.current = now;
-        setDownloadProgress({
-          percentage: data.percentage || 0,
-          downloadedBytes: data.downloaded_bytes || 0,
-          totalBytes: data.total_bytes || 0,
+        // BarkFlow: never let progress go backwards (prevents regression visual glitch)
+        setDownloadProgress((prev) => {
+          const newPct = data.percentage || 0;
+          const newBytes = data.downloaded_bytes || 0;
+          // Only update if progress moved forward (or is at 0 for a new download)
+          if (newPct < prev.percentage && prev.percentage > 5 && newPct > 0) {
+            return prev; // Skip regressive update
+          }
+          return {
+            percentage: Math.max(prev.percentage, newPct),
+            downloadedBytes: Math.max(prev.downloadedBytes, newBytes),
+            totalBytes: data.total_bytes || prev.totalBytes || 0,
+          };
         });
       } else if (data.type === "installing") {
         setIsInstalling(true);

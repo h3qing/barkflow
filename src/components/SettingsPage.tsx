@@ -728,8 +728,8 @@ export default function SettingsPage({ activeSection = "general" }: SettingsPage
   const [isRemovingModels, setIsRemovingModels] = useState(false);
   const cachePathHint =
     typeof navigator !== "undefined" && /Windows/i.test(navigator.userAgent)
-      ? "%USERPROFILE%\\.cache\\openwhispr"
-      : "~/.cache/openwhispr";
+      ? "%USERPROFILE%\\.cache\\barkflow"
+      : "~/.cache/barkflow";
 
   const {
     status: updateStatus,
