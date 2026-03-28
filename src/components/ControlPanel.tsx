@@ -51,7 +51,8 @@ export default function ControlPanel() {
   const [showReferrals, setShowReferrals] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [showCommandBar, setShowCommandBar] = useState(false);
-  const [activeView, setActiveView] = useState<ControlPanelView>("home");
+  // BarkFlow: Default to BarkFlow history instead of OpenWhispr's transcription home
+  const [activeView, setActiveView] = useState<ControlPanelView>("barkflow-history");
   const [isMeetingMode, setIsMeetingMode] = useState(false);
   const [meetingRecordingRequest, setMeetingRecordingRequest] = useState<{
     noteId: number;
@@ -515,11 +516,7 @@ export default function ControlPanel() {
               setShowSettings(true);
             }}
             onOpenReferrals={() => setShowReferrals(true)}
-            userName={user?.name}
-            userEmail={user?.email}
-            userImage={user?.image}
-            isSignedIn={isSignedIn}
-            authLoaded={authLoaded}
+            // BarkFlow: Auth removed — no user props needed
             updateAction={
               !updateStatus.isDevelopment &&
               (updateStatus.updateAvailable ||
