@@ -281,6 +281,27 @@ export default function BarkFlowSettings({ className }: BarkFlowSettingsProps) {
           </SettingsRow>
         </SettingsGroup>
       </SettingsSection>
+
+      {/* Setup */}
+      <SettingsSection title="Setup">
+        <SettingsGroup>
+          <SettingsRow label="Re-run onboarding" description="Walk through the setup wizard again (microphone, model, hotkey).">
+            <button
+              onClick={() => {
+                localStorage.setItem("onboardingCurrentStep", "0");
+                localStorage.removeItem("onboardingCompleted");
+                window.location.reload();
+              }}
+              className="inline-flex items-center gap-1.5 h-7 px-3 rounded-md text-xs font-medium text-foreground border border-border/50 dark:border-white/10 hover:bg-foreground/5 dark:hover:bg-white/5 transition-colors"
+            >
+              Restart Setup
+            </button>
+          </SettingsRow>
+          <SettingsRow label="Version" description="BarkFlow version number.">
+            <span className="text-xs text-muted-foreground font-mono">v0.6.0</span>
+          </SettingsRow>
+        </SettingsGroup>
+      </SettingsSection>
     </div>
   );
 }
