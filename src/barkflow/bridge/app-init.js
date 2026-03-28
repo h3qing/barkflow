@@ -187,6 +187,25 @@ async function initializeBarkFlow() {
 
     barkflowDb = db;
     debugLogger.log("[BarkFlow] Database tables initialized");
+
+    // Dedup cleanup: remove clipboard entries that duplicate voice entries
+    // (voice text gets auto-pasted to clipboard, creating duplicates)
+    try {
+      const result = db.prepare(`
+        DELETE FROM bf_entries WHERE id IN (
+          SELECT c.id FROM bf_entries c
+          INNER JOIN bf_entries v ON c.raw_text = v.raw_text
+          WHERE c.source = 'clipboard'
+            AND v.source = 'voice'
+            AND abs(julianday(c.created_at) - julianday(v.created_at)) * 86400 < 10
+        )
+      `).run();
+      if (result.changes > 0) {
+        debugLogger.log(`[BarkFlow] Dedup cleanup: removed ${result.changes} duplicate clipboard entries`);
+      }
+    } catch (err) {
+      debugLogger.debug("[BarkFlow] Dedup cleanup skipped", { error: err.message });
+    }
   } catch (error) {
     debugLogger.log(`[BarkFlow] Database initialization failed: ${error.message}`);
     throw error;

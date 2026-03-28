@@ -343,30 +343,30 @@ export default function App() {
   const micState = getMicState();
 
   const getMicButtonProps = () => {
+    // BarkFlow: no background on button — the SVG indicator IS the visual
     const baseClasses =
-      "rounded-full w-auto h-12 px-2 flex items-center justify-center relative overflow-visible cursor-pointer";
+      "w-auto h-auto flex items-center justify-center relative overflow-visible cursor-pointer";
 
     switch (micState) {
       case "idle":
       case "hover":
         return {
-          className: `${baseClasses} bg-black/40 cursor-pointer`,
+          className: `${baseClasses} opacity-70 hover:opacity-100 transition-opacity`,
           tooltip: formatHotkeyLabel(hotkey),
         };
       case "recording":
         return {
-          className: `${baseClasses} bg-amber-600 cursor-pointer`,
+          className: `${baseClasses}`,
           tooltip: t("app.mic.recording"),
         };
       case "processing":
         return {
-          className: `${baseClasses} bg-amber-700 cursor-not-allowed`,
+          className: `${baseClasses} opacity-80 cursor-not-allowed`,
           tooltip: t("app.mic.processing"),
         };
       default:
         return {
-          className: `${baseClasses} bg-black/40 cursor-pointer`,
-          style: { transform: "scale(0.8)" },
+          className: `${baseClasses} opacity-60`,
           tooltip: t("app.mic.clickToSpeak"),
         };
     }
@@ -480,19 +480,7 @@ export default function App() {
                   "transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.25s ease-out",
               }}
             >
-              {/* Background effects */}
-              <div
-                className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent transition-opacity duration-150"
-                style={{ opacity: micState === "hover" ? 0.8 : 0 }}
-              ></div>
-              <div
-                className="absolute inset-0 transition-colors duration-150"
-                style={{
-                  backgroundColor: micState === "hover" ? "rgba(0,0,0,0.1)" : "transparent",
-                }}
-              ></div>
-
-              {/* Dynamic content based on state — dog head + soundbar */}
+              {/* BarkFlow indicator — soundbar with dog head, no extra chrome */}
               {micState === "idle" || micState === "hover" ? (
                 <BarkFlowIndicator state="idle" size={16} />
               ) : micState === "recording" ? (
@@ -500,16 +488,6 @@ export default function App() {
               ) : micState === "processing" ? (
                 <BarkFlowIndicator state="processing" size={16} animated={true} />
               ) : null}
-
-              {/* State indicator ring for recording */}
-              {micState === "recording" && (
-                <div className="absolute inset-0 rounded-full border-2 border-amber-500/50 animate-pulse"></div>
-              )}
-
-              {/* State indicator ring for processing */}
-              {micState === "processing" && (
-                <div className="absolute inset-0 rounded-full border-2 border-amber-500/30 opacity-50"></div>
-              )}
             </button>
           </Tooltip>
           {isCommandMenuOpen && (
