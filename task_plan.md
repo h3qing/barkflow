@@ -57,13 +57,16 @@ Phase 0 (in_progress)
 - **Depends on:** Phase 1b complete
 
 ### Phase 3: Polish & Ship
+- [x] Command bar (Cmd+K) — text alternative for voice (shipped in Phase 2)
+- [x] Performance optimization (virtual scrolling for 10K+ entries)
+- [x] Documentation (CONTRIBUTING.md)
+- [x] UI cleanup (removed Integrations, Support, simplified profile)
+- [x] Smart model advisor (RAM-based recommendations)
+- [x] Polish presets (5 personalities with eval framework)
 - [ ] Run /design-consultation → create DESIGN.md
-- [ ] Command bar (Cmd+K) — text alternative for voice
-- [ ] Performance optimization (FTS5 at scale, virtual scrolling for large history)
-- [ ] Documentation (CONTRIBUTING.md, user guide)
 - [ ] First public release
-- **Status:** pending
-- **Depends on:** Phase 2 complete
+- **Status:** in_progress
+- **Depends on:** Phase 2 complete ✓
 
 ## Key Questions
 1. Ollama latency: Can Llama 3.2 3B polish <1s on M1? (Benchmark in Phase 1a)
