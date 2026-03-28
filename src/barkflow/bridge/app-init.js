@@ -158,6 +158,14 @@ async function initializeBarkFlow() {
     createBarkFlowTables(db);
     createFtsTables(db);
 
+    // Migration: add favorite column (idempotent)
+    try {
+      db.exec("ALTER TABLE bf_entries ADD COLUMN favorite INTEGER NOT NULL DEFAULT 0");
+    } catch (err) {
+      // Column already exists — ignore
+      if (!err.message.includes("duplicate column")) throw err;
+    }
+
     barkflowDb = db;
     debugLogger.log("[BarkFlow] Database tables initialized");
   } catch (error) {
@@ -247,6 +255,20 @@ function deleteBarkFlowEntry(id) {
   barkflowDb.prepare('DELETE FROM bf_entries WHERE id = ?').run(id);
 }
 
+function toggleBarkFlowFavorite(id) {
+  if (!barkflowDb) return false;
+  const entry = barkflowDb.prepare('SELECT favorite FROM bf_entries WHERE id = ?').get(id);
+  if (!entry) return false;
+  const newValue = entry.favorite ? 0 : 1;
+  barkflowDb.prepare('UPDATE bf_entries SET favorite = ? WHERE id = ?').run(newValue, id);
+  return newValue === 1;
+}
+
+function getBarkFlowFavorites(limit = 50) {
+  if (!barkflowDb) return [];
+  return barkflowDb.prepare('SELECT * FROM bf_entries WHERE favorite = 1 ORDER BY created_at DESC LIMIT ?').all(limit);
+}
+
 function createBarkFlowProject(name) {
   if (!barkflowDb) return null;
   const id = crypto.randomUUID();
@@ -287,6 +309,8 @@ module.exports = {
   getBarkFlowEntries,
   searchBarkFlowEntries,
   deleteBarkFlowEntry,
+  toggleBarkFlowFavorite,
+  getBarkFlowFavorites,
   startClipboardMonitor,
   stopClipboardMonitor,
   createBarkFlowProject,

@@ -1841,6 +1841,29 @@ class IPCHandlers {
       }
     });
 
+    // BarkFlow: Toggle favorite on an entry
+    ipcMain.handle("barkflow-toggle-favorite", async (_event, id) => {
+      try {
+        const { toggleBarkFlowFavorite } = require("../barkflow/bridge/app-init");
+        const isFavorite = toggleBarkFlowFavorite(id);
+        return { success: true, isFavorite };
+      } catch (error) {
+        debugLogger.log(`[BarkFlow] toggle-favorite failed: ${error.message}`);
+        return { success: false, error: error.message };
+      }
+    });
+
+    // BarkFlow: Get favorited entries
+    ipcMain.handle("barkflow-get-favorites", async (_event, limit) => {
+      try {
+        const { getBarkFlowFavorites } = require("../barkflow/bridge/app-init");
+        return getBarkFlowFavorites(limit ?? 50);
+      } catch (error) {
+        debugLogger.log(`[BarkFlow] get-favorites failed: ${error.message}`);
+        return [];
+      }
+    });
+
     // BarkFlow: Toggle clipboard monitoring on/off
     ipcMain.handle("barkflow-clipboard-toggle", async (_event, enabled) => {
       try {

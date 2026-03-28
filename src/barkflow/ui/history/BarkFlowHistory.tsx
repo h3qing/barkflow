@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
-import { Search, Mic, Clipboard, Trash2, ChevronDown, ChevronRight } from "lucide-react";
+import { Search, Mic, Clipboard, Trash2, Star, Sparkles, Upload } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import { cn } from "../../../components/lib/utils";
@@ -11,6 +11,8 @@ interface BarkFlowElectronAPI {
   barkflowGetEntries: (limit: number, offset: number) => Promise<Entry[]>;
   barkflowSearchEntries: (query: string, limit: number) => Promise<Entry[]>;
   barkflowDeleteEntry: (id: string) => Promise<{ success: boolean }>;
+  barkflowToggleFavorite: (id: string) => Promise<{ success: boolean; isFavorite: boolean }>;
+  barkflowGetFavorites: (limit: number) => Promise<Entry[]>;
 }
 
 function getAPI(): BarkFlowElectronAPI {
@@ -18,7 +20,7 @@ function getAPI(): BarkFlowElectronAPI {
   return (window as any).electronAPI as BarkFlowElectronAPI;
 }
 
-type SourceFilter = "all" | "voice" | "clipboard";
+type SourceFilter = "all" | "voice" | "clipboard" | "favorites";
 
 interface BarkFlowHistoryProps {
   readonly className?: string;
@@ -60,6 +62,9 @@ function formatFullTimestamp(iso: string): string {
 function SourceIcon({ source }: { readonly source: EntrySource }) {
   if (source === "voice") {
     return <Mic size={14} className="shrink-0 text-amber-500" />;
+  }
+  if (source === "import") {
+    return <Upload size={14} className="shrink-0 text-emerald-500" />;
   }
   return <Clipboard size={14} className="shrink-0 text-muted-foreground" />;
 }

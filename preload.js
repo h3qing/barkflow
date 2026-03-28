@@ -679,6 +679,8 @@ contextBridge.exposeInMainWorld("electronAPI", {
   barkflowGetEntries: (limit, offset) => ipcRenderer.invoke("barkflow-get-entries", limit, offset),
   barkflowSearchEntries: (query, limit) => ipcRenderer.invoke("barkflow-search-entries", query, limit),
   barkflowDeleteEntry: (id) => ipcRenderer.invoke("barkflow-delete-entry", id),
+  barkflowToggleFavorite: (id) => ipcRenderer.invoke("barkflow-toggle-favorite", id),
+  barkflowGetFavorites: (limit) => ipcRenderer.invoke("barkflow-get-favorites", limit),
   barkflowClipboardToggle: (enabled) => ipcRenderer.invoke("barkflow-clipboard-toggle", enabled),
 
   // BarkFlow: Projects — named buckets for voice capture routing
