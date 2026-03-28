@@ -70,23 +70,48 @@ const BarkFlowIndicator = ({ state = 'idle', size = 48, animated = false, speaki
       {/* === Soundbar (translucent, blends with background) === */}
       <rect x="8" y="30" width="204" height="22" rx="11" fill="rgba(0,0,0,0.35)" />
 
-      {/* Mic icon (left side) — subtle when idle */}
-      <circle cx="24" cy="41" r="4" fill="none" stroke="white" strokeWidth="1.2" opacity={speaking ? 0.8 : 0.3} />
-      <rect x="23" y="37" width="2" height="5" rx="1" fill="white" opacity={speaking ? 0.8 : 0.3} />
-      <line x1="24" y1="46" x2="24" y2="48" stroke="white" strokeWidth="1" opacity={speaking ? 0.6 : 0.2} />
+      {/* Mic icon (left side) */}
+      <circle cx="24" cy="41" r="4" fill="none" stroke="white" strokeWidth="1.2" opacity={speaking ? 0.8 : state === 'processing' ? 0.5 : 0.25} />
+      <rect x="23" y="37" width="2" height="5" rx="1" fill="white" opacity={speaking ? 0.8 : state === 'processing' ? 0.5 : 0.25} />
+      <line x1="24" y1="46" x2="24" y2="48" stroke="white" strokeWidth="1" opacity={speaking ? 0.6 : 0.15} />
 
-      {/* Recording dot (right side) — red only when speaking */}
-      <circle cx="196" cy="41" r="3.5" fill={speaking ? "#EF4444" : "#666"} opacity={speaking ? 1 : 0.2}>
+      {/* Status dot (right side) — red when speaking, amber when processing, gray idle */}
+      <circle cx="196" cy="41" r="3.5"
+        fill={speaking ? "#EF4444" : state === 'processing' ? "#F59E0B" : "#666"}
+        opacity={speaking ? 1 : state === 'processing' ? 0.8 : 0.15}
+      >
         {speaking && <animate attributeName="opacity" values="1;0.4;1" dur="1s" repeatCount="indefinite" />}
+        {state === 'processing' && !speaking && <animate attributeName="opacity" values="0.8;0.3;0.8" dur="2s" repeatCount="indefinite" />}
       </circle>
 
-      {/* === Waveform bars — only animated when SPEAKING, quiet otherwise === */}
+      {/* === Waveform bars — 3 states: speaking (active), processing (gentle), idle (dots) === */}
       {[60, 66, 72, 78, 84, 90, 96, 102, 108, 114, 120, 126, 132, 138, 144, 150, 156].map((x, i) => {
-        // Bars are tall + animated only when speaking, minimal otherwise
-        const quietH = 2; // tiny dots when not speaking
-        const activeH = [3, 5, 7, 9, 11, 14, 12, 15, 12, 14, 11, 9, 7, 9, 7, 5, 3][i];
-        const h = speaking ? Math.min(18, activeH + 4) : quietH;
-        const color = speaking && i % 3 === 1 ? '#93C5FD' : 'white';
+        const fullH = [3, 5, 7, 9, 11, 14, 12, 15, 12, 14, 11, 9, 7, 9, 7, 5, 3][i];
+        const processingH = [2, 3, 4, 5, 6, 7, 6, 7, 6, 5, 4, 5, 4, 3, 2, 3, 2][i];
+
+        let h, color, opacity, animClass, animStyle;
+        if (speaking) {
+          // SPEAKING: full waveform, white + blue, animated
+          h = Math.min(18, fullH + 4);
+          color = i % 3 === 1 ? '#93C5FD' : 'white';
+          opacity = 0.9;
+          animClass = 'animate-pulse';
+          animStyle = { animationDelay: `${i * 0.04}s`, animationDuration: '0.5s' };
+        } else if (state === 'processing') {
+          // PROCESSING: gentle wave, amber tint, slow pulse
+          h = processingH;
+          color = '#F59E0B';
+          opacity = 0.6;
+          animClass = 'animate-pulse';
+          animStyle = { animationDelay: `${i * 0.08}s`, animationDuration: '1.2s' };
+        } else {
+          // IDLE / RECORDING but not speaking: tiny quiet dots
+          h = 2;
+          color = 'white';
+          opacity = 0.2;
+          animClass = '';
+          animStyle = {};
+        }
 
         return (
           <rect
@@ -97,9 +122,9 @@ const BarkFlowIndicator = ({ state = 'idle', size = 48, animated = false, speaki
             rx={1.5}
             height={Math.max(2, h)}
             fill={color}
-            opacity={speaking ? 0.9 : 0.25}
-            className={speaking ? 'animate-pulse' : ''}
-            style={speaking ? { animationDelay: `${i * 0.04}s`, animationDuration: '0.5s' } : {}}
+            opacity={opacity}
+            className={animClass}
+            style={animStyle}
           />
         );
       })}
