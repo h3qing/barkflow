@@ -687,6 +687,10 @@ contextBridge.exposeInMainWorld("electronAPI", {
   barkflowDeleteProject: (id) => ipcRenderer.invoke("barkflow-delete-project", id),
   barkflowGetProjectEntries: (projectId, limit) => ipcRenderer.invoke("barkflow-get-project-entries", projectId, limit),
 
+  // BarkFlow: Model advisor — recommend model based on system memory
+  barkflowGetModelRecommendation: () => ipcRenderer.invoke("barkflow-get-model-recommendation"),
+  barkflowGetModelFailureAdvice: (model, stderr) => ipcRenderer.invoke("barkflow-get-model-failure-advice", model, stderr),
+
   // BarkFlow: File import — upload audio files for transcription
   barkflowImportAudio: (filePath) => ipcRenderer.invoke("barkflow-import-audio", filePath),
   barkflowImportSupportedExtensions: () => ipcRenderer.invoke("barkflow-import-supported-extensions"),

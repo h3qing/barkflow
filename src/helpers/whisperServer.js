@@ -331,14 +331,20 @@ class WhisperServerManager extends EventEmitter {
         const stderr = info.stderr ? info.stderr.trim().slice(0, 500) : "";
         const details = stderr || (info.exitCode !== null ? `exit code: ${info.exitCode}` : "");
 
-        // BarkFlow: detect common failure modes and give actionable messages
-        let userMessage = `whisper-server process died during startup`;
-        if (stderr.includes("loading model") && stderr.includes("use gpu")) {
-          userMessage = "Model too large for available GPU memory. Try a smaller model (Small or Base), or disable GPU acceleration in Settings.";
-        } else if (stderr.includes("No such file")) {
-          userMessage = "Whisper model file not found. Please re-download the model.";
-        } else if (details) {
-          userMessage += `: ${details}`;
+        // BarkFlow: use model advisor for friendly, actionable error messages
+        let userMessage;
+        try {
+          const { getModelFailureAdvice } = require("../barkflow/bridge/model-advisor");
+          const modelName = this.modelPath ? require("path").basename(this.modelPath).replace("ggml-", "").replace(".bin", "") : "unknown";
+          const advice = getModelFailureAdvice(modelName, stderr);
+          userMessage = `${advice.title}\n\n${advice.message}`;
+        } catch {
+          userMessage = `whisper-server process died during startup`;
+          if (stderr.includes("loading model")) {
+            userMessage = "Model may be too large for your system. Try a smaller model.";
+          } else if (details) {
+            userMessage += `: ${details}`;
+          }
         }
 
         throw new Error(userMessage);

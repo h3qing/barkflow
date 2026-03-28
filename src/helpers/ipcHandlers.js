@@ -1903,6 +1903,25 @@ class IPCHandlers {
       }
     });
 
+    // BarkFlow: Model advisor — recommend model based on system memory
+    ipcMain.handle("barkflow-get-model-recommendation", async () => {
+      try {
+        const { getRecommendedModel } = require("../barkflow/bridge/model-advisor");
+        return getRecommendedModel();
+      } catch (error) {
+        return { recommended: "small", systemRAM: 8, models: [] };
+      }
+    });
+
+    ipcMain.handle("barkflow-get-model-failure-advice", async (_event, failedModel, stderr) => {
+      try {
+        const { getModelFailureAdvice } = require("../barkflow/bridge/model-advisor");
+        return getModelFailureAdvice(failedModel, stderr);
+      } catch {
+        return { title: "Model failed", message: "Try a smaller model.", recommendation: "small" };
+      }
+    });
+
     // BarkFlow: File import — upload audio files for transcription
     ipcMain.handle("barkflow-import-audio", async (_event, filePath) => {
       try {
