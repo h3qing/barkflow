@@ -3,6 +3,26 @@
 All notable changes to BarkFlow will be documented in this file.
 BarkFlow is a fork of OpenWhispr — see below for inherited changes.
 
+## [0.5.0] - 2026-03-28 — Phase 4: UX Refinements
+
+### Added
+- Search bar on Home page (filters transcripts in real-time)
+- Favorites on Home page (star icon per transcript, persisted)
+- Favorites filter toggle button
+- Polish presets now enforce punctuation (periods, commas, sentence breaks)
+- Voice/clipboard dedup (no more duplicate entries from pasted voice text)
+- Startup dedup cleanup (removes historical duplicates from database)
+
+### Changed
+- Floating indicator: clean soundbar + ear silhouettes only (no dog face)
+- Ears perk up when speaking, relax when idle
+- No background circle on indicator button (transparent, clean)
+- Home page restored as default view (user preference)
+
+### Fixed
+- "Empty entry" / "Invalid Date" in History (snake_case → camelCase mapping)
+- Unicode escape `\u2026` showing as literal text in search placeholder
+
 ## [0.4.0] - 2026-03-28 — Phase 3: Polish & Ship
 
 ### Added
