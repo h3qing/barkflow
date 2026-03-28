@@ -30,6 +30,7 @@ function makeSavedEntry(input: PipelineInput, polished: string | null, routedTo:
     projectId: input.projectId,
     audioPath: input.audioPath,
     metadata: {},
+    favorite: 0,
   });
 }
 

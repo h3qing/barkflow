@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
-import { Search, Mic, Clipboard, Trash2, ChevronDown, ChevronRight } from "lucide-react";
+import { Search, Mic, Clipboard, Trash2, Star, Sparkles, Upload } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import { cn } from "../../../components/lib/utils";
@@ -11,6 +11,8 @@ interface BarkFlowElectronAPI {
   barkflowGetEntries: (limit: number, offset: number) => Promise<Entry[]>;
   barkflowSearchEntries: (query: string, limit: number) => Promise<Entry[]>;
   barkflowDeleteEntry: (id: string) => Promise<{ success: boolean }>;
+  barkflowToggleFavorite: (id: string) => Promise<{ success: boolean; isFavorite: boolean }>;
+  barkflowGetFavorites: (limit: number) => Promise<Entry[]>;
 }
 
 function getAPI(): BarkFlowElectronAPI {
@@ -18,7 +20,7 @@ function getAPI(): BarkFlowElectronAPI {
   return (window as any).electronAPI as BarkFlowElectronAPI;
 }
 
-type SourceFilter = "all" | "voice" | "clipboard";
+type SourceFilter = "all" | "voice" | "clipboard" | "favorites";
 
 interface BarkFlowHistoryProps {
   readonly className?: string;
@@ -28,7 +30,7 @@ interface BarkFlowHistoryProps {
 
 function truncate(text: string, max: number): string {
   if (text.length <= max) return text;
-  return text.slice(0, max).trimEnd() + "\u2026";
+  return text.slice(0, max).trimEnd() + "…";
 }
 
 function relativeTime(iso: string): string {
@@ -61,21 +63,47 @@ function SourceIcon({ source }: { readonly source: EntrySource }) {
   if (source === "voice") {
     return <Mic size={14} className="shrink-0 text-amber-500" />;
   }
+  if (source === "import") {
+    return <Upload size={14} className="shrink-0 text-emerald-500" />;
+  }
   return <Clipboard size={14} className="shrink-0 text-muted-foreground" />;
 }
 
-function SourceBadge({ source }: { readonly source: EntrySource }) {
-  const label = source === "voice" ? "Voice" : source === "clipboard" ? "Clipboard" : source;
-  const badgeClass =
-    source === "voice"
-      ? "bg-amber-500/10 text-amber-600 dark:text-amber-400"
-      : "bg-muted text-muted-foreground";
+function sourceLabel(source: EntrySource): string {
+  switch (source) {
+    case "voice": return "Voice";
+    case "clipboard": return "Clipboard";
+    case "import": return "Import";
+    case "meeting": return "Meeting";
+    default: return source;
+  }
+}
 
+function sourceBadgeClass(source: EntrySource): string {
+  switch (source) {
+    case "voice": return "bg-amber-500/10 text-amber-600 dark:text-amber-400";
+    case "import": return "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400";
+    default: return "bg-muted text-muted-foreground";
+  }
+}
+
+function SourceBadge({ source }: { readonly source: EntrySource }) {
   return (
-    <span className={cn("inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium", badgeClass)}>
-      {label}
+    <span className={cn("inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] font-medium", sourceBadgeClass(source))}>
+      <SourceIcon source={source} />
+      {sourceLabel(source)}
     </span>
   );
+}
+
+function filterLabel(f: SourceFilter): string {
+  switch (f) {
+    case "all": return "All";
+    case "voice": return "Voice";
+    case "clipboard": return "Clipboard";
+    case "favorites": return "Favorites";
+    default: return f;
+  }
 }
 
 function FilterChips({
@@ -85,7 +113,7 @@ function FilterChips({
   readonly active: SourceFilter;
   readonly onChange: (f: SourceFilter) => void;
 }) {
-  const filters: readonly SourceFilter[] = ["all", "voice", "clipboard"];
+  const filters: readonly SourceFilter[] = ["all", "voice", "clipboard", "favorites"];
   return (
     <div className="flex items-center gap-1">
       {filters.map((f) => (
@@ -99,7 +127,8 @@ function FilterChips({
               : "text-muted-foreground hover:bg-foreground/5 dark:hover:bg-white/5"
           )}
         >
-          {f === "all" ? "All" : f === "voice" ? "Voice" : "Clipboard"}
+          {f === "favorites" && <Star size={11} className="inline mr-1" />}
+          {filterLabel(f)}
         </button>
       ))}
     </div>
@@ -110,12 +139,15 @@ function EntryRow({
   entry,
   isSelected,
   onSelect,
+  onToggleFavorite,
 }: {
   readonly entry: Entry;
   readonly isSelected: boolean;
   readonly onSelect: () => void;
+  readonly onToggleFavorite: (id: string) => void;
 }) {
   const text = displayText(entry);
+  const isFavorite = entry.favorite === 1;
 
   return (
     <button
@@ -146,6 +178,24 @@ function EntryRow({
             )}
           </div>
         </div>
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            onToggleFavorite(entry.id);
+          }}
+          className="shrink-0 mt-0.5 p-0.5 rounded hover:bg-foreground/5 transition-colors"
+          aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+        >
+          <Star
+            size={14}
+            className={cn(
+              "transition-colors",
+              isFavorite
+                ? "fill-amber-400 text-amber-400"
+                : "text-muted-foreground/40 hover:text-amber-400"
+            )}
+          />
+        </button>
       </div>
     </button>
   );
@@ -154,12 +204,14 @@ function EntryRow({
 function EntryDetail({
   entry,
   onDelete,
+  onToggleFavorite,
 }: {
   readonly entry: Entry;
   readonly onDelete: (id: string) => void;
+  readonly onToggleFavorite: (id: string) => void;
 }) {
-  const [showRaw, setShowRaw] = useState(false);
-  const hasRawText = entry.rawText != null && entry.rawText !== entry.polished;
+  const hasPolish = entry.polished != null && entry.rawText != null && entry.polished !== entry.rawText;
+  const isFavorite = entry.favorite === 1;
 
   return (
     <div className="flex flex-col gap-4 p-4">
@@ -172,28 +224,48 @@ function EntryDetail({
             {entry.hotkeyUsed}
           </span>
         )}
+        <button
+          onClick={() => onToggleFavorite(entry.id)}
+          className="ml-auto p-1 rounded hover:bg-foreground/5 transition-colors"
+          aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
+        >
+          <Star
+            size={16}
+            className={cn(
+              "transition-colors",
+              isFavorite
+                ? "fill-amber-400 text-amber-400"
+                : "text-muted-foreground/40 hover:text-amber-400"
+            )}
+          />
+        </button>
       </div>
 
-      {/* Polished text */}
-      <div className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
-        {displayText(entry) || <span className="italic text-muted-foreground">No text content</span>}
-      </div>
+      {/* Text content */}
+      {hasPolish ? (
+        <>
+          {/* Polished text */}
+          <div>
+            <div className="flex items-center gap-1.5 mb-1.5">
+              <Sparkles size={13} className="text-purple-500" />
+              <span className="text-xs font-medium text-purple-600 dark:text-purple-400">Polished</span>
+            </div>
+            <div className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
+              {entry.polished}
+            </div>
+          </div>
 
-      {/* Raw text (collapsible) */}
-      {hasRawText && (
-        <div>
-          <button
-            onClick={() => setShowRaw((prev) => !prev)}
-            className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition-colors"
-          >
-            {showRaw ? <ChevronDown size={12} /> : <ChevronRight size={12} />}
-            Show original
-          </button>
-          {showRaw && (
-            <div className="mt-2 p-3 rounded-md bg-muted/50 dark:bg-white/5 text-xs text-muted-foreground whitespace-pre-wrap leading-relaxed">
+          {/* Original transcript — always visible, muted */}
+          <div>
+            <span className="text-[11px] font-medium text-muted-foreground/70">Original transcript</span>
+            <div className="mt-1 p-3 rounded-md bg-muted/50 dark:bg-white/5 text-xs text-muted-foreground whitespace-pre-wrap leading-relaxed">
               {entry.rawText}
             </div>
-          )}
+          </div>
+        </>
+      ) : (
+        <div className="text-sm text-foreground whitespace-pre-wrap leading-relaxed">
+          {displayText(entry) || <span className="italic text-muted-foreground">No text content</span>}
         </div>
       )}
 
@@ -263,6 +335,8 @@ export default function BarkFlowHistory({ className }: BarkFlowHistoryProps) {
   const [containerHeight, setContainerHeight] = useState(600);
   const listContainerRef = useRef<HTMLDivElement>(null);
 
+  const [favoriteEntries, setFavoriteEntries] = useState<readonly Entry[]>([]);
+
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Track container height via ResizeObserver
@@ -294,6 +368,15 @@ export default function BarkFlowHistory({ className }: BarkFlowHistoryProps) {
       setError("Failed to load entries. Please try again.");
     } finally {
       setIsLoading(false);
+    }
+  }, []);
+
+  const fetchFavorites = useCallback(async () => {
+    try {
+      const data = await getAPI().barkflowGetFavorites(PAGE_SIZE);
+      setFavoriteEntries(data ?? []);
+    } catch {
+      // Silently fail — favorites are non-critical
     }
   }, []);
 
@@ -332,7 +415,8 @@ export default function BarkFlowHistory({ className }: BarkFlowHistoryProps) {
 
   useEffect(() => {
     fetchEntries();
-  }, [fetchEntries]);
+    fetchFavorites();
+  }, [fetchEntries, fetchFavorites]);
 
   // Debounced search
   useEffect(() => {
@@ -366,10 +450,30 @@ export default function BarkFlowHistory({ className }: BarkFlowHistoryProps) {
     }
   }, []);
 
+  const handleToggleFavorite = useCallback(async (id: string) => {
+    try {
+      const result = await getAPI().barkflowToggleFavorite(id);
+      if (!result.success) return;
+
+      const newFavoriteValue = result.isFavorite ? 1 : 0;
+
+      // Update entry in main list (immutable)
+      setEntries((prev) =>
+        prev.map((e) => (e.id === id ? { ...e, favorite: newFavoriteValue } : e))
+      );
+
+      // Refresh favorites list
+      fetchFavorites();
+    } catch {
+      setError("Failed to toggle favorite. Please try again.");
+    }
+  }, [fetchFavorites]);
+
   const filteredEntries = useMemo(() => {
+    if (sourceFilter === "favorites") return favoriteEntries;
     if (sourceFilter === "all") return entries;
     return entries.filter((e) => e.source === sourceFilter);
-  }, [entries, sourceFilter]);
+  }, [entries, favoriteEntries, sourceFilter]);
 
   const selectedEntry = useMemo(
     () => filteredEntries.find((e) => e.id === selectedId) ?? null,
@@ -414,7 +518,7 @@ export default function BarkFlowHistory({ className }: BarkFlowHistoryProps) {
             <Input
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search entries\u2026"
+              placeholder="Search entries…"
               className="h-8 pl-8 text-xs"
             />
           </div>
@@ -433,7 +537,7 @@ export default function BarkFlowHistory({ className }: BarkFlowHistoryProps) {
         >
           {isLoading && filteredEntries.length === 0 && (
             <div className="flex items-center justify-center py-8">
-              <span className="text-xs text-muted-foreground">Loading\u2026</span>
+              <span className="text-xs text-muted-foreground">Loading…</span>
             </div>
           )}
 
@@ -463,6 +567,7 @@ export default function BarkFlowHistory({ className }: BarkFlowHistoryProps) {
                     entry={entry}
                     isSelected={entry.id === selectedId}
                     onSelect={() => setSelectedId(entry.id)}
+                    onToggleFavorite={handleToggleFavorite}
                   />
                 ))}
               </div>
@@ -471,7 +576,7 @@ export default function BarkFlowHistory({ className }: BarkFlowHistoryProps) {
 
           {isLoadingMore && (
             <div className="flex items-center justify-center py-3">
-              <span className="text-xs text-muted-foreground">Loading more\u2026</span>
+              <span className="text-xs text-muted-foreground">Loading more…</span>
             </div>
           )}
         </div>
@@ -480,7 +585,7 @@ export default function BarkFlowHistory({ className }: BarkFlowHistoryProps) {
       {/* Detail panel */}
       <div className="flex-1 overflow-y-auto">
         {selectedEntry ? (
-          <EntryDetail entry={selectedEntry} onDelete={handleDelete} />
+          <EntryDetail entry={selectedEntry} onDelete={handleDelete} onToggleFavorite={handleToggleFavorite} />
         ) : (
           <NoSelectionPlaceholder />
         )}

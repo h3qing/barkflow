@@ -20,6 +20,7 @@ export interface Entry {
   readonly projectId: string | null;
   readonly audioPath: string | null;
   readonly metadata: Record<string, unknown>;
+  readonly favorite: number; // 0 = not favorite, 1 = favorite
 }
 
 export interface Project {

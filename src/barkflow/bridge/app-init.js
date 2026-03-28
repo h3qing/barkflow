@@ -20,6 +20,19 @@ let barkflowDb = null;
 let clipboardInterval = null;
 let lastClipboardText = "";
 
+// Dedup: track recent voice transcriptions so clipboard monitor skips them.
+// When voice text is pasted at cursor, it appears on clipboard — we don't want
+// to capture it again as a "clipboard" entry.
+const recentVoiceTexts = new Set();
+const VOICE_DEDUP_TTL_MS = 5000; // forget after 5 seconds
+
+function markAsVoiceTranscription(text) {
+  if (!text) return;
+  const trimmed = text.trim();
+  recentVoiceTexts.add(trimmed);
+  setTimeout(() => recentVoiceTexts.delete(trimmed), VOICE_DEDUP_TTL_MS);
+}
+
 function createBarkFlowTables(db) {
   db.exec(`
     CREATE TABLE IF NOT EXISTS bf_entries (
@@ -105,6 +118,12 @@ function startClipboardMonitor() {
       if (!currentText.trim()) return;
       // Skip very short text (likely accidental)
       if (currentText.trim().length < 2) return;
+      // BarkFlow dedup: skip if this text was just voice-transcribed
+      // (pasting voice text puts it on clipboard — don't double-capture)
+      if (recentVoiceTexts.has(currentText.trim())) {
+        lastClipboardText = currentText;
+        return;
+      }
 
       lastClipboardText = currentText;
 
@@ -158,8 +177,35 @@ async function initializeBarkFlow() {
     createBarkFlowTables(db);
     createFtsTables(db);
 
+    // Migration: add favorite column (idempotent)
+    try {
+      db.exec("ALTER TABLE bf_entries ADD COLUMN favorite INTEGER NOT NULL DEFAULT 0");
+    } catch (err) {
+      // Column already exists — ignore
+      if (!err.message.includes("duplicate column")) throw err;
+    }
+
     barkflowDb = db;
     debugLogger.log("[BarkFlow] Database tables initialized");
+
+    // Dedup cleanup: remove clipboard entries that duplicate voice entries
+    // (voice text gets auto-pasted to clipboard, creating duplicates)
+    try {
+      const result = db.prepare(`
+        DELETE FROM bf_entries WHERE id IN (
+          SELECT c.id FROM bf_entries c
+          INNER JOIN bf_entries v ON c.raw_text = v.raw_text
+          WHERE c.source = 'clipboard'
+            AND v.source = 'voice'
+            AND abs(julianday(c.created_at) - julianday(v.created_at)) * 86400 < 10
+        )
+      `).run();
+      if (result.changes > 0) {
+        debugLogger.log(`[BarkFlow] Dedup cleanup: removed ${result.changes} duplicate clipboard entries`);
+      }
+    } catch (err) {
+      debugLogger.debug("[BarkFlow] Dedup cleanup skipped", { error: err.message });
+    }
   } catch (error) {
     debugLogger.log(`[BarkFlow] Database initialization failed: ${error.message}`);
     throw error;
@@ -199,6 +245,12 @@ async function shutdownBarkFlow() {
 function saveBarkFlowEntry({ source, rawText, polished, routedTo, hotkeyUsed, durationMs, projectId, audioPath, metadata }) {
   if (!barkflowDb) return null;
 
+  // Dedup: mark voice text so clipboard monitor skips it
+  if (source === "voice") {
+    if (polished) markAsVoiceTranscription(polished);
+    if (rawText) markAsVoiceTranscription(rawText);
+  }
+
   const id = crypto.randomUUID();
   const createdAt = new Date().toISOString();
 
@@ -223,12 +275,31 @@ function saveBarkFlowEntry({ source, rawText, polished, routedTo, hotkeyUsed, du
   }
 }
 
+// Map SQLite snake_case columns to camelCase for the renderer
+function mapRow(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    createdAt: row.created_at,
+    source: row.source,
+    rawText: row.raw_text,
+    polished: row.polished,
+    routedTo: row.routed_to,
+    hotkeyUsed: row.hotkey_used,
+    durationMs: row.duration_ms,
+    projectId: row.project_id,
+    audioPath: row.audio_path,
+    metadata: row.metadata,
+    favorite: row.favorite || 0,
+  };
+}
+
 function getBarkFlowEntries(limit = 50, offset = 0) {
   if (!barkflowDb) return [];
   const rows = barkflowDb.prepare(
     'SELECT * FROM bf_entries ORDER BY created_at DESC LIMIT ? OFFSET ?'
   ).all(limit, offset);
-  return rows;
+  return rows.map(mapRow);
 }
 
 function searchBarkFlowEntries(query, limit = 50) {
@@ -239,12 +310,26 @@ function searchBarkFlowEntries(query, limit = 50) {
      WHERE bf_entries_fts MATCH ?
      ORDER BY e.created_at DESC LIMIT ?`
   ).all(query, limit);
-  return rows;
+  return rows.map(mapRow);
 }
 
 function deleteBarkFlowEntry(id) {
   if (!barkflowDb) return;
   barkflowDb.prepare('DELETE FROM bf_entries WHERE id = ?').run(id);
+}
+
+function toggleBarkFlowFavorite(id) {
+  if (!barkflowDb) return false;
+  const entry = barkflowDb.prepare('SELECT favorite FROM bf_entries WHERE id = ?').get(id);
+  if (!entry) return false;
+  const newValue = entry.favorite ? 0 : 1;
+  barkflowDb.prepare('UPDATE bf_entries SET favorite = ? WHERE id = ?').run(newValue, id);
+  return newValue === 1;
+}
+
+function getBarkFlowFavorites(limit = 50) {
+  if (!barkflowDb) return [];
+  return barkflowDb.prepare('SELECT * FROM bf_entries WHERE favorite = 1 ORDER BY created_at DESC LIMIT ?').all(limit).map(mapRow);
 }
 
 function createBarkFlowProject(name) {
@@ -277,7 +362,7 @@ function getProjectEntries(projectId, limit = 50) {
   if (!barkflowDb) return [];
   return barkflowDb.prepare(
     'SELECT * FROM bf_entries WHERE project_id = ? ORDER BY created_at DESC LIMIT ?'
-  ).all(projectId, limit);
+  ).all(projectId, limit).map(mapRow);
 }
 
 module.exports = {
@@ -287,6 +372,8 @@ module.exports = {
   getBarkFlowEntries,
   searchBarkFlowEntries,
   deleteBarkFlowEntry,
+  toggleBarkFlowFavorite,
+  getBarkFlowFavorites,
   startClipboardMonitor,
   stopClipboardMonitor,
   createBarkFlowProject,

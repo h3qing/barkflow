@@ -1,7 +1,7 @@
-import { useMemo } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "./ui/button";
-import { Loader2, Sparkles, Cloud, X, Mic, Trash2 } from "lucide-react";
+import { Loader2, Sparkles, Cloud, X, Mic, Trash2, Search, Star } from "lucide-react";
 import TranscriptionItem from "./ui/TranscriptionItem";
 import type { TranscriptionItem as TranscriptionItemType } from "../types/electron";
 import { formatHotkeyLabel } from "../utils/hotkeys";
@@ -47,14 +47,48 @@ export default function HistoryView({
   const { t } = useTranslation();
   const dataRetentionEnabled = useSettingsStore((s) => s.dataRetentionEnabled);
   const { events, isLoading: eventsLoading, isConnected } = useUpcomingEvents();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [favorites, setFavorites] = useState<Set<number>>(
+    () => new Set(JSON.parse(localStorage.getItem("barkflow-home-favorites") || "[]"))
+  );
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+
+  const toggleFavorite = useCallback((id: number) => {
+    setFavorites((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      localStorage.setItem("barkflow-home-favorites", JSON.stringify([...next]));
+      return next;
+    });
+  }, []);
+
+  const filteredHistory = useMemo(() => {
+    let items = history;
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase();
+      items = items.filter(
+        (item) =>
+          item.text?.toLowerCase().includes(q) ||
+          item.raw_text?.toLowerCase().includes(q)
+      );
+    }
+    if (showFavoritesOnly) {
+      items = items.filter((item) => favorites.has(item.id));
+    }
+    return items;
+  }, [history, searchQuery, showFavoritesOnly, favorites]);
 
   const groupedHistory = useMemo(() => {
-    if (history.length === 0) return [];
+    if (filteredHistory.length === 0) return [];
 
     const groups: { label: string; items: TranscriptionItemType[] }[] = [];
     let currentLabel: string | null = null;
 
-    for (const item of history) {
+    for (const item of filteredHistory) {
       const label = formatDateGroup(item.timestamp, t);
 
       if (label !== currentLabel) {
@@ -66,7 +100,7 @@ export default function HistoryView({
     }
 
     return groups;
-  }, [history, t]);
+  }, [filteredHistory, t]);
 
   return (
     <div className="px-4 pt-4 pb-6">
@@ -157,6 +191,40 @@ export default function HistoryView({
                 </span>
               </div>
             )}
+            {/* BarkFlow: Search bar + favorites toggle */}
+            <div className="mb-3 flex items-center gap-2">
+              <div className="relative flex-1">
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search transcripts..."
+                  className="w-full h-8 pl-9 pr-3 rounded-lg border border-border/30 dark:border-white/8 bg-foreground/3 dark:bg-white/3 text-sm text-foreground placeholder:text-muted-foreground/50 outline-none focus:ring-1 focus:ring-primary/30 transition-colors"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 rounded text-muted-foreground/40 hover:text-foreground transition-colors"
+                  >
+                    <X size={12} />
+                  </button>
+                )}
+              </div>
+              <button
+                onClick={() => setShowFavoritesOnly((prev) => !prev)}
+                className={cn(
+                  "flex items-center gap-1.5 h-8 px-3 rounded-lg text-xs font-medium transition-colors",
+                  showFavoritesOnly
+                    ? "bg-amber-500/15 text-amber-600 dark:text-amber-400"
+                    : "text-muted-foreground hover:bg-foreground/5 dark:hover:bg-white/5"
+                )}
+              >
+                <Star size={13} className={showFavoritesOnly ? "fill-amber-400 text-amber-400" : ""} />
+                Favorites
+              </button>
+            </div>
+
             {!dataRetentionEnabled && (
               <div className="mb-3 rounded-lg border border-amber-500/30 bg-amber-500/5 dark:bg-amber-500/10 px-3.5 py-2.5 flex items-center gap-2.5">
                 <span className="text-amber-600 dark:text-amber-400 shrink-0 text-sm">⊘</span>
@@ -291,15 +359,33 @@ export default function HistoryView({
                     </div>
                     <div className="space-y-1.5 relative z-0">
                       {group.items.map((item) => (
-                        <TranscriptionItem
-                          key={item.id}
-                          item={item}
-                          onCopy={copyToClipboard}
-                          onDelete={deleteTranscription}
-                          onShowAudioInFolder={onShowAudioInFolder}
-                          onRetryTranscription={onRetryTranscription}
-                          onOpenSettings={() => onOpenSettings("transcription")}
-                        />
+                        <div key={item.id} className="flex items-start gap-1">
+                          <button
+                            onClick={() => toggleFavorite(item.id)}
+                            className="shrink-0 mt-3 p-0.5 rounded hover:bg-foreground/5 transition-colors"
+                            aria-label={favorites.has(item.id) ? "Remove from favorites" : "Add to favorites"}
+                          >
+                            <Star
+                              size={13}
+                              className={cn(
+                                "transition-colors",
+                                favorites.has(item.id)
+                                  ? "fill-amber-400 text-amber-400"
+                                  : "text-muted-foreground/30 hover:text-amber-400"
+                              )}
+                            />
+                          </button>
+                          <div className="flex-1 min-w-0">
+                            <TranscriptionItem
+                              item={item}
+                              onCopy={copyToClipboard}
+                              onDelete={deleteTranscription}
+                              onShowAudioInFolder={onShowAudioInFolder}
+                              onRetryTranscription={onRetryTranscription}
+                              onOpenSettings={() => onOpenSettings("transcription")}
+                            />
+                          </div>
+                        </div>
                       ))}
                     </div>
                   </div>

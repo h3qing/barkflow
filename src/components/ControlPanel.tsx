@@ -51,8 +51,7 @@ export default function ControlPanel() {
   const [showReferrals, setShowReferrals] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [showCommandBar, setShowCommandBar] = useState(false);
-  // BarkFlow: Default to BarkFlow history instead of OpenWhispr's transcription home
-  const [activeView, setActiveView] = useState<ControlPanelView>("barkflow-history");
+  const [activeView, setActiveView] = useState<ControlPanelView>("home");
   const [isMeetingMode, setIsMeetingMode] = useState(false);
   const [meetingRecordingRequest, setMeetingRecordingRequest] = useState<{
     noteId: number;

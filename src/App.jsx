@@ -10,55 +10,72 @@ import { useWindowDrag } from "./hooks/useWindowDrag";
 import { useAudioRecording } from "./hooks/useAudioRecording";
 import { useSettingsStore } from "./stores/settingsStore";
 
-// BarkFlow Indicator — flat waveform bar with small ears on top
-const BarkFlowIndicator = ({ state = 'idle', size = 32, animated = false }) => {
-  // Ear positions shift based on state
-  const earStyle = {
-    idle: { leftY: 4, rightY: 4 },
-    recording: { leftY: 2, rightY: 2 },     // ears perk up
-    processing: { leftY: 3, rightY: 5 },    // asymmetric (curious tilt)
-    error: { leftY: 6, rightY: 6 },         // ears droop
-  };
-  const ears = earStyle[state] || earStyle.idle;
-
-  // Waveform bar heights animate during recording
-  const barHeights = state === 'recording'
-    ? [6, 10, 14, 10, 6]      // active waveform
-    : state === 'processing'
-      ? [4, 8, 12, 8, 4]      // thinking pulse
-      : [3, 5, 7, 5, 3];      // idle/subtle
+// BarkFlow Indicator — soundbar with Mando's ears poking up from edges
+// Clean and minimal: just the bar + two pointed ear silhouettes on top
+const BarkFlowIndicator = ({ state = 'idle', size = 48, animated = false, speaking = false }) => {
+  // Ear height: ears perk up when speaking, relax otherwise
+  const earH = speaking ? 14 : (state === 'recording' ? 10 : 7);
+  const earOpacity = state === 'idle' ? 0.5 : 0.85;
 
   return (
-    <svg width={size} height={size} viewBox="0 0 32 24" fill="none">
-      {/* Left ear — small triangle on top-left of bar */}
+    <svg width={size * 3} height={size} viewBox="0 0 144 48" fill="none">
+      {/* Left ear — pokes up from the left end of the bar */}
       <path
-        d={`M 4 ${ears.leftY + 8} L 7 ${ears.leftY} L 10 ${ears.leftY + 8} Z`}
+        d={`M 10 28 L 18 ${28 - earH} L 26 28 Z`}
         fill="#D97706"
-        opacity={state === 'idle' ? 0.6 : 0.9}
-        style={{ transition: 'all 0.3s ease' }}
+        opacity={earOpacity}
+        style={{ transition: 'all 0.2s ease-out' }}
       />
-      {/* Right ear — small triangle on top-right of bar */}
+      {/* Left ear inner */}
       <path
-        d={`M 22 ${ears.rightY + 8} L 25 ${ears.rightY} L 28 ${ears.rightY + 8} Z`}
-        fill="#D97706"
-        opacity={state === 'idle' ? 0.6 : 0.9}
-        style={{ transition: 'all 0.3s ease' }}
+        d={`M 13 28 L 18 ${31 - earH} L 23 28 Z`}
+        fill="#F59E0B"
+        opacity={earOpacity * 0.4}
+        style={{ transition: 'all 0.2s ease-out' }}
       />
-      {/* Waveform bars — centered, 5 bars */}
-      {barHeights.map((h, i) => (
-        <rect
-          key={i}
-          x={8 + i * 4}
-          y={12 + (14 - h) / 2}
-          width={2.5}
-          rx={1.25}
-          height={h}
-          fill="white"
-          opacity={animated ? undefined : 0.9}
-          className={animated ? 'animate-pulse' : ''}
-          style={animated ? { animationDelay: `${i * 0.1}s`, animationDuration: '0.8s' } : {}}
-        />
-      ))}
+
+      {/* Right ear — pokes up from the right end of the bar */}
+      <path
+        d={`M 118 28 L 126 ${28 - earH} L 134 28 Z`}
+        fill="#D97706"
+        opacity={earOpacity}
+        style={{ transition: 'all 0.2s ease-out' }}
+      />
+      {/* Right ear inner */}
+      <path
+        d={`M 121 28 L 126 ${31 - earH} L 131 28 Z`}
+        fill="#F59E0B"
+        opacity={earOpacity * 0.4}
+        style={{ transition: 'all 0.2s ease-out' }}
+      />
+
+      {/* Soundbar */}
+      <rect x="4" y="28" width="136" height="18" rx="9" fill="rgba(0,0,0,0.55)" />
+
+      {/* Waveform bars */}
+      {[14, 22, 30, 38, 46, 54, 62, 70, 78, 86, 94, 102, 110, 118, 126].map((x, i) => {
+        const baseH = [3, 5, 6, 8, 10, 12, 10, 12, 10, 8, 6, 8, 6, 5, 3][i];
+        const h = speaking
+          ? Math.min(14, baseH + Math.sin(i * 0.9 + Date.now() * 0.003) * 3 + 3)
+          : state === 'recording'
+            ? baseH + 1
+            : baseH;
+
+        return (
+          <rect
+            key={i}
+            x={x}
+            y={28 + (18 - h) / 2}
+            width={3.5}
+            rx={1.75}
+            height={Math.max(2, h)}
+            fill="white"
+            opacity={speaking ? 0.9 : state === 'recording' ? 0.7 : 0.5}
+            className={animated && state === 'recording' ? 'animate-pulse' : ''}
+            style={animated ? { animationDelay: `${i * 0.05}s`, animationDuration: '0.6s' } : {}}
+          />
+        );
+      })}
     </svg>
   );
 };
@@ -295,30 +312,30 @@ export default function App() {
   const micState = getMicState();
 
   const getMicButtonProps = () => {
+    // BarkFlow: no background on button — the SVG indicator IS the visual
     const baseClasses =
-      "rounded-full w-12 h-12 flex items-center justify-center relative overflow-hidden border-2 border-white/70 cursor-pointer";
+      "w-auto h-auto flex items-center justify-center relative overflow-visible cursor-pointer";
 
     switch (micState) {
       case "idle":
       case "hover":
         return {
-          className: `${baseClasses} bg-black/40 cursor-pointer`,
+          className: `${baseClasses} opacity-70 hover:opacity-100 transition-opacity`,
           tooltip: formatHotkeyLabel(hotkey),
         };
       case "recording":
         return {
-          className: `${baseClasses} bg-amber-600 cursor-pointer`,
+          className: `${baseClasses}`,
           tooltip: t("app.mic.recording"),
         };
       case "processing":
         return {
-          className: `${baseClasses} bg-amber-700 cursor-not-allowed`,
+          className: `${baseClasses} opacity-80 cursor-not-allowed`,
           tooltip: t("app.mic.processing"),
         };
       default:
         return {
-          className: `${baseClasses} bg-black/40 cursor-pointer`,
-          style: { transform: "scale(0.8)" },
+          className: `${baseClasses} opacity-60`,
           tooltip: t("app.mic.clickToSpeak"),
         };
     }
@@ -432,36 +449,14 @@ export default function App() {
                   "transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.25s ease-out",
               }}
             >
-              {/* Background effects */}
-              <div
-                className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent transition-opacity duration-150"
-                style={{ opacity: micState === "hover" ? 0.8 : 0 }}
-              ></div>
-              <div
-                className="absolute inset-0 transition-colors duration-150"
-                style={{
-                  backgroundColor: micState === "hover" ? "rgba(0,0,0,0.1)" : "transparent",
-                }}
-              ></div>
-
-              {/* Dynamic content based on state */}
+              {/* BarkFlow indicator — soundbar with dog head, no extra chrome */}
               {micState === "idle" || micState === "hover" ? (
-                <BarkFlowIndicator state="idle" size={28} />
+                <BarkFlowIndicator state="idle" size={16} />
               ) : micState === "recording" ? (
-                <BarkFlowIndicator state="recording" size={30} animated={true} />
+                <BarkFlowIndicator state="recording" size={16} animated={true} speaking={isRecording} />
               ) : micState === "processing" ? (
-                <BarkFlowIndicator state="processing" size={28} animated={true} />
+                <BarkFlowIndicator state="processing" size={16} animated={true} />
               ) : null}
-
-              {/* State indicator ring for recording */}
-              {micState === "recording" && (
-                <div className="absolute inset-0 rounded-full border-2 border-amber-500/50 animate-pulse"></div>
-              )}
-
-              {/* State indicator ring for processing */}
-              {micState === "processing" && (
-                <div className="absolute inset-0 rounded-full border-2 border-amber-500/30 opacity-50"></div>
-              )}
             </button>
           </Tooltip>
           {isCommandMenuOpen && (
