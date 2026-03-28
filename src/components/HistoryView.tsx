@@ -1,7 +1,7 @@
 import { useMemo, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Button } from "./ui/button";
-import { Loader2, Sparkles, Cloud, X, Mic, Trash2, Search, Star } from "lucide-react";
+import { Loader2, Sparkles, Cloud, X, Mic, Trash2, Search, Star, Clipboard } from "lucide-react";
 import TranscriptionItem from "./ui/TranscriptionItem";
 import type { TranscriptionItem as TranscriptionItemType } from "../types/electron";
 import { formatHotkeyLabel } from "../utils/hotkeys";
@@ -10,6 +10,7 @@ import { cn } from "./lib/utils";
 import { useUpcomingEvents } from "../hooks/useUpcomingEvents";
 import UpcomingMeetings from "./UpcomingMeetings";
 import { useSettingsStore } from "../stores/settingsStore";
+import ClipboardHistory from "../barkflow/ui/clipboard-preview/ClipboardHistory";
 
 interface HistoryViewProps {
   history: TranscriptionItemType[];
@@ -26,6 +27,7 @@ interface HistoryViewProps {
   onOpenSettings: (section?: string) => void;
   onShowAudioInFolder: (id: number) => void;
   onRetryTranscription: (id: number) => Promise<void>;
+  onNavigateToHistory?: () => void;
 }
 
 export default function HistoryView({
@@ -43,6 +45,7 @@ export default function HistoryView({
   onOpenSettings,
   onShowAudioInFolder,
   onRetryTranscription,
+  onNavigateToHistory,
 }: HistoryViewProps) {
   const { t } = useTranslation();
   const dataRetentionEnabled = useSettingsStore((s) => s.dataRetentionEnabled);
@@ -392,6 +395,17 @@ export default function HistoryView({
                 ))}
               </div>
             )}
+
+            {/* BarkFlow: Clipboard History */}
+            <div className="mt-6">
+              <div className="flex items-center gap-1.5 pb-2.5">
+                <Clipboard size={12} className="text-muted-foreground" />
+                <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide">
+                  Recent Clipboard
+                </span>
+              </div>
+              <ClipboardHistory onNavigateToHistory={onNavigateToHistory} />
+            </div>
           </div>
 
           {isConnected && (

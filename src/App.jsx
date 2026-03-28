@@ -10,69 +10,121 @@ import { useWindowDrag } from "./hooks/useWindowDrag";
 import { useAudioRecording } from "./hooks/useAudioRecording";
 import { useSettingsStore } from "./stores/settingsStore";
 
-// BarkFlow Indicator — soundbar with Mando's ears poking up from edges
-// Clean and minimal: just the bar + two pointed ear silhouettes on top
+// BarkFlow Indicator — black soundbar with realistic dog ears, mic icon, red dot
+// Matches the user's mockup: [mic] |||||||||||| [●]  with ears on top
 const BarkFlowIndicator = ({ state = 'idle', size = 48, animated = false, speaking = false }) => {
-  // Ear height: ears perk up when speaking, relax otherwise
-  const earH = speaking ? 14 : (state === 'recording' ? 10 : 7);
-  const earOpacity = state === 'idle' ? 0.5 : 0.85;
+  // Ear perk: taller when speaking/recording
+  const earH = speaking ? 20 : (state === 'recording' ? 16 : 12);
+  const earOp = state === 'idle' ? 0.7 : 1;
+  const isActive = state === 'recording' || state === 'processing';
 
   return (
-    <svg width={size * 3} height={size} viewBox="0 0 144 48" fill="none">
-      {/* Left ear — pokes up from the left end of the bar */}
+    <svg width={220} height={56} viewBox="0 0 220 56" fill="none">
+      {/* === Left ear (positioned ~1/3 from left edge, on top of bar) === */}
+      {/* Outer ear shape — like Mando's: tall, pointed, slightly curved */}
       <path
-        d={`M 10 28 L 18 ${28 - earH} L 26 28 Z`}
-        fill="#D97706"
-        opacity={earOpacity}
+        d={`M 48 32 C 48 32 42 ${32 - earH + 4} 38 ${32 - earH} C 37 ${32 - earH - 2} 38 ${32 - earH - 3} 40 ${32 - earH - 1} C 43 ${32 - earH + 2} 52 26 54 32 Z`}
+        fill="#8B5E3C"
+        opacity={earOp}
         style={{ transition: 'all 0.2s ease-out' }}
       />
-      {/* Left ear inner */}
+      {/* Ear inner (pinkish/lighter) */}
       <path
-        d={`M 13 28 L 18 ${31 - earH} L 23 28 Z`}
-        fill="#F59E0B"
-        opacity={earOpacity * 0.4}
+        d={`M 49 31 C 49 31 44 ${33 - earH + 4} 41 ${33 - earH + 1} C 40.5 ${33 - earH} 41.5 ${33 - earH - 0.5} 42.5 ${33 - earH + 0.5} C 44 ${33 - earH + 2} 51 27 52 31 Z`}
+        fill="#C4956A"
+        opacity={earOp * 0.6}
         style={{ transition: 'all 0.2s ease-out' }}
       />
-
-      {/* Right ear — pokes up from the right end of the bar */}
+      {/* Dark edge (fur shadow) */}
       <path
-        d={`M 118 28 L 126 ${28 - earH} L 134 28 Z`}
-        fill="#D97706"
-        opacity={earOpacity}
-        style={{ transition: 'all 0.2s ease-out' }}
-      />
-      {/* Right ear inner */}
-      <path
-        d={`M 121 28 L 126 ${31 - earH} L 131 28 Z`}
-        fill="#F59E0B"
-        opacity={earOpacity * 0.4}
+        d={`M 47 32 C 47 32 43 ${33 - earH + 5} 39 ${33 - earH + 1} C 38 ${33 - earH} 38 ${33 - earH - 1} 39 ${33 - earH - 0.5}`}
+        stroke="#5C3A1E"
+        strokeWidth="1"
+        fill="none"
+        opacity={earOp * 0.5}
         style={{ transition: 'all 0.2s ease-out' }}
       />
 
-      {/* Soundbar */}
-      <rect x="4" y="28" width="136" height="18" rx="9" fill="rgba(0,0,0,0.55)" />
+      {/* === Right ear (positioned ~1/3 from right edge) === */}
+      <path
+        d={`M 172 32 C 172 32 178 ${32 - earH + 4} 182 ${32 - earH} C 183 ${32 - earH - 2} 182 ${32 - earH - 3} 180 ${32 - earH - 1} C 177 ${32 - earH + 2} 168 26 166 32 Z`}
+        fill="#8B5E3C"
+        opacity={earOp}
+        style={{ transition: 'all 0.2s ease-out' }}
+      />
+      <path
+        d={`M 171 31 C 171 31 176 ${33 - earH + 4} 179 ${33 - earH + 1} C 179.5 ${33 - earH} 178.5 ${33 - earH - 0.5} 177.5 ${33 - earH + 0.5} C 176 ${33 - earH + 2} 169 27 168 31 Z`}
+        fill="#C4956A"
+        opacity={earOp * 0.6}
+        style={{ transition: 'all 0.2s ease-out' }}
+      />
+      <path
+        d={`M 173 32 C 173 32 177 ${33 - earH + 5} 181 ${33 - earH + 1} C 182 ${33 - earH} 182 ${33 - earH - 1} 181 ${33 - earH - 0.5}`}
+        stroke="#5C3A1E"
+        strokeWidth="1"
+        fill="none"
+        opacity={earOp * 0.5}
+        style={{ transition: 'all 0.2s ease-out' }}
+      />
 
-      {/* Waveform bars */}
-      {[14, 22, 30, 38, 46, 54, 62, 70, 78, 86, 94, 102, 110, 118, 126].map((x, i) => {
-        const baseH = [3, 5, 6, 8, 10, 12, 10, 12, 10, 8, 6, 8, 6, 5, 3][i];
-        const h = speaking
-          ? Math.min(14, baseH + Math.sin(i * 0.9 + Date.now() * 0.003) * 3 + 3)
-          : state === 'recording'
-            ? baseH + 1
-            : baseH;
+      {/* === Soundbar (translucent, blends with background) === */}
+      <rect x="8" y="30" width="204" height="22" rx="11" fill="rgba(0,0,0,0.35)" />
+
+      {/* Mic icon (left side) */}
+      <circle cx="24" cy="41" r="4" fill="none" stroke="white" strokeWidth="1.2" opacity={speaking ? 0.8 : state === 'processing' ? 0.5 : 0.25} />
+      <rect x="23" y="37" width="2" height="5" rx="1" fill="white" opacity={speaking ? 0.8 : state === 'processing' ? 0.5 : 0.25} />
+      <line x1="24" y1="46" x2="24" y2="48" stroke="white" strokeWidth="1" opacity={speaking ? 0.6 : 0.15} />
+
+      {/* Status dot (right side) — red when speaking, amber when processing, gray idle */}
+      <circle cx="196" cy="41" r="3.5"
+        fill={speaking ? "#EF4444" : state === 'processing' ? "#F59E0B" : "#666"}
+        opacity={speaking ? 1 : state === 'processing' ? 0.8 : 0.15}
+      >
+        {speaking && <animate attributeName="opacity" values="1;0.4;1" dur="1s" repeatCount="indefinite" />}
+        {state === 'processing' && !speaking && <animate attributeName="opacity" values="0.8;0.3;0.8" dur="2s" repeatCount="indefinite" />}
+      </circle>
+
+      {/* === Waveform bars — 3 states: speaking (active), processing (gentle), idle (dots) === */}
+      {[60, 66, 72, 78, 84, 90, 96, 102, 108, 114, 120, 126, 132, 138, 144, 150, 156].map((x, i) => {
+        const fullH = [3, 5, 7, 9, 11, 14, 12, 15, 12, 14, 11, 9, 7, 9, 7, 5, 3][i];
+        const processingH = [2, 3, 4, 5, 6, 7, 6, 7, 6, 5, 4, 5, 4, 3, 2, 3, 2][i];
+
+        let h, color, opacity, animClass, animStyle;
+        if (speaking) {
+          // SPEAKING: full waveform, white + blue, animated
+          h = Math.min(18, fullH + 4);
+          color = i % 3 === 1 ? '#93C5FD' : 'white';
+          opacity = 0.9;
+          animClass = 'animate-pulse';
+          animStyle = { animationDelay: `${i * 0.04}s`, animationDuration: '0.5s' };
+        } else if (state === 'processing') {
+          // PROCESSING: gentle wave, amber tint, slow pulse
+          h = processingH;
+          color = '#F59E0B';
+          opacity = 0.6;
+          animClass = 'animate-pulse';
+          animStyle = { animationDelay: `${i * 0.08}s`, animationDuration: '1.2s' };
+        } else {
+          // IDLE / RECORDING but not speaking: tiny quiet dots
+          h = 2;
+          color = 'white';
+          opacity = 0.2;
+          animClass = '';
+          animStyle = {};
+        }
 
         return (
           <rect
             key={i}
             x={x}
-            y={28 + (18 - h) / 2}
-            width={3.5}
-            rx={1.75}
+            y={30 + (22 - h) / 2}
+            width={3}
+            rx={1.5}
             height={Math.max(2, h)}
-            fill="white"
-            opacity={speaking ? 0.9 : state === 'recording' ? 0.7 : 0.5}
-            className={animated && state === 'recording' ? 'animate-pulse' : ''}
-            style={animated ? { animationDelay: `${i * 0.05}s`, animationDuration: '0.6s' } : {}}
+            fill={color}
+            opacity={opacity}
+            className={animClass}
+            style={animStyle}
           />
         );
       })}

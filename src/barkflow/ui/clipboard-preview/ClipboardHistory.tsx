@@ -1,0 +1,118 @@
+import { useState, useEffect, useCallback, useRef } from "react";
+import { Clipboard, ArrowRight } from "lucide-react";
+import { cn } from "../../../components/lib/utils";
+import type { Entry } from "../../core/storage/types";
+
+const MAX_VISIBLE = 5;
+const REFRESH_INTERVAL_MS = 5_000;
+const FETCH_LIMIT = 20;
+
+function relativeTime(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime();
+  const seconds = Math.floor(diff / 1000);
+  if (seconds < 60) return "just now";
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days}d ago`;
+  return new Date(iso).toLocaleDateString();
+}
+
+function truncateText(text: string, max: number): string {
+  if (text.length <= max) return text;
+  return text.slice(0, max).trimEnd() + "\u2026";
+}
+
+function displayLabel(entry: Entry): string {
+  const meta = entry.metadata as Record<string, unknown>;
+  if (meta?.type === "image") return "[Image]";
+  const text = entry.polished ?? entry.rawText ?? "";
+  return text.length > 0 ? truncateText(text, 100) : "[Empty]";
+}
+
+interface ClipboardHistoryProps {
+  readonly onNavigateToHistory?: () => void;
+}
+
+export default function ClipboardHistory({ onNavigateToHistory }: ClipboardHistoryProps) {
+  const [entries, setEntries] = useState<readonly Entry[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const fetchClipboardEntries = useCallback(async () => {
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const api = (window as any).electronAPI;
+      if (api?.barkflowGetEntries == null) return;
+
+      const raw: Entry[] = await api.barkflowGetEntries(FETCH_LIMIT, 0);
+      const clipboardOnly = (raw ?? []).filter((e) => e.source === "clipboard");
+      setEntries(clipboardOnly.slice(0, MAX_VISIBLE));
+      setError(null);
+    } catch {
+      setError("Unable to load clipboard entries.");
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchClipboardEntries();
+
+    intervalRef.current = setInterval(fetchClipboardEntries, REFRESH_INTERVAL_MS);
+    return () => {
+      if (intervalRef.current !== null) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [fetchClipboardEntries]);
+
+  if (error != null) {
+    return (
+      <p className="text-xs text-muted-foreground/60 italic py-2">{error}</p>
+    );
+  }
+
+  if (entries.length === 0) {
+    return (
+      <p className="text-xs text-muted-foreground/50 py-2">
+        No clipboard captures yet.
+      </p>
+    );
+  }
+
+  return (
+    <div className="space-y-1.5">
+      {entries.map((entry) => (
+        <div
+          key={entry.id}
+          className={cn(
+            "flex items-start gap-2 px-3 py-2 rounded-lg",
+            "bg-foreground/[0.02] dark:bg-white/[0.03]",
+            "border border-border/20 dark:border-white/5"
+          )}
+        >
+          <Clipboard size={13} className="shrink-0 mt-0.5 text-muted-foreground/50" />
+          <div className="flex-1 min-w-0">
+            <p className="text-xs text-foreground leading-snug truncate">
+              {displayLabel(entry)}
+            </p>
+            <span className="text-[11px] text-muted-foreground/60">
+              {relativeTime(entry.createdAt)}
+            </span>
+          </div>
+        </div>
+      ))}
+
+      {onNavigateToHistory != null && (
+        <button
+          onClick={onNavigateToHistory}
+          className="flex items-center gap-1 mt-1 text-xs text-primary/80 hover:text-primary transition-colors"
+        >
+          View all in History
+          <ArrowRight size={12} />
+        </button>
+      )}
+    </div>
+  );
+}

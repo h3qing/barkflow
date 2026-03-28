@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
-import { Search, Mic, Clipboard, Trash2, Star, Sparkles, Upload } from "lucide-react";
+import { Search, Mic, Clipboard, Trash2, Star, Sparkles, Upload, ImageIcon } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import { cn } from "../../../components/lib/utils";
@@ -13,6 +13,7 @@ interface BarkFlowElectronAPI {
   barkflowDeleteEntry: (id: string) => Promise<{ success: boolean }>;
   barkflowToggleFavorite: (id: string) => Promise<{ success: boolean; isFavorite: boolean }>;
   barkflowGetFavorites: (limit: number) => Promise<Entry[]>;
+  barkflowGetImage: (imagePath: string) => Promise<{ success: boolean; data?: string; error?: string }>;
 }
 
 function getAPI(): BarkFlowElectronAPI {
@@ -48,6 +49,25 @@ function relativeTime(iso: string): string {
 
 function displayText(entry: Entry): string {
   return entry.polished ?? entry.rawText ?? "";
+}
+
+interface ImageMetadata {
+  readonly type: "image";
+  readonly width: number;
+  readonly height: number;
+  readonly thumbPath: string;
+}
+
+function parseImageMetadata(entry: Entry): ImageMetadata | null {
+  try {
+    const meta = typeof entry.metadata === "string"
+      ? JSON.parse(entry.metadata)
+      : entry.metadata;
+    if (meta?.type === "image") return meta as ImageMetadata;
+  } catch {
+    // Malformed metadata — not an image entry
+  }
+  return null;
 }
 
 function formatFullTimestamp(iso: string): string {
@@ -148,6 +168,7 @@ function EntryRow({
 }) {
   const text = displayText(entry);
   const isFavorite = entry.favorite === 1;
+  const imageMeta = parseImageMetadata(entry);
 
   return (
     <button
@@ -162,12 +183,22 @@ function EntryRow({
     >
       <div className="flex items-start gap-2">
         <div className="mt-0.5">
-          <SourceIcon source={entry.source} />
+          {imageMeta ? (
+            <ImageIcon size={14} className="shrink-0 text-blue-500" />
+          ) : (
+            <SourceIcon source={entry.source} />
+          )}
         </div>
         <div className="flex-1 min-w-0">
-          <p className="text-sm text-foreground leading-snug truncate">
-            {text ? truncate(text, 80) : <span className="italic text-muted-foreground">Empty entry</span>}
-          </p>
+          {imageMeta ? (
+            <p className="text-sm text-foreground leading-snug truncate">
+              Image {imageMeta.width}&times;{imageMeta.height}
+            </p>
+          ) : (
+            <p className="text-sm text-foreground leading-snug truncate">
+              {text ? truncate(text, 80) : <span className="italic text-muted-foreground">Empty entry</span>}
+            </p>
+          )}
           <div className="flex items-center gap-2 mt-1">
             <span className="text-[11px] text-muted-foreground">{relativeTime(entry.createdAt)}</span>
             <SourceBadge source={entry.source} />
@@ -201,6 +232,59 @@ function EntryRow({
   );
 }
 
+function ImagePreview({ imagePath }: { readonly imagePath: string }) {
+  const [imageData, setImageData] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    setImageData(null);
+    setLoadError(null);
+
+    getAPI()
+      .barkflowGetImage(imagePath)
+      .then((result) => {
+        if (cancelled) return;
+        if (result.success && result.data) {
+          setImageData(result.data);
+        } else {
+          setLoadError(result.error ?? "Failed to load image");
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setLoadError("Failed to load image");
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [imagePath]);
+
+  if (loadError) {
+    return (
+      <div className="flex items-center justify-center p-6 rounded-md bg-muted/50 text-xs text-muted-foreground">
+        {loadError}
+      </div>
+    );
+  }
+
+  if (!imageData) {
+    return (
+      <div className="flex items-center justify-center p-6 rounded-md bg-muted/50 text-xs text-muted-foreground">
+        Loading image...
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={`data:image/png;base64,${imageData}`}
+      alt="Clipboard capture"
+      className="max-w-full rounded-md border border-border/20 dark:border-white/6"
+    />
+  );
+}
+
 function EntryDetail({
   entry,
   onDelete,
@@ -212,6 +296,7 @@ function EntryDetail({
 }) {
   const hasPolish = entry.polished != null && entry.rawText != null && entry.polished !== entry.rawText;
   const isFavorite = entry.favorite === 1;
+  const imageMeta = parseImageMetadata(entry);
 
   return (
     <div className="flex flex-col gap-4 p-4">
@@ -241,8 +326,18 @@ function EntryDetail({
         </button>
       </div>
 
-      {/* Text content */}
-      {hasPolish ? (
+      {/* Image content */}
+      {imageMeta && entry.audioPath ? (
+        <div>
+          <div className="flex items-center gap-1.5 mb-2">
+            <ImageIcon size={13} className="text-blue-500" />
+            <span className="text-xs font-medium text-blue-600 dark:text-blue-400">
+              Image {imageMeta.width}&times;{imageMeta.height}
+            </span>
+          </div>
+          <ImagePreview imagePath={entry.audioPath} />
+        </div>
+      ) : hasPolish ? (
         <>
           {/* Polished text */}
           <div>
