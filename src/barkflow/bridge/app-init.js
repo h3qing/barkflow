@@ -10,7 +10,8 @@
  */
 
 const crypto = require("crypto");
-const { app, clipboard } = require("electron");
+const fs = require("fs");
+const { app, clipboard, nativeImage } = require("electron");
 const Database = require("better-sqlite3");
 const path = require("path");
 const debugLogger = require("../../helpers/debugLogger");
@@ -110,6 +111,48 @@ function startClipboardMonitor() {
 
   clipboardInterval = setInterval(() => {
     try {
+      // Check for image on clipboard FIRST (image copy may also have text)
+      const img = clipboard.readImage();
+      if (!img.isEmpty()) {
+        const imgSize = img.getSize();
+        // Dedup by dimensions (reuse lastClipboardText variable)
+        const imgKey = `img_${imgSize.width}x${imgSize.height}`;
+        if (imgKey !== lastClipboardText) {
+          lastClipboardText = imgKey;
+
+          // Save image to disk
+          const imgId = crypto.randomUUID();
+          const imgDir = path.join(app.getPath("userData"), "barkflow-images");
+          if (!fs.existsSync(imgDir)) fs.mkdirSync(imgDir, { recursive: true });
+
+          const imgPath = path.join(imgDir, `${imgId}.png`);
+          fs.writeFileSync(imgPath, img.toPNG());
+
+          // Create a thumbnail (max 200px wide)
+          const thumb = img.resize({ width: Math.min(200, imgSize.width) });
+          const thumbPath = path.join(imgDir, `${imgId}_thumb.png`);
+          fs.writeFileSync(thumbPath, thumb.toPNG());
+
+          saveBarkFlowEntry({
+            source: "clipboard",
+            rawText: `[Image ${imgSize.width}\u00d7${imgSize.height}]`,
+            polished: null,
+            routedTo: null,
+            hotkeyUsed: null,
+            durationMs: null,
+            projectId: null,
+            audioPath: imgPath,
+            metadata: { type: "image", width: imgSize.width, height: imgSize.height, thumbPath },
+          });
+
+          debugLogger.debug("[BarkFlow] Clipboard image captured", {
+            width: imgSize.width,
+            height: imgSize.height,
+          });
+          return; // Image handled — skip text check this cycle
+        }
+      }
+
       const currentText = clipboard.readText() || "";
 
       // Skip if same as last capture

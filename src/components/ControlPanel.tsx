@@ -628,6 +628,7 @@ export default function ControlPanel() {
                   setSettingsSection(section);
                   setShowSettings(true);
                 }}
+                onNavigateToHistory={() => setActiveView("barkflow-history")}
               />
             )}
             {activeView === "personal-notes" && (

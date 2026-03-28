@@ -1864,6 +1864,19 @@ class IPCHandlers {
       }
     });
 
+    // BarkFlow: Read image file as base64 (for History view)
+    ipcMain.handle("barkflow-get-image", async (_event, imagePath) => {
+      try {
+        const fs = require("fs");
+        if (!fs.existsSync(imagePath)) return { success: false, error: "File not found" };
+        const data = fs.readFileSync(imagePath);
+        return { success: true, data: data.toString("base64") };
+      } catch (error) {
+        debugLogger.log(`[BarkFlow] get-image failed: ${error.message}`);
+        return { success: false, error: error.message };
+      }
+    });
+
     // BarkFlow: Toggle clipboard monitoring on/off
     ipcMain.handle("barkflow-clipboard-toggle", async (_event, enabled) => {
       try {
