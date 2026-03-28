@@ -1,6 +1,61 @@
 # Changelog
 
-All notable changes to this project will be documented in this file.
+All notable changes to BarkFlow will be documented in this file.
+BarkFlow is a fork of OpenWhispr — see below for inherited changes.
+
+## [0.4.0] - 2026-03-28 — Phase 3: Polish & Ship
+
+### Added
+- Virtual scrolling for History view (handles 10K+ entries without lag)
+- CONTRIBUTING.md with architecture guide and dev commands
+
+### Changed
+- Default view: BarkFlow History (was OpenWhispr "Home")
+- Removed Integrations, Support sidebar items
+- Simplified user profile to BarkFlow branding
+
+## [0.3.0] - 2026-03-27 — Phase 2: MCP Plugins & Quality
+
+### Added
+- MCP Plugin System — PluginManager, plugin UI, config persistence
+- Command Bar (Cmd+K) — prefix routing (/todo, /note, /project)
+- Smart Model Advisor — recommends Whisper model based on system RAM
+- Polish Presets — 5 styles (Clean, Professional, Casual, Minimal, Structured)
+- Eval Framework — 8 test cases with WER/filler scoring
+- BarkFlow CI (tests + lint + macOS build)
+
+### Fixed
+- Progress bar regression during model download
+- Friendly errors when large models crash
+
+## [0.2.0] - 2026-03-26 — Phase 1: Core Features
+
+### Added
+- Ollama text polish (auto-cleans transcriptions before paste)
+- Unified History (voice + clipboard with FTS5 search)
+- Projects ("wandering mind" capture buckets)
+- Clipboard monitoring (500ms polling, dedup)
+- File import pipeline, Voice-to-Markdown (Fn+N)
+- Dog ear indicator (centered, amber brand)
+- BarkFlow settings, Meeting recording bridge
+- Learning mode toast (first 20 captures)
+- StorageProvider + SqliteProvider + Pipeline orchestrator
+- 70 unit tests
+
+### Fixed
+- Intermittent whisper server failure, macOS hotkey validation
+
+## [0.1.0] - 2026-03-25 — Phase 0: Fork & Foundation
+
+### Added
+- Forked OpenWhispr v1.6.6, security hardening (CSP, validation)
+- 620+ string rebranding, Pro upsell removed (-858 lines)
+- BarkFlow directory structure with bridge pattern
+- Strict TypeScript, Vitest framework
+
+---
+
+*OpenWhispr inherited changelog below:*
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).

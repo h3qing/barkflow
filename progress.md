@@ -164,11 +164,61 @@
 | 2026-03-26 | Ctrl+Option hotkey not registering | 1 | Added macOS modifier-only validation with clear error message |
 | 2026-03-26 | Google Fonts blocked by CSP | 1 | Removed CDN import — font bundled locally |
 
+## Session: 2026-03-27 — Phase 2 (MCP Plugins) + Phase 3 (Polish)
+
+### Phase 2: MCP Plugin System
+- **Status:** complete
+- Actions taken:
+  - Built PluginManager class (JSON-RPC over stdio, process lifecycle)
+  - Built plugin management UI (BarkFlowPlugins.tsx) + sidebar integration
+  - Built Command Bar (Cmd+K) with prefix routing (/todo, /note, /project)
+  - Created plugin bridge (persistent config in barkflow-plugins.json)
+  - Default plugins: Todoist, Notion, Calendar, Slack (disabled)
+  - 17 new tests (87 total)
+- PR: #8 (merged)
+
+### Quality Improvements
+- Smart model advisor: recommends Whisper model based on system RAM
+- 5 polish presets: Clean, Professional, Casual, Minimal, Structured
+- Eval framework: 8 test cases, WER/filler scoring
+- Fixed progress bar regression, large model crash messages
+- Removed Support dropdown, cleaned settings (hid cloud sections)
+- BarkFlow CI: replaced 8 OpenWhispr workflows with 1
+
+### Phase 3: Polish & Ship
+- **Status:** in_progress
+- Actions taken:
+  - Virtual scrolling for History (handles 10K+ entries)
+  - UI cleanup: removed Integrations, simplified profile, default to BarkFlow History
+  - CONTRIBUTING.md
+  - CHANGELOG.md with version history
+  - Bumped version: 0.1.0 → 0.4.0
+- PR: #9
+
+## Session: 2026-03-28 — Versioning + Documentation
+
+### Versioning
+- **Status:** complete
+- Actions taken:
+  - VERSION file created (0.4.0)
+  - CHANGELOG.md with full version history (0.1.0 → 0.4.0)
+  - package.json version bumped to 0.4.0
+  - Progress log updated with all sessions
+
+## Version History
+
+| Version | Date | Phase | Key Changes |
+|---------|------|-------|-------------|
+| 0.1.0 | 2026-03-25 | Phase 0 | Fork, security, scaffolding |
+| 0.2.0 | 2026-03-26 | Phase 1 | All 9 core features, 70 tests |
+| 0.3.0 | 2026-03-27 | Phase 2 | MCP plugins, Command Bar, model advisor |
+| 0.4.0 | 2026-03-28 | Phase 3 | Virtual scrolling, UI cleanup, docs |
+
 ## 5-Question Reboot Check
 | Question | Answer |
 |----------|--------|
-| Where am I? | Phase 1b nearly complete — 8/9 features done, ready for merge |
-| Where am I going? | Merge → user testing → meeting recording → Phase 2 (MCP) |
+| Where am I? | v0.4.0 — Phase 3 nearly complete, all major features shipped |
+| Where am I going? | Final polish → v1.0 public release |
 | What's the goal? | Fork OpenWhispr → BarkFlow: voice-first personal automation |
-| What have I learned? | OpenWhispr provides STT, hotkeys, audio, LLM polish, SQLite, UI. Needs: tests, security hardening, StorageProvider, clipboard monitoring, routing. See findings.md |
-| What have I done? | Design doc approved, CEO plan active, design review 8/10, eng review cleared, 3 new features added, repo organized. See above. |
+| What have I learned? | Full stack built: StorageProvider, Pipeline, Ollama polish, MCP plugins, History UI, Command Bar, Clipboard monitoring, 87 tests |
+| What have I done? | 4 phases shipped (0-3), 3 PRs merged, 87 tests, ~5,000 lines BarkFlow code |

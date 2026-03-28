@@ -4,11 +4,11 @@ import {
   NotebookPen,
   BookOpen,
   Upload,
-  Blocks,
-  Gift,
+  // Blocks,        // BarkFlow: unused — Integrations view hidden
+  // Gift,          // BarkFlow: unused — Referrals removed
   Settings,
-  HelpCircle,
-  UserCircle,
+  // HelpCircle,    // BarkFlow: unused — Support dropdown removed
+  // UserCircle,    // BarkFlow: unused — User profile replaced with branding
   X,
   Search,
   Clock,
@@ -19,7 +19,7 @@ import {
 import logoIcon from "../assets/icon.png";
 import { useTranslation } from "react-i18next";
 import { cn } from "./lib/utils";
-import SupportDropdown from "./ui/SupportDropdown";
+// import SupportDropdown from "./ui/SupportDropdown"; // BarkFlow: unused — Support dropdown removed
 import { getCachedPlatform } from "../utils/platform";
 
 const platform = getCachedPlatform();
@@ -35,6 +35,7 @@ interface ControlPanelSidebarProps {
   onUpgrade?: () => void;
   onUpgradeCheckout?: () => void;
   isOverLimit?: boolean;
+  // BarkFlow: Auth props kept in interface for compatibility but no longer used
   userName?: string | null;
   userEmail?: string | null;
   userImage?: string | null;
@@ -53,14 +54,6 @@ export default function ControlPanelSidebar({
   onOpenReferrals,
   onUpgrade,
   onUpgradeCheckout,
-  isOverLimit,
-  userName,
-  userEmail,
-  userImage,
-  isSignedIn,
-  authLoaded,
-  isProUser,
-  usageLoaded,
   updateAction,
 }: ControlPanelSidebarProps) {
   const { t } = useTranslation();
