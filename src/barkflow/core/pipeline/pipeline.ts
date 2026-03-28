@@ -113,6 +113,7 @@ export class Pipeline {
         projectId: input.projectId,
         audioPath: input.audioPath,
         metadata: {},
+        favorite: 0,
       });
     } catch (err) {
       // Storage failure should not crash the pipeline.
@@ -130,6 +131,7 @@ export class Pipeline {
         projectId: input.projectId,
         audioPath: input.audioPath,
         metadata: {},
+        favorite: 0,
       });
     }
   }

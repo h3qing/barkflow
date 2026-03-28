@@ -567,6 +567,7 @@ export default function BarkFlowHistory({ className }: BarkFlowHistoryProps) {
                     entry={entry}
                     isSelected={entry.id === selectedId}
                     onSelect={() => setSelectedId(entry.id)}
+                    onToggleFavorite={handleToggleFavorite}
                   />
                 ))}
               </div>
@@ -584,7 +585,7 @@ export default function BarkFlowHistory({ className }: BarkFlowHistoryProps) {
       {/* Detail panel */}
       <div className="flex-1 overflow-y-auto">
         {selectedEntry ? (
-          <EntryDetail entry={selectedEntry} onDelete={handleDelete} />
+          <EntryDetail entry={selectedEntry} onDelete={handleDelete} onToggleFavorite={handleToggleFavorite} />
         ) : (
           <NoSelectionPlaceholder />
         )}

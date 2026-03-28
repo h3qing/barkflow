@@ -10,53 +10,89 @@ import { useWindowDrag } from "./hooks/useWindowDrag";
 import { useAudioRecording } from "./hooks/useAudioRecording";
 import { useSettingsStore } from "./stores/settingsStore";
 
-// BarkFlow Indicator — flat waveform bar with small ears on top
-const BarkFlowIndicator = ({ state = 'idle', size = 32, animated = false }) => {
-  // Ear positions shift based on state
-  const earStyle = {
-    idle: { leftY: 4, rightY: 4 },
-    recording: { leftY: 2, rightY: 2 },     // ears perk up
-    processing: { leftY: 3, rightY: 5 },    // asymmetric (curious tilt)
-    error: { leftY: 6, rightY: 6 },         // ears droop
+// BarkFlow Indicator — Mando's tall pointed shepherd ears + waveform
+// Inspired by Mando (Heqing's dog) — tall upright ears, slightly angled outward
+const BarkFlowIndicator = ({ state = 'idle', size = 36, animated = false }) => {
+  // Ear rotation shifts based on state (Mando's ears are expressive!)
+  const earAngle = {
+    idle: { left: -8, right: 8 },         // relaxed, slightly out
+    recording: { left: -3, right: 3 },     // perked up, alert
+    processing: { left: -12, right: 5 },   // curious head tilt
+    error: { left: -20, right: 20 },       // drooped/sad
   };
-  const ears = earStyle[state] || earStyle.idle;
+  const rot = earAngle[state] || earAngle.idle;
 
-  // Waveform bar heights animate during recording
-  const barHeights = state === 'recording'
-    ? [6, 10, 14, 10, 6]      // active waveform
+  // Waveform bar heights
+  const bars = state === 'recording'
+    ? [5, 9, 13, 9, 5]
     : state === 'processing'
-      ? [4, 8, 12, 8, 4]      // thinking pulse
-      : [3, 5, 7, 5, 3];      // idle/subtle
+      ? [4, 7, 11, 7, 4]
+      : [3, 5, 7, 5, 3];
 
   return (
-    <svg width={size} height={size} viewBox="0 0 32 24" fill="none">
-      {/* Left ear — small triangle on top-left of bar */}
+    <svg width={size} height={size} viewBox="0 0 48 48" fill="none">
+      {/* Left ear — tall pointed, Mando-style (shepherd ear shape) */}
       <path
-        d={`M 4 ${ears.leftY + 8} L 7 ${ears.leftY} L 10 ${ears.leftY + 8} Z`}
+        d="M 14 28 C 14 28 10 12 8 6 C 7.5 4.5 8.5 3.5 9.5 4 C 11 5 17 16 18 28 Z"
         fill="#D97706"
         opacity={state === 'idle' ? 0.6 : 0.9}
-        style={{ transition: 'all 0.3s ease' }}
+        style={{
+          transform: `rotate(${rot.left}deg)`,
+          transformOrigin: '14px 28px',
+          transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+        }}
       />
-      {/* Right ear — small triangle on top-right of bar */}
+      {/* Left ear inner highlight */}
       <path
-        d={`M 22 ${ears.rightY + 8} L 25 ${ears.rightY} L 28 ${ears.rightY + 8} Z`}
+        d="M 14.5 26 C 14.5 26 11.5 14 10 8 C 9.8 7.2 10.3 6.8 10.8 7.2 C 11.8 8 15.5 17 16.5 26 Z"
+        fill="#F59E0B"
+        opacity={state === 'idle' ? 0.2 : 0.35}
+        style={{
+          transform: `rotate(${rot.left}deg)`,
+          transformOrigin: '14px 28px',
+          transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+        }}
+      />
+
+      {/* Right ear — mirror of left */}
+      <path
+        d="M 34 28 C 34 28 38 12 40 6 C 40.5 4.5 39.5 3.5 38.5 4 C 37 5 31 16 30 28 Z"
         fill="#D97706"
         opacity={state === 'idle' ? 0.6 : 0.9}
-        style={{ transition: 'all 0.3s ease' }}
+        style={{
+          transform: `rotate(${rot.right}deg)`,
+          transformOrigin: '34px 28px',
+          transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+        }}
       />
-      {/* Waveform bars — centered, 5 bars */}
-      {barHeights.map((h, i) => (
+      {/* Right ear inner highlight */}
+      <path
+        d="M 33.5 26 C 33.5 26 36.5 14 38 8 C 38.2 7.2 37.7 6.8 37.2 7.2 C 36.2 8 32.5 17 31.5 26 Z"
+        fill="#F59E0B"
+        opacity={state === 'idle' ? 0.2 : 0.35}
+        style={{
+          transform: `rotate(${rot.right}deg)`,
+          transformOrigin: '34px 28px',
+          transition: 'all 0.35s cubic-bezier(0.4, 0, 0.2, 1)',
+        }}
+      />
+
+      {/* Subtle head shape connecting ears */}
+      <ellipse cx="24" cy="35" rx="10" ry="8" fill="#D97706" opacity="0.1" />
+
+      {/* Waveform bars between the ears */}
+      {bars.map((h, i) => (
         <rect
           key={i}
-          x={8 + i * 4}
-          y={12 + (14 - h) / 2}
-          width={2.5}
-          rx={1.25}
+          x={19 + i * 3}
+          y={32 + (13 - h) / 2}
+          width={2}
+          rx={1}
           height={h}
           fill="white"
-          opacity={animated ? undefined : 0.9}
+          opacity={0.9}
           className={animated ? 'animate-pulse' : ''}
-          style={animated ? { animationDelay: `${i * 0.1}s`, animationDuration: '0.8s' } : {}}
+          style={animated ? { animationDelay: `${i * 0.08}s`, animationDuration: '0.7s' } : {}}
         />
       ))}
     </svg>

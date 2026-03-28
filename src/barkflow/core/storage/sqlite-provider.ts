@@ -54,6 +54,7 @@ function rowToEntry(row: Record<string, unknown>): Entry {
     projectId: row['project_id'] as string | null,
     audioPath: row['audio_path'] as string | null,
     metadata: row['metadata'] ? JSON.parse(String(row['metadata'])) as Record<string, unknown> : {},
+    favorite: (row['favorite'] as number) ?? 0,
   });
 }
 
