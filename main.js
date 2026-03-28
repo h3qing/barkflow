@@ -713,6 +713,46 @@ async function startApp() {
     const MIN_HOLD_DURATION_MS = 150;
     const POST_STOP_COOLDOWN_MS = 300;
 
+    // BarkFlow: Fn+letter combo detection.
+    // While Fn is held, register temporary global shortcuts for T, N, P.
+    // If one fires before dictation starts, set the active routing slot.
+    const BARKFLOW_COMBO_KEYS = {
+      T: "Fn+T",
+      N: "Fn+N",
+      P: "Fn+P",
+    };
+    let barkflowComboRegistered = false;
+
+    function registerBarkflowComboKeys() {
+      if (barkflowComboRegistered) return;
+      for (const [key, slot] of Object.entries(BARKFLOW_COMBO_KEYS)) {
+        try {
+          const registered = globalShortcut.register(key, () => {
+            barkflowActiveHotkeySlot = slot;
+            debugLogger?.debug("[BarkFlow] Combo key detected", { slot });
+          });
+          if (!registered) {
+            debugLogger?.debug("[BarkFlow] Could not register combo key", { key });
+          }
+        } catch (err) {
+          debugLogger?.debug("[BarkFlow] Combo key registration error", { key, error: err.message });
+        }
+      }
+      barkflowComboRegistered = true;
+    }
+
+    function unregisterBarkflowComboKeys() {
+      if (!barkflowComboRegistered) return;
+      for (const key of Object.keys(BARKFLOW_COMBO_KEYS)) {
+        try {
+          globalShortcut.unregister(key);
+        } catch {
+          // Ignore — may not have been registered
+        }
+      }
+      barkflowComboRegistered = false;
+    }
+
     globeKeyManager.on("globe-down", async () => {
       const currentHotkey = hotkeyManager.getCurrentHotkey && hotkeyManager.getCurrentHotkey();
       const mainWindowLive = isLiveWindow(windowManager.mainWindow);
@@ -726,6 +766,10 @@ async function startApp() {
       if (isLiveWindow(windowManager.controlPanelWindow)) {
         windowManager.controlPanelWindow.webContents.send("globe-key-pressed");
       }
+
+      // BarkFlow: Reset slot to default and register combo keys while Fn is held
+      barkflowActiveHotkeySlot = "Fn";
+      registerBarkflowComboKeys();
 
       // Handle dictation if Globe/Fn is the current hotkey
       if (isGlobeLikeHotkey(currentHotkey)) {
@@ -769,6 +813,9 @@ async function startApp() {
 
     globeKeyManager.on("globe-up", async () => {
       debugLogger?.debug("[Globe] globe-up received", { wasRecording: globeKeyIsRecording });
+
+      // BarkFlow: Unregister combo keys when Fn is released
+      unregisterBarkflowComboKeys();
 
       // Forward to control panel for hotkey capture (Fn key released)
       if (isLiveWindow(windowManager.controlPanelWindow)) {
@@ -1005,6 +1052,18 @@ async function startApp() {
     });
   }
 }
+
+// BarkFlow: Expose active hotkey slot to renderer via IPC
+ipcMain.handle("barkflow-get-active-hotkey", () => {
+  return barkflowActiveHotkeySlot;
+});
+
+// BarkFlow: Allow renderer to consume (read and reset) the active hotkey slot
+ipcMain.handle("barkflow-consume-active-hotkey", () => {
+  const slot = barkflowActiveHotkeySlot;
+  barkflowActiveHotkeySlot = "Fn"; // Reset to default after consumption
+  return slot;
+});
 
 // Listen for usage limit reached from dictation overlay, forward to control panel
 ipcMain.on("limit-reached", (_event, data) => {
