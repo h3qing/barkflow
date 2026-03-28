@@ -240,24 +240,56 @@ function NoSelectionPlaceholder() {
   );
 }
 
+// Virtual scroll constants
+const ROW_HEIGHT = 56;
+const BUFFER = 10;
+const PAGE_SIZE = 500;
+const LOAD_MORE_THRESHOLD = 100; // px from bottom to trigger load-more
+
 // Main component
 
 export default function BarkFlowHistory({ className }: BarkFlowHistoryProps) {
   const [entries, setEntries] = useState<readonly Entry[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [sourceFilter, setSourceFilter] = useState<SourceFilter>("all");
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
+  // Virtual scroll state
+  const [scrollTop, setScrollTop] = useState(0);
+  const [containerHeight, setContainerHeight] = useState(600);
+  const listContainerRef = useRef<HTMLDivElement>(null);
+
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Track container height via ResizeObserver
+  useEffect(() => {
+    const node = listContainerRef.current;
+    if (node == null) return;
+
+    setContainerHeight(node.clientHeight);
+
+    const observer = new ResizeObserver((resizeEntries) => {
+      const rect = resizeEntries[0];
+      if (rect != null) {
+        setContainerHeight(rect.contentRect.height);
+      }
+    });
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, []);
 
   const fetchEntries = useCallback(async () => {
     try {
       setIsLoading(true);
       setError(null);
-      const data = await getAPI().barkflowGetEntries(50, 0);
-      setEntries(data ?? []);
+      const data = await getAPI().barkflowGetEntries(PAGE_SIZE, 0);
+      const fetched = data ?? [];
+      setEntries(fetched);
+      setHasMore(fetched.length >= PAGE_SIZE);
     } catch (err) {
       setError("Failed to load entries. Please try again.");
     } finally {
@@ -265,11 +297,31 @@ export default function BarkFlowHistory({ className }: BarkFlowHistoryProps) {
     }
   }, []);
 
+  const loadMoreEntries = useCallback(async () => {
+    if (isLoadingMore || !hasMore) return;
+    try {
+      setIsLoadingMore(true);
+      const data = await getAPI().barkflowGetEntries(PAGE_SIZE, entries.length);
+      const fetched = data ?? [];
+      if (fetched.length === 0) {
+        setHasMore(false);
+      } else {
+        setEntries((prev) => [...prev, ...fetched]);
+        setHasMore(fetched.length >= PAGE_SIZE);
+      }
+    } catch {
+      // Silently fail load-more; user can scroll again to retry
+    } finally {
+      setIsLoadingMore(false);
+    }
+  }, [entries.length, hasMore, isLoadingMore]);
+
   const searchEntries = useCallback(async (query: string) => {
     try {
       setIsLoading(true);
       setError(null);
-      const data = await getAPI().barkflowSearchEntries(query, 50);
+      setHasMore(false); // Search returns all matches; no pagination
+      const data = await getAPI().barkflowSearchEntries(query, PAGE_SIZE);
       setEntries(data ?? []);
     } catch (err) {
       setError("Search failed. Please try again.");
@@ -324,6 +376,30 @@ export default function BarkFlowHistory({ className }: BarkFlowHistoryProps) {
     [filteredEntries, selectedId]
   );
 
+  // Virtual scroll calculations
+  const totalHeight = filteredEntries.length * ROW_HEIGHT;
+  const startIdx = Math.max(0, Math.floor(scrollTop / ROW_HEIGHT) - BUFFER);
+  const endIdx = Math.min(
+    filteredEntries.length,
+    Math.ceil((scrollTop + containerHeight) / ROW_HEIGHT) + BUFFER
+  );
+  const visibleEntries = filteredEntries.slice(startIdx, endIdx);
+
+  const handleListScroll = useCallback(
+    (e: React.UIEvent<HTMLDivElement>) => {
+      const target = e.currentTarget;
+      setScrollTop(target.scrollTop);
+
+      // Trigger load-more when near the bottom
+      const distanceFromBottom =
+        target.scrollHeight - target.scrollTop - target.clientHeight;
+      if (distanceFromBottom < LOAD_MORE_THRESHOLD && hasMore && !isLoadingMore) {
+        loadMoreEntries();
+      }
+    },
+    [hasMore, isLoadingMore, loadMoreEntries]
+  );
+
   return (
     <div className={cn("flex h-full max-w-5xl mx-auto w-full", className)}>
       {/* List panel */}
@@ -349,8 +425,12 @@ export default function BarkFlowHistory({ className }: BarkFlowHistoryProps) {
           <FilterChips active={sourceFilter} onChange={setSourceFilter} />
         </div>
 
-        {/* Entry list */}
-        <div className="flex-1 overflow-y-auto px-1.5">
+        {/* Entry list — virtual scrolled */}
+        <div
+          ref={listContainerRef}
+          className="flex-1 overflow-y-auto px-1.5"
+          onScroll={handleListScroll}
+        >
           {isLoading && filteredEntries.length === 0 && (
             <div className="flex items-center justify-center py-8">
               <span className="text-xs text-muted-foreground">Loading\u2026</span>
@@ -368,14 +448,32 @@ export default function BarkFlowHistory({ className }: BarkFlowHistoryProps) {
 
           {!isLoading && !error && filteredEntries.length === 0 && <EmptyState />}
 
-          {filteredEntries.map((entry) => (
-            <EntryRow
-              key={entry.id}
-              entry={entry}
-              isSelected={entry.id === selectedId}
-              onSelect={() => setSelectedId(entry.id)}
-            />
-          ))}
+          {filteredEntries.length > 0 && (
+            <div style={{ height: totalHeight, position: "relative" }}>
+              <div
+                style={{
+                  position: "absolute",
+                  top: startIdx * ROW_HEIGHT,
+                  width: "100%",
+                }}
+              >
+                {visibleEntries.map((entry) => (
+                  <EntryRow
+                    key={entry.id}
+                    entry={entry}
+                    isSelected={entry.id === selectedId}
+                    onSelect={() => setSelectedId(entry.id)}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {isLoadingMore && (
+            <div className="flex items-center justify-center py-3">
+              <span className="text-xs text-muted-foreground">Loading more\u2026</span>
+            </div>
+          )}
         </div>
       </div>
 
