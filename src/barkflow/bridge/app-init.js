@@ -231,12 +231,31 @@ function saveBarkFlowEntry({ source, rawText, polished, routedTo, hotkeyUsed, du
   }
 }
 
+// Map SQLite snake_case columns to camelCase for the renderer
+function mapRow(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    createdAt: row.created_at,
+    source: row.source,
+    rawText: row.raw_text,
+    polished: row.polished,
+    routedTo: row.routed_to,
+    hotkeyUsed: row.hotkey_used,
+    durationMs: row.duration_ms,
+    projectId: row.project_id,
+    audioPath: row.audio_path,
+    metadata: row.metadata,
+    favorite: row.favorite || 0,
+  };
+}
+
 function getBarkFlowEntries(limit = 50, offset = 0) {
   if (!barkflowDb) return [];
   const rows = barkflowDb.prepare(
     'SELECT * FROM bf_entries ORDER BY created_at DESC LIMIT ? OFFSET ?'
   ).all(limit, offset);
-  return rows;
+  return rows.map(mapRow);
 }
 
 function searchBarkFlowEntries(query, limit = 50) {
@@ -247,7 +266,7 @@ function searchBarkFlowEntries(query, limit = 50) {
      WHERE bf_entries_fts MATCH ?
      ORDER BY e.created_at DESC LIMIT ?`
   ).all(query, limit);
-  return rows;
+  return rows.map(mapRow);
 }
 
 function deleteBarkFlowEntry(id) {
@@ -266,7 +285,7 @@ function toggleBarkFlowFavorite(id) {
 
 function getBarkFlowFavorites(limit = 50) {
   if (!barkflowDb) return [];
-  return barkflowDb.prepare('SELECT * FROM bf_entries WHERE favorite = 1 ORDER BY created_at DESC LIMIT ?').all(limit);
+  return barkflowDb.prepare('SELECT * FROM bf_entries WHERE favorite = 1 ORDER BY created_at DESC LIMIT ?').all(limit).map(mapRow);
 }
 
 function createBarkFlowProject(name) {
@@ -299,7 +318,7 @@ function getProjectEntries(projectId, limit = 50) {
   if (!barkflowDb) return [];
   return barkflowDb.prepare(
     'SELECT * FROM bf_entries WHERE project_id = ? ORDER BY created_at DESC LIMIT ?'
-  ).all(projectId, limit);
+  ).all(projectId, limit).map(mapRow);
 }
 
 module.exports = {
