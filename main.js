@@ -214,6 +214,10 @@ let ipcHandlers = null;
 let globeKeyAlertShown = false;
 let authBridgeServer = null;
 
+// BarkFlow: Track which hotkey slot triggered the current recording.
+// Set on globe-down + combo key detection, consumed by renderer after transcription.
+let barkflowActiveHotkeySlot = "Fn";
+
 function parseAuthBridgePort() {
   const raw = (process.env.OPENWHISPR_AUTH_BRIDGE_PORT || "").trim();
   if (!raw) return DEFAULT_AUTH_BRIDGE_PORT;

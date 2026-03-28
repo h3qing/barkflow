@@ -28,6 +28,13 @@ function validateAudioFile(filePath) {
   }
 
   const resolved = path.resolve(filePath);
+
+  // Security: prevent path traversal outside home directory
+  const homeDir = require("os").homedir();
+  if (!resolved.startsWith(homeDir)) {
+    return { valid: false, error: "File must be within your home directory" };
+  }
+
   const ext = path.extname(resolved).toLowerCase();
 
   if (!SUPPORTED_EXTENSIONS.has(ext)) {
