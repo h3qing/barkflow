@@ -347,12 +347,17 @@ function getBarkFlowEntries(limit = 50, offset = 0) {
 
 function searchBarkFlowEntries(query, limit = 50) {
   if (!barkflowDb) return [];
+  // Security: sanitize FTS5 query to prevent operator injection (*, NEAR, OR, etc.)
+  const safeQuery = String(query).replace(/[*"(){}:^~+\-]/g, "").trim();
+  if (!safeQuery) return [];
+  const ftsQuery = safeQuery.split(/\s+/).filter(Boolean).map(t => `"${t}"`).join(" ");
+  const safeLimit = Math.min(Math.max(1, Number(limit) || 50), 500);
   const rows = barkflowDb.prepare(
     `SELECT e.* FROM bf_entries e
      INNER JOIN bf_entries_fts fts ON e.rowid = fts.rowid
      WHERE bf_entries_fts MATCH ?
      ORDER BY e.created_at DESC LIMIT ?`
-  ).all(query, limit);
+  ).all(ftsQuery, safeLimit);
   return rows.map(mapRow);
 }
 

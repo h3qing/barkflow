@@ -1211,6 +1211,10 @@ declare global {
       updateNotificationReady?: () => Promise<void>;
       updateNotificationRespond?: (action: string) => Promise<{ success: boolean }>;
 
+      // BarkFlow — Hotkey routing
+      barkflowGetActiveHotkey: () => Promise<string>;
+      barkflowConsumeActiveHotkey: () => Promise<string>;
+
       // BarkFlow — History
       barkflowGetEntries: (limit: number, offset: number) => Promise<any[]>;
       barkflowSearchEntries: (query: string, limit: number) => Promise<any[]>;

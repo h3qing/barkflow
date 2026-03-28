@@ -20,6 +20,16 @@ async function polishWithOllama(text, options = {}) {
   const presetId = options.preset || DEFAULT_PRESET_ID;
   const systemPrompt = getPresetPrompt(presetId);
 
+  // Security: only allow localhost Ollama URLs (prevent SSRF)
+  try {
+    const parsedUrl = new URL(baseUrl);
+    if (!["localhost", "127.0.0.1"].includes(parsedUrl.hostname)) {
+      return { success: true, text, polished: false, error: "Ollama URL must be localhost" };
+    }
+  } catch {
+    return { success: true, text, polished: false, error: "Invalid Ollama URL" };
+  }
+
   if (!text || !text.trim()) {
     return { success: true, text: text || "", polished: false };
   }

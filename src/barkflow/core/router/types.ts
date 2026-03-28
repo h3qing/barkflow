@@ -13,6 +13,7 @@ export type RouteDestination =
   | 'paste-at-cursor'
   | 'copy-to-clipboard'
   | 'save-as-markdown'
+  | 'todo'
   | 'project';
 
 export interface RouteDefinition {

@@ -160,22 +160,81 @@ export const useAudioRecording = (toast, options = {}) => {
 
           setTranscript(textToPaste);
 
-          const isStreaming = result.source?.includes("streaming");
-          const { keepTranscriptionInClipboard } = getSettings();
-          const pasteStart = performance.now();
-          await audioManagerRef.current.safePaste(textToPaste, {
-            ...(isStreaming ? { fromStreaming: true } : {}),
-            restoreClipboard: !keepTranscriptionInClipboard,
-          });
-          logger.info(
-            "Paste timing",
-            {
-              pasteMs: Math.round(performance.now() - pasteStart),
-              source: result.source,
-              textLength: result.text.length,
-            },
-            "streaming"
-          );
+          // BarkFlow: Consume the active hotkey slot to determine routing
+          let activeHotkey = "Fn";
+          try {
+            const slot = await window.electronAPI?.barkflowConsumeActiveHotkey?.();
+            if (slot) {
+              activeHotkey = slot;
+            }
+          } catch (hotkeyErr) {
+            logger.warn("BarkFlow: Could not read active hotkey", { error: hotkeyErr }, "barkflow");
+          }
+
+          let routedTo = "paste-at-cursor";
+
+          if (activeHotkey === "Fn+N") {
+            // Fn+N: Save as markdown file
+            routedTo = "save-as-markdown";
+            try {
+              const mdResult = await window.electronAPI?.barkflowSaveMarkdown?.(textToPaste);
+              if (mdResult?.success) {
+                logger.info("BarkFlow: Saved markdown note", { filePath: mdResult.filePath }, "barkflow");
+                toast({
+                  title: "Saved as note",
+                  description: mdResult.filePath?.split("/").pop() || "Markdown file saved",
+                  variant: "default",
+                  duration: 4000,
+                });
+              } else {
+                logger.warn("BarkFlow: Markdown save failed", { error: mdResult?.error }, "barkflow");
+                toast({
+                  title: "Note save failed",
+                  description: mdResult?.error || "Unknown error",
+                  variant: "destructive",
+                  duration: 5000,
+                });
+              }
+            } catch (mdErr) {
+              logger.warn("BarkFlow: Markdown route error", { error: mdErr }, "barkflow");
+            }
+          } else if (activeHotkey === "Fn+T") {
+            // Fn+T: Todo — save entry with routedTo="todo" (Phase 2: Todoist plugin)
+            routedTo = "todo";
+            toast({
+              title: "Saved as todo",
+              description: `"${textToPaste.slice(0, 50)}${textToPaste.length > 50 ? "..." : ""}"`,
+              variant: "default",
+              duration: 4000,
+            });
+          } else if (activeHotkey === "Fn+P") {
+            // Fn+P: Project — save entry with routedTo="project" (show picker later)
+            routedTo = "project";
+            toast({
+              title: "Saved to project",
+              description: `"${textToPaste.slice(0, 50)}${textToPaste.length > 50 ? "..." : ""}"`,
+              variant: "default",
+              duration: 4000,
+            });
+          } else {
+            // Default: Fn alone — paste at cursor (original behavior)
+            const isStreaming = result.source?.includes("streaming");
+            const { keepTranscriptionInClipboard } = getSettings();
+            const pasteStart = performance.now();
+            await audioManagerRef.current.safePaste(textToPaste, {
+              ...(isStreaming ? { fromStreaming: true } : {}),
+              restoreClipboard: !keepTranscriptionInClipboard,
+            });
+            logger.info(
+              "Paste timing",
+              {
+                pasteMs: Math.round(performance.now() - pasteStart),
+                source: result.source,
+                textLength: result.text.length,
+              },
+              "streaming"
+            );
+          }
 
           audioManagerRef.current.saveTranscription(textToPaste, rawText);
 
@@ -184,8 +243,8 @@ export const useAudioRecording = (toast, options = {}) => {
             source: 'voice',
             rawText: rawText,
             polished: textToPaste !== rawText ? textToPaste : null,
-            routedTo: 'paste-at-cursor',
-            hotkeyUsed: null, // TODO: pass actual hotkey from Phase 1a routing
+            routedTo,
+            hotkeyUsed: activeHotkey,
             durationMs: null, // TODO: get from audio recording
             projectId: null,
             audioPath: null,
