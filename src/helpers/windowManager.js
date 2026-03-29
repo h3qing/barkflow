@@ -194,7 +194,7 @@ class WindowManager {
 
   createHotkeyCallback() {
     let lastToggleTime = 0;
-    const DEBOUNCE_MS = 150;
+    const DEBOUNCE_MS = 75; // WhisperWoof: faster toggle response
 
     return async () => {
       if (this.hotkeyManager.isInListeningMode()) {
@@ -243,7 +243,7 @@ class WindowManager {
       return;
     }
 
-    const MIN_HOLD_DURATION_MS = 150;
+    const MIN_HOLD_DURATION_MS = 75; // WhisperWoof: faster push-to-talk
     const MAX_PUSH_DURATION_MS = 300000; // 5 minutes max recording
     const downTime = Date.now();
 
@@ -369,7 +369,7 @@ class WindowManager {
       return;
     }
 
-    const MIN_HOLD_DURATION_MS = 150;
+    const MIN_HOLD_DURATION_MS = 75; // WhisperWoof: faster push-to-talk
     const downTime = Date.now();
 
     this.showDictationPanel();

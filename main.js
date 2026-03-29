@@ -706,8 +706,8 @@ async function startApp() {
     let globeKeyDownTime = 0;
     let globeKeyIsRecording = false;
     let globeLastStopTime = 0;
-    const MIN_HOLD_DURATION_MS = 150;
-    const POST_STOP_COOLDOWN_MS = 300;
+    const MIN_HOLD_DURATION_MS = 75; // WhisperWoof: reduced from 150ms — faster push-to-talk activation
+    const POST_STOP_COOLDOWN_MS = 100; // WhisperWoof: reduced from 300ms for snappier response
 
     globeKeyManager.on("globe-down", async () => {
       const currentHotkey = hotkeyManager.getCurrentHotkey && hotkeyManager.getCurrentHotkey();
