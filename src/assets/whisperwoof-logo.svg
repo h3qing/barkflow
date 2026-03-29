@@ -1,0 +1,17 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- WhisperWoof "WW" logo with dog ear accents -->
+
+  <!-- Background circle -->
+  <circle cx="32" cy="32" r="30" fill="#D97706" />
+
+  <!-- Left ear (dog ear peeking from top-left of W) -->
+  <path d="M 14 18 C 14 18 10 8 9 5 C 8.5 3.5 9.5 3 10.5 3.5 C 12 4.5 16 12 17 18 Z" fill="#8B5E3C" opacity="0.9"/>
+  <path d="M 14.5 17 C 14.5 17 11.5 9 10.5 6 C 10.3 5.3 11 5 11.5 5.5 C 12.5 6.5 15.5 13 16 17 Z" fill="#C4956A" opacity="0.5"/>
+
+  <!-- Right ear (dog ear peeking from top-right of second W) -->
+  <path d="M 50 18 C 50 18 54 8 55 5 C 55.5 3.5 54.5 3 53.5 3.5 C 52 4.5 48 12 47 18 Z" fill="#8B5E3C" opacity="0.9"/>
+  <path d="M 49.5 17 C 49.5 17 52.5 9 53.5 6 C 53.7 5.3 53 5 52.5 5.5 C 51.5 6.5 48.5 13 48 17 Z" fill="#C4956A" opacity="0.5"/>
+
+  <!-- "WW" text -->
+  <text x="32" y="44" text-anchor="middle" font-family="-apple-system, system-ui, sans-serif" font-weight="800" font-size="28" fill="white" letter-spacing="-1">WW</text>
+</svg>

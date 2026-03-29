@@ -733,7 +733,7 @@ class IPCHandlers {
     ipcMain.handle("get-file-size", async (_event, filePath) => {
       const fs = require("fs");
       try {
-        // BarkFlow security: validate path is not traversing outside expected directories
+        // WhisperWoof security: validate path is not traversing outside expected directories
         const resolved = path.resolve(filePath);
         const userDataDir = app.getPath("userData");
         const homeDir = app.getPath("home");
@@ -752,7 +752,7 @@ class IPCHandlers {
     ipcMain.handle("transcribe-audio-file", async (event, filePath, options = {}) => {
       const fs = require("fs");
       try {
-        // BarkFlow security: validate file path and size
+        // WhisperWoof security: validate file path and size
         const resolved = path.resolve(filePath);
         const homeDir = app.getPath("home");
         if (!resolved.startsWith(homeDir)) {
@@ -1420,7 +1420,7 @@ class IPCHandlers {
 
     ipcMain.handle("open-external", async (event, url) => {
       try {
-        // BarkFlow security: validate URL protocol before opening
+        // WhisperWoof security: validate URL protocol before opening
         const parsed = new URL(url);
         const allowedProtocols = ["http:", "https:", "mailto:"];
         if (!allowedProtocols.includes(parsed.protocol)) {
@@ -1751,136 +1751,136 @@ class IPCHandlers {
       }
     });
 
-    // BarkFlow: Ollama text polish — separate from OpenWhispr's reasoning system
-    ipcMain.handle("barkflow-ollama-polish", async (event, text, options) => {
+    // WhisperWoof: Ollama text polish — separate from OpenWhispr's reasoning system
+    ipcMain.handle("whisperwoof-ollama-polish", async (event, text, options) => {
       try {
-        const { polishWithOllama } = require("../barkflow/bridge/ollama-bridge");
+        const { polishWithOllama } = require("../whisperwoof/bridge/ollama-bridge");
         return await polishWithOllama(text, options);
       } catch (error) {
         return { success: true, text, polished: false, error: error.message };
       }
     });
 
-    ipcMain.handle("barkflow-ollama-check", async () => {
+    ipcMain.handle("whisperwoof-ollama-check", async () => {
       try {
-        const { checkOllamaAvailable } = require("../barkflow/bridge/ollama-bridge");
+        const { checkOllamaAvailable } = require("../whisperwoof/bridge/ollama-bridge");
         return await checkOllamaAvailable();
       } catch {
         return { available: false, models: [] };
       }
     });
 
-    // BarkFlow: Polish presets (personality selection)
-    ipcMain.handle("barkflow-get-polish-presets", async () => {
-      const { getPolishPresets } = require("../barkflow/bridge/polish-presets");
+    // WhisperWoof: Polish presets (personality selection)
+    ipcMain.handle("whisperwoof-get-polish-presets", async () => {
+      const { getPolishPresets } = require("../whisperwoof/bridge/polish-presets");
       return getPolishPresets();
     });
 
-    // BarkFlow: Save entry to bf_entries table
-    ipcMain.handle("barkflow-save-entry", async (event, entry) => {
+    // WhisperWoof: Save entry to bf_entries table
+    ipcMain.handle("whisperwoof-save-entry", async (event, entry) => {
       try {
-        const { saveBarkFlowEntry } = require("../barkflow/bridge/app-init");
-        const result = saveBarkFlowEntry(entry);
+        const { saveWhisperWoofEntry } = require("../whisperwoof/bridge/app-init");
+        const result = saveWhisperWoofEntry(entry);
         if (result) {
           return { success: true, ...result };
         }
-        return { success: false, error: "BarkFlow database not initialized" };
+        return { success: false, error: "WhisperWoof database not initialized" };
       } catch (error) {
         return { success: false, error: error.message };
       }
     });
 
-    // BarkFlow: Save as Markdown note (Fn+N routing destination)
-    ipcMain.handle("barkflow-save-markdown", async (event, text) => {
+    // WhisperWoof: Save as Markdown note (Fn+N routing destination)
+    ipcMain.handle("whisperwoof-save-markdown", async (event, text) => {
       try {
-        const { saveAsMarkdown } = require("../barkflow/bridge/markdown-route");
+        const { saveAsMarkdown } = require("../whisperwoof/bridge/markdown-route");
         return saveAsMarkdown(text);
       } catch (error) {
         return { success: false, error: error.message };
       }
     });
 
-    ipcMain.handle("barkflow-get-notes-dir", async () => {
+    ipcMain.handle("whisperwoof-get-notes-dir", async () => {
       try {
-        const { getNotesDirectory } = require("../barkflow/bridge/markdown-route");
+        const { getNotesDirectory } = require("../whisperwoof/bridge/markdown-route");
         return { success: true, path: getNotesDirectory() };
       } catch (error) {
         return { success: false, error: error.message };
       }
     });
 
-    // BarkFlow: History entries (voice + clipboard unified view)
-    ipcMain.handle("barkflow-get-entries", async (_event, limit, offset) => {
+    // WhisperWoof: History entries (voice + clipboard unified view)
+    ipcMain.handle("whisperwoof-get-entries", async (_event, limit, offset) => {
       try {
-        const { getBarkFlowEntries } = require("../barkflow/bridge/app-init");
-        return getBarkFlowEntries(limit, offset);
+        const { getWhisperWoofEntries } = require("../whisperwoof/bridge/app-init");
+        return getWhisperWoofEntries(limit, offset);
       } catch (error) {
-        debugLogger.log(`[BarkFlow] get-entries failed: ${error.message}`);
+        debugLogger.log(`[WhisperWoof] get-entries failed: ${error.message}`);
         return [];
       }
     });
 
-    ipcMain.handle("barkflow-search-entries", async (_event, query, limit) => {
+    ipcMain.handle("whisperwoof-search-entries", async (_event, query, limit) => {
       try {
-        const { searchBarkFlowEntries } = require("../barkflow/bridge/app-init");
-        return searchBarkFlowEntries(query, limit);
+        const { searchWhisperWoofEntries } = require("../whisperwoof/bridge/app-init");
+        return searchWhisperWoofEntries(query, limit);
       } catch (error) {
-        debugLogger.log(`[BarkFlow] search-entries failed: ${error.message}`);
+        debugLogger.log(`[WhisperWoof] search-entries failed: ${error.message}`);
         return [];
       }
     });
 
-    ipcMain.handle("barkflow-delete-entry", async (_event, id) => {
+    ipcMain.handle("whisperwoof-delete-entry", async (_event, id) => {
       try {
-        const { deleteBarkFlowEntry } = require("../barkflow/bridge/app-init");
-        deleteBarkFlowEntry(id);
+        const { deleteWhisperWoofEntry } = require("../whisperwoof/bridge/app-init");
+        deleteWhisperWoofEntry(id);
         return { success: true };
       } catch (error) {
-        debugLogger.log(`[BarkFlow] delete-entry failed: ${error.message}`);
+        debugLogger.log(`[WhisperWoof] delete-entry failed: ${error.message}`);
         return { success: false, error: error.message };
       }
     });
 
-    // BarkFlow: Toggle favorite on an entry
-    ipcMain.handle("barkflow-toggle-favorite", async (_event, id) => {
+    // WhisperWoof: Toggle favorite on an entry
+    ipcMain.handle("whisperwoof-toggle-favorite", async (_event, id) => {
       try {
-        const { toggleBarkFlowFavorite } = require("../barkflow/bridge/app-init");
-        const isFavorite = toggleBarkFlowFavorite(id);
+        const { toggleWhisperWoofFavorite } = require("../whisperwoof/bridge/app-init");
+        const isFavorite = toggleWhisperWoofFavorite(id);
         return { success: true, isFavorite };
       } catch (error) {
-        debugLogger.log(`[BarkFlow] toggle-favorite failed: ${error.message}`);
+        debugLogger.log(`[WhisperWoof] toggle-favorite failed: ${error.message}`);
         return { success: false, error: error.message };
       }
     });
 
-    // BarkFlow: Get favorited entries
-    ipcMain.handle("barkflow-get-favorites", async (_event, limit) => {
+    // WhisperWoof: Get favorited entries
+    ipcMain.handle("whisperwoof-get-favorites", async (_event, limit) => {
       try {
-        const { getBarkFlowFavorites } = require("../barkflow/bridge/app-init");
-        return getBarkFlowFavorites(limit ?? 50);
+        const { getWhisperWoofFavorites } = require("../whisperwoof/bridge/app-init");
+        return getWhisperWoofFavorites(limit ?? 50);
       } catch (error) {
-        debugLogger.log(`[BarkFlow] get-favorites failed: ${error.message}`);
+        debugLogger.log(`[WhisperWoof] get-favorites failed: ${error.message}`);
         return [];
       }
     });
 
-    // BarkFlow: Read image file as base64 (for History view)
-    ipcMain.handle("barkflow-get-image", async (_event, imagePath) => {
+    // WhisperWoof: Read image file as base64 (for History view)
+    ipcMain.handle("whisperwoof-get-image", async (_event, imagePath) => {
       try {
         const fs = require("fs");
         if (!fs.existsSync(imagePath)) return { success: false, error: "File not found" };
         const data = fs.readFileSync(imagePath);
         return { success: true, data: data.toString("base64") };
       } catch (error) {
-        debugLogger.log(`[BarkFlow] get-image failed: ${error.message}`);
+        debugLogger.log(`[WhisperWoof] get-image failed: ${error.message}`);
         return { success: false, error: error.message };
       }
     });
 
-    // BarkFlow: Toggle clipboard monitoring on/off
-    ipcMain.handle("barkflow-clipboard-toggle", async (_event, enabled) => {
+    // WhisperWoof: Toggle clipboard monitoring on/off
+    ipcMain.handle("whisperwoof-clipboard-toggle", async (_event, enabled) => {
       try {
-        const { startClipboardMonitor, stopClipboardMonitor } = require("../barkflow/bridge/app-init");
+        const { startClipboardMonitor, stopClipboardMonitor } = require("../whisperwoof/bridge/app-init");
         if (enabled) {
           startClipboardMonitor();
         } else {
@@ -1888,80 +1888,80 @@ class IPCHandlers {
         }
         return { success: true, enabled };
       } catch (error) {
-        debugLogger.log(`[BarkFlow] clipboard-toggle failed: ${error.message}`);
+        debugLogger.log(`[WhisperWoof] clipboard-toggle failed: ${error.message}`);
         return { success: false, error: error.message };
       }
     });
 
-    // BarkFlow: Projects — named buckets for "wandering mind" capture
-    ipcMain.handle("barkflow-create-project", async (_event, name) => {
+    // WhisperWoof: Projects — named buckets for "wandering mind" capture
+    ipcMain.handle("whisperwoof-create-project", async (_event, name) => {
       try {
-        const { createBarkFlowProject } = require("../barkflow/bridge/app-init");
-        const result = createBarkFlowProject(name);
+        const { createWhisperWoofProject } = require("../whisperwoof/bridge/app-init");
+        const result = createWhisperWoofProject(name);
         if (result) {
           return { success: true, ...result };
         }
-        return { success: false, error: "BarkFlow database not initialized" };
+        return { success: false, error: "WhisperWoof database not initialized" };
       } catch (error) {
-        debugLogger.log(`[BarkFlow] create-project failed: ${error.message}`);
+        debugLogger.log(`[WhisperWoof] create-project failed: ${error.message}`);
         return { success: false, error: error.message };
       }
     });
 
-    ipcMain.handle("barkflow-get-projects", async () => {
+    ipcMain.handle("whisperwoof-get-projects", async () => {
       try {
-        const { getBarkFlowProjects } = require("../barkflow/bridge/app-init");
-        return getBarkFlowProjects();
+        const { getWhisperWoofProjects } = require("../whisperwoof/bridge/app-init");
+        return getWhisperWoofProjects();
       } catch (error) {
-        debugLogger.log(`[BarkFlow] get-projects failed: ${error.message}`);
+        debugLogger.log(`[WhisperWoof] get-projects failed: ${error.message}`);
         return [];
       }
     });
 
-    ipcMain.handle("barkflow-delete-project", async (_event, id) => {
+    ipcMain.handle("whisperwoof-delete-project", async (_event, id) => {
       try {
-        const { deleteBarkFlowProject } = require("../barkflow/bridge/app-init");
-        deleteBarkFlowProject(id);
+        const { deleteWhisperWoofProject } = require("../whisperwoof/bridge/app-init");
+        deleteWhisperWoofProject(id);
         return { success: true };
       } catch (error) {
-        debugLogger.log(`[BarkFlow] delete-project failed: ${error.message}`);
+        debugLogger.log(`[WhisperWoof] delete-project failed: ${error.message}`);
         return { success: false, error: error.message };
       }
     });
 
-    ipcMain.handle("barkflow-get-project-entries", async (_event, projectId, limit) => {
+    ipcMain.handle("whisperwoof-get-project-entries", async (_event, projectId, limit) => {
       try {
-        const { getProjectEntries } = require("../barkflow/bridge/app-init");
+        const { getProjectEntries } = require("../whisperwoof/bridge/app-init");
         return getProjectEntries(projectId, limit);
       } catch (error) {
-        debugLogger.log(`[BarkFlow] get-project-entries failed: ${error.message}`);
+        debugLogger.log(`[WhisperWoof] get-project-entries failed: ${error.message}`);
         return [];
       }
     });
 
-    // BarkFlow: Model advisor — recommend model based on system memory
-    ipcMain.handle("barkflow-get-model-recommendation", async () => {
+    // WhisperWoof: Model advisor — recommend model based on system memory
+    ipcMain.handle("whisperwoof-get-model-recommendation", async () => {
       try {
-        const { getRecommendedModel } = require("../barkflow/bridge/model-advisor");
+        const { getRecommendedModel } = require("../whisperwoof/bridge/model-advisor");
         return getRecommendedModel();
       } catch (error) {
         return { recommended: "small", systemRAM: 8, models: [] };
       }
     });
 
-    ipcMain.handle("barkflow-get-model-failure-advice", async (_event, failedModel, stderr) => {
+    ipcMain.handle("whisperwoof-get-model-failure-advice", async (_event, failedModel, stderr) => {
       try {
-        const { getModelFailureAdvice } = require("../barkflow/bridge/model-advisor");
+        const { getModelFailureAdvice } = require("../whisperwoof/bridge/model-advisor");
         return getModelFailureAdvice(failedModel, stderr);
       } catch {
         return { title: "Model failed", message: "Try a smaller model.", recommendation: "small" };
       }
     });
 
-    // BarkFlow: File import — upload audio files for transcription
-    ipcMain.handle("barkflow-import-audio", async (_event, filePath) => {
+    // WhisperWoof: File import — upload audio files for transcription
+    ipcMain.handle("whisperwoof-import-audio", async (_event, filePath) => {
       try {
-        const { importAudioFile } = require("../barkflow/bridge/file-import");
+        const { importAudioFile } = require("../whisperwoof/bridge/file-import");
         const result = importAudioFile(filePath);
         if (!result.success) return result;
 
@@ -1973,13 +1973,13 @@ class IPCHandlers {
         if (transcription.success && transcription.text) {
           let polished = null;
           try {
-            const { polishWithOllama } = require("../barkflow/bridge/ollama-bridge");
+            const { polishWithOllama } = require("../whisperwoof/bridge/ollama-bridge");
             const polishResult = await polishWithOllama(transcription.text);
             if (polishResult.polished) polished = polishResult.text;
           } catch { /* polish failed, use raw */ }
 
-          const { saveBarkFlowEntry } = require("../barkflow/bridge/app-init");
-          const entry = saveBarkFlowEntry({
+          const { saveWhisperWoofEntry } = require("../whisperwoof/bridge/app-init");
+          const entry = saveWhisperWoofEntry({
             source: "import",
             rawText: transcription.text,
             polished,
@@ -2005,15 +2005,15 @@ class IPCHandlers {
       }
     });
 
-    ipcMain.handle("barkflow-import-supported-extensions", async () => {
-      const { getSupportedExtensions } = require("../barkflow/bridge/file-import");
+    ipcMain.handle("whisperwoof-import-supported-extensions", async () => {
+      const { getSupportedExtensions } = require("../whisperwoof/bridge/file-import");
       return getSupportedExtensions();
     });
 
-    // BarkFlow: Meeting transcription bridge — records meetings into bf_entries
-    ipcMain.handle("barkflow-meeting-start", async (_event, options = {}) => {
+    // WhisperWoof: Meeting transcription bridge — records meetings into bf_entries
+    ipcMain.handle("whisperwoof-meeting-start", async (_event, options = {}) => {
       try {
-        const { startMeeting } = require("../barkflow/bridge/meeting-bridge");
+        const { startMeeting } = require("../whisperwoof/bridge/meeting-bridge");
         const meetingId = startMeeting(options);
         if (meetingId) {
           return { success: true, meetingId };
@@ -2024,9 +2024,9 @@ class IPCHandlers {
       }
     });
 
-    ipcMain.handle("barkflow-meeting-segment", async (_event, text) => {
+    ipcMain.handle("whisperwoof-meeting-segment", async (_event, text) => {
       try {
-        const { addMeetingSegment } = require("../barkflow/bridge/meeting-bridge");
+        const { addMeetingSegment } = require("../whisperwoof/bridge/meeting-bridge");
         addMeetingSegment(text);
         return { success: true };
       } catch (error) {
@@ -2034,9 +2034,9 @@ class IPCHandlers {
       }
     });
 
-    ipcMain.handle("barkflow-meeting-end", async () => {
+    ipcMain.handle("whisperwoof-meeting-end", async () => {
       try {
-        const { endMeeting } = require("../barkflow/bridge/meeting-bridge");
+        const { endMeeting } = require("../whisperwoof/bridge/meeting-bridge");
         const result = endMeeting();
         if (!result) {
           return { success: false, error: "No active meeting" };
@@ -2046,15 +2046,15 @@ class IPCHandlers {
         let polished = null;
         if (result.transcript) {
           try {
-            const { polishWithOllama } = require("../barkflow/bridge/ollama-bridge");
+            const { polishWithOllama } = require("../whisperwoof/bridge/ollama-bridge");
             const polishResult = await polishWithOllama(result.transcript);
             if (polishResult.polished) polished = polishResult.text;
           } catch { /* polish failed, use raw transcript */ }
         }
 
         // Save to bf_entries
-        const { saveBarkFlowEntry } = require("../barkflow/bridge/app-init");
-        const entry = saveBarkFlowEntry({
+        const { saveWhisperWoofEntry } = require("../whisperwoof/bridge/app-init");
+        const entry = saveWhisperWoofEntry({
           source: "meeting",
           rawText: result.transcript,
           polished,
@@ -2085,9 +2085,9 @@ class IPCHandlers {
       }
     });
 
-    ipcMain.handle("barkflow-meeting-status", async () => {
+    ipcMain.handle("whisperwoof-meeting-status", async () => {
       try {
-        const { getActiveMeeting } = require("../barkflow/bridge/meeting-bridge");
+        const { getActiveMeeting } = require("../whisperwoof/bridge/meeting-bridge");
         const meeting = getActiveMeeting();
         return { success: true, active: meeting !== null, meeting };
       } catch (error) {
@@ -2095,44 +2095,44 @@ class IPCHandlers {
       }
     });
 
-    // BarkFlow: Plugin management (MCP server plugins)
-    ipcMain.handle("barkflow-get-plugins", async () => {
+    // WhisperWoof: Plugin management (MCP server plugins)
+    ipcMain.handle("whisperwoof-get-plugins", async () => {
       try {
-        const { getPlugins } = require("../barkflow/bridge/plugin-bridge");
+        const { getPlugins } = require("../whisperwoof/bridge/plugin-bridge");
         return getPlugins();
       } catch (error) {
-        debugLogger.log(`[BarkFlow] get-plugins failed: ${error.message}`);
+        debugLogger.log(`[WhisperWoof] get-plugins failed: ${error.message}`);
         return [];
       }
     });
 
-    ipcMain.handle("barkflow-update-plugin", async (_event, id, updates) => {
+    ipcMain.handle("whisperwoof-update-plugin", async (_event, id, updates) => {
       try {
-        const { updatePlugin } = require("../barkflow/bridge/plugin-bridge");
+        const { updatePlugin } = require("../whisperwoof/bridge/plugin-bridge");
         return updatePlugin(id, updates);
       } catch (error) {
-        debugLogger.log(`[BarkFlow] update-plugin failed: ${error.message}`);
+        debugLogger.log(`[WhisperWoof] update-plugin failed: ${error.message}`);
         return null;
       }
     });
 
-    ipcMain.handle("barkflow-add-plugin", async (_event, config) => {
+    ipcMain.handle("whisperwoof-add-plugin", async (_event, config) => {
       try {
-        const { addPlugin } = require("../barkflow/bridge/plugin-bridge");
+        const { addPlugin } = require("../whisperwoof/bridge/plugin-bridge");
         return addPlugin(config);
       } catch (error) {
-        debugLogger.log(`[BarkFlow] add-plugin failed: ${error.message}`);
+        debugLogger.log(`[WhisperWoof] add-plugin failed: ${error.message}`);
         return null;
       }
     });
 
-    ipcMain.handle("barkflow-remove-plugin", async (_event, id) => {
+    ipcMain.handle("whisperwoof-remove-plugin", async (_event, id) => {
       try {
-        const { removePlugin } = require("../barkflow/bridge/plugin-bridge");
+        const { removePlugin } = require("../whisperwoof/bridge/plugin-bridge");
         removePlugin(id);
         return { success: true };
       } catch (error) {
-        debugLogger.log(`[BarkFlow] remove-plugin failed: ${error.message}`);
+        debugLogger.log(`[WhisperWoof] remove-plugin failed: ${error.message}`);
         return { success: false, error: error.message };
       }
     });

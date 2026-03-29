@@ -1,4 +1,4 @@
-# BarkFlow Eval Set
+# WhisperWoof Eval Set
 
 Test audio samples paired with expected transcription and polish outputs.
 Used to measure and improve STT + polish quality.

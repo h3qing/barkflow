@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "description": "BarkFlow transcription + polish evaluation set",
+  "description": "WhisperWoof transcription + polish evaluation set",
   "cases": [
     {
       "id": "filler-removal-basic",

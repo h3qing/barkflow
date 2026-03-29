@@ -11,9 +11,9 @@
   - Ran 3 parallel reviews: engineering, security, design/UX
   - Synthesized review summary (5 critical blockers identified)
 - Files created/modified:
-  - `~/.gstack/projects/barkflow/heqinghuang-main-design-20260323-222609.md` (design doc, APPROVED)
-  - `~/.gstack/projects/barkflow/ceo-plans/2026-03-23-barkflow-mvp.md` (CEO plan, ACTIVE)
-  - `~/.gstack/projects/barkflow/review-summary-2026-03-23.md` (review synthesis)
+  - `~/.gstack/projects/whisperwoof/heqinghuang-main-design-20260323-222609.md` (design doc, APPROVED)
+  - `~/.gstack/projects/whisperwoof/ceo-plans/2026-03-23-whisperwoof-mvp.md` (CEO plan, ACTIVE)
+  - `~/.gstack/projects/whisperwoof/review-summary-2026-03-23.md` (review synthesis)
   - `docs/reviews/2026-03-23-initial-reviews.md` (committed to repo)
 
 ## Session: 2026-03-25 — Design Review + Eng Review + Repo Setup
@@ -46,7 +46,7 @@
   - Deferred command bar (Cmd+K) to Phase 2
 - Decisions: 8 added to plan
 - Files modified:
-  - `~/.gstack/projects/barkflow/heqinghuang-main-design-20260323-222609.md`
+  - `~/.gstack/projects/whisperwoof/heqinghuang-main-design-20260323-222609.md`
 
 ### Eng Review (/plan-eng-review)
 - **Status:** complete
@@ -55,7 +55,7 @@
   - Researched OpenWhispr codebase in depth (tech stack, architecture, security, hotkey system, testing)
   - Reframed Phase 1 items as ADAPT/NEW/HARDEN based on OpenWhispr baseline
   - Architecture: cloud providers kept + proxied, Kysely kept, preload audit in Phase 0
-  - Code quality: src/barkflow/ isolation with bridge pattern, strict TS for BarkFlow only
+  - Code quality: src/whisperwoof/ isolation with bridge pattern, strict TS for WhisperWoof only
   - Tests: Vitest framework, 30+ gap coverage diagram, test plan artifact
   - Performance: real-time streaming for meetings, background processing for file imports
   - Added 3 new features: Projects (wandering mind), Meeting recording, File upload pipeline
@@ -66,7 +66,7 @@
   - Added failure modes for meeting disconnect + file import errors
 - Decisions: 12 made
 - Files modified:
-  - `~/.gstack/projects/barkflow/heqinghuang-main-design-20260323-222609.md`
+  - `~/.gstack/projects/whisperwoof/heqinghuang-main-design-20260323-222609.md`
 
 ### Repo Setup
 - **Status:** complete
@@ -86,14 +86,14 @@
 - **Status:** complete
 - Actions taken:
   - npm install completed (Node 22 required, cache permission fix with --cache /tmp/npm-cache)
-  - Wired BarkFlow init into main.js (startApp + will-quit)
+  - Wired WhisperWoof init into main.js (startApp + will-quit)
   - Compiled native binaries (Globe key, fast-paste, audio-tap, mic-listener)
   - Built Vite renderer (npm run build:renderer)
   - Verified app launches: `npx electron .` boots, shows UI, no crashes
   - All 70 tests pass (248ms)
 - Files created/modified:
-  - `src/barkflow/bridge/app-init.js` (CommonJS shim for main process)
-  - `main.js` (wired BarkFlow init + shutdown)
+  - `src/whisperwoof/bridge/app-init.js` (CommonJS shim for main process)
+  - `main.js` (wired WhisperWoof init + shutdown)
   - `package.json` (vitest added as dev dependency)
 
 ## Test Results
@@ -141,14 +141,14 @@
 - **Status:** in_progress
 - Actions taken:
   - Created ollama-bridge.js (main process) — calls Ollama HTTP API
-  - Registered IPC handlers: barkflow-ollama-polish, barkflow-ollama-check
+  - Registered IPC handlers: whisperwoof-ollama-polish, whisperwoof-ollama-check
   - Exposed in preload bridge
   - Hooked into useAudioRecording.js onTranscriptionComplete flow
   - Auto-polish: STT → Ollama polish → paste polished text
   - Fallback: if Ollama unavailable, paste raw text (no delay)
   - Both raw and polished saved to history
 - Files created/modified:
-  - `src/barkflow/bridge/ollama-bridge.js` (new)
+  - `src/whisperwoof/bridge/ollama-bridge.js` (new)
   - `src/helpers/ipcHandlers.js` (added IPC handlers)
   - `preload.js` (exposed new methods)
   - `src/hooks/useAudioRecording.js` (hooked polish into flow)
@@ -170,9 +170,9 @@
 - **Status:** complete
 - Actions taken:
   - Built PluginManager class (JSON-RPC over stdio, process lifecycle)
-  - Built plugin management UI (BarkFlowPlugins.tsx) + sidebar integration
+  - Built plugin management UI (WhisperWoofPlugins.tsx) + sidebar integration
   - Built Command Bar (Cmd+K) with prefix routing (/todo, /note, /project)
-  - Created plugin bridge (persistent config in barkflow-plugins.json)
+  - Created plugin bridge (persistent config in whisperwoof-plugins.json)
   - Default plugins: Todoist, Notion, Calendar, Slack (disabled)
   - 17 new tests (87 total)
 - PR: #8 (merged)
@@ -183,13 +183,13 @@
 - Eval framework: 8 test cases, WER/filler scoring
 - Fixed progress bar regression, large model crash messages
 - Removed Support dropdown, cleaned settings (hid cloud sections)
-- BarkFlow CI: replaced 8 OpenWhispr workflows with 1
+- WhisperWoof CI: replaced 8 OpenWhispr workflows with 1
 
 ### Phase 3: Polish & Ship
 - **Status:** in_progress
 - Actions taken:
   - Virtual scrolling for History (handles 10K+ entries)
-  - UI cleanup: removed Integrations, simplified profile, default to BarkFlow History
+  - UI cleanup: removed Integrations, simplified profile, default to WhisperWoof History
   - CONTRIBUTING.md
   - CHANGELOG.md with version history
   - Bumped version: 0.1.0 → 0.4.0
@@ -219,6 +219,6 @@
 |----------|--------|
 | Where am I? | v0.4.0 — Phase 3 nearly complete, all major features shipped |
 | Where am I going? | Final polish → v1.0 public release |
-| What's the goal? | Fork OpenWhispr → BarkFlow: voice-first personal automation |
+| What's the goal? | Fork OpenWhispr → WhisperWoof: voice-first personal automation |
 | What have I learned? | Full stack built: StorageProvider, Pipeline, Ollama polish, MCP plugins, History UI, Command Bar, Clipboard monitoring, 87 tests |
-| What have I done? | 4 phases shipped (0-3), 3 PRs merged, 87 tests, ~5,000 lines BarkFlow code |
+| What have I done? | 4 phases shipped (0-3), 3 PRs merged, 87 tests, ~5,000 lines WhisperWoof code |

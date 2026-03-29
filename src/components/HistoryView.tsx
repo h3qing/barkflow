@@ -10,7 +10,7 @@ import { cn } from "./lib/utils";
 import { useUpcomingEvents } from "../hooks/useUpcomingEvents";
 import UpcomingMeetings from "./UpcomingMeetings";
 import { useSettingsStore } from "../stores/settingsStore";
-import ClipboardHistory from "../barkflow/ui/clipboard-preview/ClipboardHistory";
+import ClipboardHistory from "../whisperwoof/ui/clipboard-preview/ClipboardHistory";
 
 interface HistoryViewProps {
   history: TranscriptionItemType[];
@@ -52,7 +52,7 @@ export default function HistoryView({
   const { events, isLoading: eventsLoading, isConnected } = useUpcomingEvents();
   const [searchQuery, setSearchQuery] = useState("");
   const [favorites, setFavorites] = useState<Set<number>>(
-    () => new Set(JSON.parse(localStorage.getItem("barkflow-home-favorites") || "[]"))
+    () => new Set(JSON.parse(localStorage.getItem("whisperwoof-home-favorites") || "[]"))
   );
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
 
@@ -64,7 +64,7 @@ export default function HistoryView({
       } else {
         next.add(id);
       }
-      localStorage.setItem("barkflow-home-favorites", JSON.stringify([...next]));
+      localStorage.setItem("whisperwoof-home-favorites", JSON.stringify([...next]));
       return next;
     });
   }, []);
@@ -194,7 +194,7 @@ export default function HistoryView({
                 </span>
               </div>
             )}
-            {/* BarkFlow: Search bar + favorites toggle */}
+            {/* WhisperWoof: Search bar + favorites toggle */}
             <div className="mb-3 flex items-center gap-2">
               <div className="relative flex-1">
                 <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground/50" />
@@ -396,7 +396,7 @@ export default function HistoryView({
               </div>
             )}
 
-            {/* BarkFlow: Clipboard History */}
+            {/* WhisperWoof: Clipboard History */}
             <div className="mt-6">
               <div className="flex items-center gap-1.5 pb-2.5">
                 <Clipboard size={12} className="text-muted-foreground" />

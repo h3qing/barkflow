@@ -1,9 +1,9 @@
 const { execFileSync } = require("child_process");
 const debugLogger = require("./debugLogger");
 
-const DBUS_SERVICE_NAME = "com.barkflow.App";
-const DBUS_OBJECT_PATH = "/com/barkflow/App";
-const DBUS_INTERFACE = "com.barkflow.App";
+const DBUS_SERVICE_NAME = "com.whisperwoof.App";
+const DBUS_OBJECT_PATH = "/com/whisperwoof/App";
+const DBUS_INTERFACE = "com.whisperwoof.App";
 
 // Map Electron modifier names to Hyprland modifier names
 const ELECTRON_TO_HYPRLAND_MOD = {

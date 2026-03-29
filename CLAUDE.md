@@ -1,8 +1,8 @@
-# BarkFlow — Developer Guide
+# WhisperWoof — Developer Guide
 
 ## Project Overview
 
-BarkFlow is a voice-first personal automation tool. Fork of OpenWhispr (Electron 39 + React 19 + TypeScript + Tailwind v4 + Vite).
+WhisperWoof is a voice-first personal automation tool. Fork of OpenWhispr (Electron 39 + React 19 + TypeScript + Tailwind v4 + Vite).
 
 Core pipeline: Voice → STT (Whisper/Parakeet) → LLM Polish (Ollama) → Hotkey-driven routing → Storage
 
@@ -17,16 +17,16 @@ Core pipeline: Voice → STT (Whisper/Parakeet) → LLM Polish (Ollama) → Hotk
 
 ## Architecture
 
-- **StorageProvider interface** — All data access is abstracted. Phase 1 uses SqliteProvider (Kysely ORM + better-sqlite3). Future providers: Supabase, BarkFlow Cloud.
+- **StorageProvider interface** — All data access is abstracted. Phase 1 uses SqliteProvider (Kysely ORM + better-sqlite3). Future providers: Supabase, WhisperWoof Cloud.
 - **Hotkey = intent** — Key combo determines destination. No LLM intent detection.
-- **MCP for plugins** (Phase 2) — Plugins are MCP servers. BarkFlow is an MCP client.
+- **MCP for plugins** (Phase 2) — Plugins are MCP servers. WhisperWoof is an MCP client.
 - **Local-first** — No mandatory cloud dependency. Ollama is optional (graceful degradation to raw transcript).
-- **Bridge pattern** — `src/barkflow/bridge/` is the ONLY place that imports OpenWhispr code. All other BarkFlow code is isolated.
+- **Bridge pattern** — `src/whisperwoof/bridge/` is the ONLY place that imports OpenWhispr code. All other WhisperWoof code is isolated.
 
 ## Key Files (after fork setup)
 
 ```
-src/barkflow/                 ← ALL BarkFlow additions
+src/whisperwoof/                 ← ALL WhisperWoof additions
   core/                       ← Main process (strict TypeScript)
     storage/                  StorageProvider interface + SqliteProvider
     polish/                   OllamaService (adapts OpenWhispr's ReasoningService)
@@ -36,12 +36,12 @@ src/barkflow/                 ← ALL BarkFlow additions
   ui/                         ← Renderer (React + TSX)
     history/                  HistoryPanel, Search, AudioPlayer
     indicator/                FloatingIndicator (Classic + Bark dog ear styles)
-    settings/                 BarkFlow settings sections
+    settings/                 WhisperWoof settings sections
     projects/                 Project picker, project detail view
   bridge/                     ← ONLY place that imports OpenWhispr code
     stt-hook.ts               Hook into STT output
     hotkey-hook.ts            Extend HotkeyManager
-    app-init.ts               BarkFlow init at startup
+    app-init.ts               WhisperWoof init at startup
 ```
 
 ## Testing
@@ -53,7 +53,7 @@ npx vitest              # Run tests
 npx vitest --coverage   # Run with coverage
 ```
 
-Target: 80%+ coverage on BarkFlow code. Test priorities:
+Target: 80%+ coverage on WhisperWoof code. Test priorities:
 1. StorageProvider CRUD + FTS search + Projects
 2. LLM polish pipeline (mock Ollama, test fallback chain)
 3. Hotkey routing dispatch

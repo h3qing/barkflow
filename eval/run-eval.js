@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * BarkFlow Eval Runner
+ * WhisperWoof Eval Runner
  *
  * Runs test cases against the Ollama polish pipeline and scores results.
  * Can use either real audio files (via Whisper) or text-only (polish only).
@@ -68,7 +68,7 @@ function hasBulletList(text) {
 // --- Ollama Polish ---
 
 async function polishText(text, preset) {
-  const { getPresetPrompt } = require(path.join(__dirname, "..", "src", "barkflow", "bridge", "polish-presets.js"));
+  const { getPresetPrompt } = require(path.join(__dirname, "..", "src", "whisperwoof", "bridge", "polish-presets.js"));
   const systemPrompt = getPresetPrompt(preset);
 
   const controller = new AbortController();
@@ -113,7 +113,7 @@ async function runEval(options = {}) {
     ? ["clean", "professional", "casual", "minimal", "structured"]
     : [options.preset || "clean"];
 
-  console.log(`\nBarkFlow Eval — ${config.cases.length} cases × ${presets.length} preset(s)`);
+  console.log(`\nWhisperWoof Eval — ${config.cases.length} cases × ${presets.length} preset(s)`);
   console.log(`Model: ${OLLAMA_MODEL} | URL: ${OLLAMA_URL}\n`);
 
   // Check Ollama is running

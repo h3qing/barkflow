@@ -1,4 +1,4 @@
-# BarkFlow Review Summary — 2026-03-23
+# WhisperWoof Review Summary — 2026-03-23
 
 Three independent reviews completed in parallel. This is the CEO-ready synthesis.
 
@@ -59,7 +59,7 @@ Fork → StorageProvider → Ollama Polish → Hotkey Router → History UI
 
 ### Proposed directory structure:
 ```
-src/barkflow/          ← ALL BarkFlow additions here
+src/whisperwoof/          ← ALL WhisperWoof additions here
   core/                ← Domain logic (no Electron/React deps)
     pipeline/          ← Orchestrates STT → Polish → Route
     polish/            ← Ollama integration
@@ -75,7 +75,7 @@ src/barkflow/          ← ALL BarkFlow additions here
   bridge/              ← ONLY place that touches OpenWhispr code
     stt-hook.ts        ← Hook into STT output
     hotkey-hook.ts     ← Extend hotkey system
-    app-init.ts        ← BarkFlow init at startup
+    app-init.ts        ← WhisperWoof init at startup
 ```
 
 ### Key architecture recommendation:
@@ -105,11 +105,11 @@ src/barkflow/          ← ALL BarkFlow additions here
 
 ### Top security architecture recommendations:
 - Use `safeStorage` API for all secrets and sensitive data encryption
-- Set `~/.barkflow/` directory permissions to `0700`, files to `0600`
+- Set `~/.whisperwoof/` directory permissions to `0700`, files to `0600`
 - Add `.metadata_never_index` to exclude from Spotlight
 - Add an `audit_log` table from day one
 - Design MCP permission model now (declare required network domains, data types)
-- Proxy Ollama requests through BarkFlow with a shared secret header
+- Proxy Ollama requests through WhisperWoof with a shared secret header
 
 ---
 

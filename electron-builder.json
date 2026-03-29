@@ -1,9 +1,9 @@
 {
-  "appId": "com.barkflow.app",
-  "productName": "BarkFlow",
+  "appId": "com.whisperwoof.app",
+  "productName": "WhisperWoof",
   "protocols": {
-    "name": "BarkFlow Protocol",
-    "schemes": ["barkflow"]
+    "name": "WhisperWoof Protocol",
+    "schemes": ["whisperwoof"]
   },
   "directories": {
     "output": "dist"
@@ -23,7 +23,7 @@
     "src/models/**/*",
     "src/services/localReasoningBridge.js",
     "src/types/**/*",
-    "src/barkflow/**/*",
+    "src/whisperwoof/**/*",
     "src/utils.js",
     "src/utils/**/*",
     "src/updater.js",
@@ -125,9 +125,9 @@
     "notarize": true,
     "extendInfo": {
       "LSUIElement": true,
-      "NSMicrophoneUsageDescription": "BarkFlow uses the microphone to capture your voice for transcription and routing.",
-      "NSAudioCaptureUsageDescription": "BarkFlow uses system audio to capture meeting audio for transcription. Your screen is never recorded.",
-      "NSAccessibilityUsageDescription": "BarkFlow needs accessibility permissions to paste transcribed text into other applications."
+      "NSMicrophoneUsageDescription": "WhisperWoof uses the microphone to capture your voice for transcription and routing.",
+      "NSAudioCaptureUsageDescription": "WhisperWoof uses system audio to capture meeting audio for transcription. Your screen is never recorded.",
+      "NSAccessibilityUsageDescription": "WhisperWoof needs accessibility permissions to paste transcribed text into other applications."
     }
   },
   "win": {
@@ -212,7 +212,7 @@
     "include": "resources/nsis/cleanup-models.nsh"
   },
   "dmg": {
-    "title": "BarkFlow",
+    "title": "WhisperWoof",
     "icon": "src/assets/icon.icns",
     "window": {
       "width": 540,
@@ -222,7 +222,7 @@
   "publish": {
     "provider": "github",
     "owner": "h3qing",
-    "repo": "barkflow",
+    "repo": "whisperwoof",
     "private": false,
     "releaseType": "draft"
   }

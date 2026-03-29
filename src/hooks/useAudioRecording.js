@@ -117,12 +117,12 @@ export const useAudioRecording = (toast, options = {}) => {
             return;
           }
 
-          // BarkFlow: Ollama text polish (if available)
+          // WhisperWoof: Ollama text polish (if available)
           let textToPaste = result.text;
           let rawText = result.rawText ?? result.text;
           try {
-            const polishPreset = localStorage.getItem("barkflow-polish-preset") || "clean";
-            const polishResult = await window.electronAPI?.barkflowOllamaPolish?.(
+            const polishPreset = localStorage.getItem("whisperwoof-polish-preset") || "clean";
+            const polishResult = await window.electronAPI?.whisperwoofOllamaPolish?.(
               transcribedText,
               { preset: polishPreset }
             );
@@ -130,19 +130,19 @@ export const useAudioRecording = (toast, options = {}) => {
               rawText = transcribedText;
               textToPaste = polishResult.text;
               logger.info(
-                "BarkFlow Ollama polish applied",
+                "WhisperWoof Ollama polish applied",
                 {
                   inputLen: transcribedText.length,
                   outputLen: polishResult.text.length,
                   elapsed: polishResult.elapsed,
                 },
-                "barkflow"
+                "whisperwoof"
               );
 
-              // BarkFlow: Learning mode — show polish before/after
-              const captureCount = parseInt(localStorage.getItem("barkflow_capture_count") || "0", 10);
+              // WhisperWoof: Learning mode — show polish before/after
+              const captureCount = parseInt(localStorage.getItem("whisperwoof_capture_count") || "0", 10);
               const isLearningMode = captureCount < 20;
-              localStorage.setItem("barkflow_capture_count", String(captureCount + 1));
+              localStorage.setItem("whisperwoof_capture_count", String(captureCount + 1));
 
               if (isLearningMode && polishResult.polished) {
                 toast({
@@ -155,7 +155,7 @@ export const useAudioRecording = (toast, options = {}) => {
             }
           } catch (polishError) {
             // Polish failed — use raw STT text. Never block the pipeline.
-            logger.warn("BarkFlow Ollama polish failed", { error: polishError }, "barkflow");
+            logger.warn("WhisperWoof Ollama polish failed", { error: polishError }, "whisperwoof");
           }
 
           setTranscript(textToPaste);
@@ -179,8 +179,8 @@ export const useAudioRecording = (toast, options = {}) => {
 
           audioManagerRef.current.saveTranscription(textToPaste, rawText);
 
-          // BarkFlow: Save to bf_entries for unified history
-          window.electronAPI?.barkflowSaveEntry?.({
+          // WhisperWoof: Save to bf_entries for unified history
+          window.electronAPI?.whisperwoofSaveEntry?.({
             source: 'voice',
             rawText: rawText,
             polished: textToPaste !== rawText ? textToPaste : null,

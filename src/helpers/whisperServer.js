@@ -331,10 +331,10 @@ class WhisperServerManager extends EventEmitter {
         const stderr = info.stderr ? info.stderr.trim().slice(0, 500) : "";
         const details = stderr || (info.exitCode !== null ? `exit code: ${info.exitCode}` : "");
 
-        // BarkFlow: use model advisor for friendly, actionable error messages
+        // WhisperWoof: use model advisor for friendly, actionable error messages
         let userMessage;
         try {
-          const { getModelFailureAdvice } = require("../barkflow/bridge/model-advisor");
+          const { getModelFailureAdvice } = require("../whisperwoof/bridge/model-advisor");
           const modelName = this.modelPath ? require("path").basename(this.modelPath).replace("ggml-", "").replace(".bin", "") : "unknown";
           const advice = getModelFailureAdvice(modelName, stderr);
           userMessage = `${advice.title}\n\n${advice.message}`;

@@ -1,5 +1,5 @@
 /**
- * UpgradePrompt — disabled for BarkFlow (local-first, no Pro tier).
+ * UpgradePrompt — disabled for WhisperWoof (local-first, no Pro tier).
  * Kept as a no-op to avoid breaking imports.
  */
 

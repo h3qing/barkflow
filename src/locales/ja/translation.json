@@ -4,7 +4,7 @@
       "sectionTitle": "言語",
       "sectionDescription": "インターフェースと文字起こしの言語を個別に設定",
       "uiLabel": "インターフェース言語",
-      "uiDescription": "BarkFlow のインターフェースで使用する言語を選択",
+      "uiDescription": "WhisperWoof のインターフェースで使用する言語を選択",
       "transcriptionLabel": "文字起こし言語",
       "transcriptionDescription": "より正確な文字起こしのために話す言語を選択"
     }
@@ -15,12 +15,12 @@
       "hide": "ディクテーションパネルを非表示"
     },
     "openControlPanel": "コントロールパネルを開く",
-    "quit": "BarkFlow を終了",
-    "tooltip": "BarkFlow - 音声ディクテーション"
+    "quit": "WhisperWoof を終了",
+    "tooltip": "WhisperWoof - 音声ディクテーション"
   },
   "menu": {
-    "appLabel": "BarkFlow",
-    "quit": "BarkFlow を終了",
+    "appLabel": "WhisperWoof",
+    "quit": "WhisperWoof を終了",
     "speech": "スピーチ",
     "help": "ヘルプ",
     "learnMore": "詳細を見る",
@@ -38,8 +38,8 @@
       "message": "ブラウザでリンクを開けませんでした:\n{{url}}\n\nエラー: {{error}}"
     },
     "loadFailure": {
-      "title": "BarkFlow の読み込みに失敗しました",
-      "message": "BarkFlow の UI を読み込めませんでした。",
+      "title": "WhisperWoof の読み込みに失敗しました",
+      "message": "WhisperWoof の UI を読み込めませんでした。",
       "detail": {
         "window": "ウィンドウ: {{windowName}}",
         "error": "エラー {{errorCode}}: {{errorDescription}}",
@@ -50,17 +50,17 @@
   },
   "startup": {
     "error": {
-      "title": "BarkFlow 起動エラー",
+      "title": "WhisperWoof 起動エラー",
       "message": "アプリケーションの起動に失敗しました:\n\n{{error}}\n\nこの問題を報告してください。"
     },
     "globeHotkey": {
       "title": "Globe ホットキーが使用できません",
-      "message": "BarkFlow は Globe キーのホットキーを有効にできませんでした。",
+      "message": "WhisperWoof は Globe キーのホットキーを有効にできませんでした。",
       "details": {
         "unknown": "Globe リスナーの起動中に不明なエラーが発生しました。",
         "fallback": "Globe キーのショートカットは無効のままになります。既存のキーボードショートカットは引き続き使用できます。",
         "devHint": "`npm run compile:globe` を実行し、アプリを再ビルドしてリスナーバイナリを再生成してください。",
-        "reinstallHint": "BarkFlow を再インストールするか、問題が解決しない場合はサポートにお問い合わせください。"
+        "reinstallHint": "WhisperWoof を再インストールするか、問題が解決しない場合はサポートにお問い合わせください。"
       }
     }
   },
@@ -82,9 +82,9 @@
     "systemAudio": "システムオーディオの設定はこのプラットフォームでは利用できません。"
   },
   "titleBar": {
-    "quitTitle": "BarkFlow を終了",
-    "quitConfirmTitle": "BarkFlow を終了しますか？",
-    "quitConfirmDescription": "BarkFlow を終了し、バックグラウンドプロセスを停止します。",
+    "quitTitle": "WhisperWoof を終了",
+    "quitConfirmTitle": "WhisperWoof を終了しますか？",
+    "quitConfirmDescription": "WhisperWoof を終了し、バックグラウンドプロセスを停止します。",
     "quit": "終了",
     "cancel": "キャンセル"
   },
@@ -161,14 +161,14 @@
       "accessibilityTitle": "アクセシビリティ",
       "accessibilityDescription": "文字起こしテキストを任意のアプリに自動貼り付けします",
       "testAndGrant": "テストして許可",
-      "requiredForApp": "BarkFlow の動作に必要です",
+      "requiredForApp": "WhisperWoof の動作に必要です",
       "microphoneRequired": "マイクへのアクセスが必要です",
       "openSystemSettings": "システム設定を開く",
       "systemAudioTitle": "システムオーディオ",
       "systemAudioDescription": "通話や会議で他の参加者の音声を録音します。画面を録画することはありません。",
       "optional": "任意",
       "recommended": "推奨",
-      "accessibilityTroubleshooting": "検出されませんか？システム設定のアクセシビリティからBarkFlowを削除し、再度追加してオンに切り替えてください。スキップして続行することもできます — テキストは自動貼り付けではなくクリップボードにコピーされます。"
+      "accessibilityTroubleshooting": "検出されませんか？システム設定のアクセシビリティからWhisperWoofを削除し、再度追加してオンに切り替えてください。スキップして続行することもできます — テキストは自動貼り付けではなくクリップボードにコピーされます。"
     },
     "transcription": {
       "title": "文字起こし設定",
@@ -195,7 +195,7 @@
       "problemTitle": "アップデートで問題が発生しました",
       "problemDescription": "アップデートを完了できませんでした。後でもう一度お試しください。",
       "installTitle": "アップデートをインストール",
-      "installDescription": "BarkFlow はアップデートを適用するために再起動します。作業中のデータは保存されます。",
+      "installDescription": "WhisperWoof はアップデートを適用するために再起動します。作業中のデータは保存されます。",
       "couldNotInstallTitle": "アップデートをインストールできませんでした",
       "couldNotInstallDescription": "問題が発生しました。もう一度お試しください。",
       "couldNotDownloadTitle": "アップデートをダウンロードできませんでした",
@@ -210,7 +210,7 @@
     },
     "accessibilityMissing": {
       "title": "アクセシビリティの許可が必要です",
-      "description": "BarkFlow が正しく動作するにはアクセシビリティの許可が必要です。以下で有効にしてください。"
+      "description": "WhisperWoof が正しく動作するにはアクセシビリティの許可が必要です。以下で有効にしてください。"
     },
     "billing": {
       "pastDueTitle": "お支払いを処理できませんでした",
@@ -263,8 +263,8 @@
       "rawTranscript": "生の文字起こし"
     },
     "cloudMigration": {
-      "title": "BarkFlow Pro へようこそ",
-      "description": "7 日間の無料トライアルが有効です！より高速で正確な文字起こしのために BarkFlow Cloud に切り替えました。以前の設定は保存されています。設定からいつでも戻せます。",
+      "title": "WhisperWoof Pro へようこそ",
+      "description": "7 日間の無料トライアルが有効です！より高速で正確な文字起こしのために WhisperWoof Cloud に切り替えました。以前の設定は保存されています。設定からいつでも戻せます。",
       "viewSettings": "設定を表示"
     },
     "aiCta": {
@@ -417,7 +417,7 @@
       "micErrors": {
         "accessFailed": "マイクへのアクセスに失敗しました。もう一度お試しください。",
         "noMicrophones": "マイクが検出されませんでした。{{settingsPath}} でマイクを接続または選択してください。",
-        "permissionDenied": "権限が拒否されました。{{privacyPath}} を開いて BarkFlow を許可してください。",
+        "permissionDenied": "権限が拒否されました。{{privacyPath}} を開いて WhisperWoof を許可してください。",
         "couldNotStart": "選択したマイクを開始できませんでした。{{settingsPath}} で入力デバイスを選択してから、テストを再実行してください。",
         "noActiveInput": "アクティブな音声入力が見つかりませんでした。{{settingsPath}} でマイクを選択してください。",
         "unknown": "マイクへのアクセスに失敗しました: {{error}}。別の入力デバイスを選択してもう一度お試しください。",
@@ -446,8 +446,8 @@
         "accessibilityNeeded": "テキストの自動貼り付けを有効にするには、システム設定でアクセシビリティの権限を許可してください。",
         "windowsReady": "Windows では自動貼り付けに特別な権限は必要ありません。準備完了です！",
         "linuxReadyWithMethod": "{{method}} を使用した自動貼り付けが利用可能です。準備完了です！",
-        "waylandClipboardMode": "この Wayland セッションでは自動貼り付けが利用できません。BarkFlow はテキストをクリップボードにコピーしますので、Ctrl+V で貼り付けてください。",
-        "optionalPasteTool": "自動貼り付けには {{tool}} をインストールしてください:\n\n{{installCmd}}{{waylandNote}}\n\nインストールしなくても BarkFlow は使用できます。テキストがクリップボードにコピーされるので、Ctrl+V で貼り付けてください。"
+        "waylandClipboardMode": "この Wayland セッションでは自動貼り付けが利用できません。WhisperWoof はテキストをクリップボードにコピーしますので、Ctrl+V で貼り付けてください。",
+        "optionalPasteTool": "自動貼り付けには {{tool}} をインストールしてください:\n\n{{installCmd}}{{waylandNote}}\n\nインストールしなくても WhisperWoof は使用できます。テキストがクリップボードにコピーされるので、Ctrl+V で貼り付けてください。"
       },
       "alerts": {
         "accessibilityNeeded": "アクセシビリティの権限が必要です！システム設定で許可してください。"
@@ -460,7 +460,7 @@
         "defaultPasteTool": "xdotool",
         "xdotoolXwayland": "xdotool（XWayland アプリ）"
       },
-      "accessibilityTestText": "BarkFlow アクセシビリティテスト",
+      "accessibilityTestText": "WhisperWoof アクセシビリティテスト",
       "warning": {
         "messages": {
           "macos": "サウンド設定で入力デバイスを確認してください",
@@ -531,7 +531,7 @@
       "continueWithGoogle": "Google で続ける"
     },
     "welcomeSubtitle": "音声でどこでもディクテーション",
-    "welcomeTitle": "BarkFlow へようこそ"
+    "welcomeTitle": "WhisperWoof へようこそ"
   },
   "cleanupPrompt": "クリーンアップ",
   "developerSection": {
@@ -736,10 +736,10 @@
     "recheckChecking": "確認中...",
     "title": "自動貼り付け",
     "usingMethodPrefix": "使用中:",
-    "waylandClipboardDescription": "この Wayland セッションでは自動貼り付けが利用できません。BarkFlow はテキストをクリップボードにコピーしますので、Ctrl+V で手動で貼り付けてください。",
+    "waylandClipboardDescription": "この Wayland セッションでは自動貼り付けが利用できません。WhisperWoof はテキストをクリップボードにコピーしますので、Ctrl+V で手動で貼り付けてください。",
     "waylandClipboardTitle": "Wayland でのクリップボードモード",
     "windowsReady": "Windows は自動貼り付けに標準対応しています。設定は不要です！",
-    "withoutToolPrefix": "このツールがない場合、BarkFlow はテキストをクリップボードにコピーします。Ctrl+V で手動で貼り付けてください。",
+    "withoutToolPrefix": "このツールがない場合、WhisperWoof はテキストをクリップボードにコピーします。Ctrl+V で手動で貼り付けてください。",
     "xwaylandAppsOnly": "自動貼り付けは XWayland アプリのみで動作します"
   },
   "promptStudio": {
@@ -789,7 +789,7 @@
       "none": "なし",
       "outputLabel": "出力",
       "processing": "処理中...",
-      "openwhisprCloud": "BarkFlow Cloud",
+      "openwhisprCloud": "WhisperWoof Cloud",
       "providerLabel": "プロバイダー",
       "run": "テスト実行",
       "customEndpoint": "カスタムエンドポイント"
@@ -934,7 +934,7 @@
           "price": "$0",
           "period": "永久",
           "features": [
-            "## BarkFlow Cloud",
+            "## WhisperWoof Cloud",
             "2,000 words/week transcription",
             "5 hours of meeting recordings/month",
             "## Always free",
@@ -1045,7 +1045,7 @@
         "button": "アカウントを削除",
         "deleting": "削除中...",
         "title": "アカウントを削除しますか？",
-        "description": "BarkFlow アカウント、すべてのクラウド同期ノート、すべてのローカルデータ（文字起こし、音声録音、ダウンロード済みモデル、カレンダー接続、設定を含む）が完全に削除されます。この操作は元に戻せません。",
+        "description": "WhisperWoof アカウント、すべてのクラウド同期ノート、すべてのローカルデータ（文字起こし、音声録音、ダウンロード済みモデル、カレンダー接続、設定を含む）が完全に削除されます。この操作は元に戻せません。",
         "confirmText": "すべて削除",
         "successTitle": "アカウントが削除されました",
         "successDescription": "アカウントとすべてのデータが削除されました。アプリが再読み込みされます。",
@@ -1082,13 +1082,13 @@
       "description": "文字起こしのクリーンアップ、コマンド処理、エラー修正を行いながら、あなたの話し方を維持します。",
       "enableTextCleanup": "テキスト補正を有効にする",
       "enableTextCleanupDescription": "AI が文字起こしの品質を向上",
-      "openwhisprCloud": "BarkFlow Cloud",
+      "openwhisprCloud": "WhisperWoof Cloud",
       "openwhisprCloudDescription": "設定不要ですぐに使えます。",
       "title": "AI テキスト補正",
       "toasts": {
         "switchedCloud": {
-          "description": "テキスト補正に BarkFlow のクラウドサービスを使用します。",
-          "title": "BarkFlow Cloud に切り替えました"
+          "description": "テキスト補正に WhisperWoof のクラウドサービスを使用します。",
+          "title": "WhisperWoof Cloud に切り替えました"
         },
         "switchedCustom": {
           "description": "独自のプロバイダーと API キーを設定してください。",
@@ -1151,7 +1151,7 @@
       "appearance": {
         "auto": "自動",
         "dark": "ダーク",
-        "description": "BarkFlow の外観を設定",
+        "description": "WhisperWoof の外観を設定",
         "light": "ライト",
         "theme": "テーマ",
         "themeDescription": "ライト、ダーク、またはシステムに合わせる",
@@ -1197,9 +1197,9 @@
       },
       "startup": {
         "launchAtLogin": "ログイン時に起動",
-        "launchAtLoginDescription": "ログイン時に BarkFlow を自動的に起動",
+        "launchAtLoginDescription": "ログイン時に WhisperWoof を自動的に起動",
         "title": "起動設定",
-        "description": "BarkFlow の起動時の動作を制御",
+        "description": "WhisperWoof の起動時の動作を制御",
         "startMinimized": "最小化で起動",
         "startMinimizedDescription": "コントロールパネルウィンドウを表示せずに起動"
       },
@@ -1245,7 +1245,7 @@
           "group": {
             "step1Title": "ユーザーを input グループに追加",
             "step2Title": "ログアウトして再ログイン",
-            "step2Desc": "グループの変更は新しいセッションでのみ有効になります。デスクトップからログアウトし、再ログインしてから BarkFlow を開き直してください。"
+            "step2Desc": "グループの変更は新しいセッションでのみ有効になります。デスクトップからログアウトし、再ログインしてから WhisperWoof を開き直してください。"
           },
           "service": {
             "step1Title": "サービスディレクトリを作成",
@@ -1293,7 +1293,7 @@
           },
           "installUpdate": {
             "confirmText": "インストールして再起動",
-            "description": "BarkFlow はアップデートを適用するために再起動します。",
+            "description": "WhisperWoof はアップデートを適用するために再起動します。",
             "title": "アップデートをインストール"
           },
           "noUpdates": {
@@ -1324,13 +1324,13 @@
     "permissions": {
       "accessibilityDescription": "文字起こし後の自動貼り付けに必要",
       "accessibilityTitle": "アクセシビリティ",
-      "description": "BarkFlow の正常動作に必要なシステム権限をテスト・管理",
+      "description": "WhisperWoof の正常動作に必要なシステム権限をテスト・管理",
       "microphoneDescription": "ディクテーションと文字起こしのためにあなたの声を録音します",
       "microphoneTitle": "マイク",
       "resetAccessibility": {
-        "description": "BarkFlow をアクセシビリティの権限から削除します。システム設定 > プライバシーとセキュリティ > アクセシビリティ で再度許可する必要があります。",
+        "description": "WhisperWoof をアクセシビリティの権限から削除します。システム設定 > プライバシーとセキュリティ > アクセシビリティ で再度許可する必要があります。",
         "label": "アクセシビリティの権限をリセット",
-        "rowDescription": "アプリの再インストールや再ビルド後の問題を修正するために、システム設定で BarkFlow を削除してから再追加",
+        "rowDescription": "アプリの再インストールや再ビルド後の問題を修正するために、システム設定で WhisperWoof を削除してから再追加",
         "title": "アクセシビリティの権限をリセット"
       },
       "optional": "任意",
@@ -1351,7 +1351,7 @@
       "description": "デバイスからのデータ送信を管理します。初期設定ではすべてオフです。",
       "title": "プライバシー",
       "usageAnalytics": "使用状況の分析",
-      "usageAnalyticsDescription": "匿名のパフォーマンスデータを共有して BarkFlow の改善にご協力ください。文字起こしの内容は送信されません。タイミングとエラーデータのみです。",
+      "usageAnalyticsDescription": "匿名のパフォーマンスデータを共有して WhisperWoof の改善にご協力ください。文字起こしの内容は送信されません。タイミングとエラーデータのみです。",
       "dataRetention": "データ保持",
       "dataRetentionDescription": "文字起こしと音声を履歴にローカル保存します。無効にすると、文字起こしは貼り付けられますが保存されません。",
       "audioRetention": "音声の保持",
@@ -1372,14 +1372,14 @@
     "transcription": {
       "customSetup": "カスタム設定",
       "customSetupDescription": "独自のプロバイダーと API キーを使用。",
-      "description": "BarkFlow の音声文字起こし方法を選択",
-      "openwhisprCloud": "BarkFlow Cloud",
+      "description": "WhisperWoof の音声文字起こし方法を選択",
+      "openwhisprCloud": "WhisperWoof Cloud",
       "openwhisprCloudDescription": "設定不要ですぐに使えます。",
       "title": "音声テキスト変換",
       "toasts": {
         "switchedCloud": {
-          "description": "文字起こしに BarkFlow のクラウドサービスを使用します。",
-          "title": "BarkFlow Cloud に切り替えました"
+          "description": "文字起こしに WhisperWoof のクラウドサービスを使用します。",
+          "title": "WhisperWoof Cloud に切り替えました"
         },
         "switchedCustom": {
           "description": "独自のプロバイダーと API キーを設定してください。",
@@ -1572,7 +1572,7 @@
       "setupTitle": "文字起こしを設定",
       "setupDescription": "音声の文字起こし方法を選択してください。ライブディクテーションにも適用されます。",
       "continue": "続ける",
-      "openwhisprCloud": "BarkFlow Cloud",
+      "openwhisprCloud": "WhisperWoof Cloud",
       "custom": "カスタム",
       "selectFolder": "フォルダを選択",
       "transcriptionFailed": "文字起こしに失敗しました",
@@ -1583,15 +1583,15 @@
       "fileTooLarge": "このファイルは 500 MB の制限を超えています。",
       "largeFileNote": "大容量ファイルは分割され、並列で文字起こしされます。",
       "chunkProgress": "パート {{completed}} / {{total}} を文字起こし中...",
-      "paidPlanRequired": "25 MB を超えるファイルのクラウド文字起こしには有料プランが必要です。大容量ファイルは BarkFlow Cloud で信頼性の高い高品質な結果を得られます。",
+      "paidPlanRequired": "25 MB を超えるファイルのクラウド文字起こしには有料プランが必要です。大容量ファイルは WhisperWoof Cloud で信頼性の高い高品質な結果を得られます。",
       "byokTooLarge": "サードパーティの API キーは 25 MB までのファイルのみ対応しています。",
-      "byokTooLargeDetail": "25 MB を超えるファイルは、BarkFlow Cloud が分割・並列処理・結合を行います。サードパーティの制限に依存せず、信頼性の高い結果が得られます。",
-      "byokTooLargeNeedsAccount": "アカウントを作成し、有料プランにアップグレードすると、BarkFlow Cloud でより大きなファイルを文字起こしできます。",
-      "byokTooLargeNeedsUpgrade": "有料プランにアップグレードすると、BarkFlow Cloud でより大きなファイルを文字起こしできます。",
-      "switchToCloudForLargeFiles": "このファイルを文字起こしするには BarkFlow Cloud に切り替えてください。",
+      "byokTooLargeDetail": "25 MB を超えるファイルは、WhisperWoof Cloud が分割・並列処理・結合を行います。サードパーティの制限に依存せず、信頼性の高い結果が得られます。",
+      "byokTooLargeNeedsAccount": "アカウントを作成し、有料プランにアップグレードすると、WhisperWoof Cloud でより大きなファイルを文字起こしできます。",
+      "byokTooLargeNeedsUpgrade": "有料プランにアップグレードすると、WhisperWoof Cloud でより大きなファイルを文字起こしできます。",
+      "switchToCloudForLargeFiles": "このファイルを文字起こしするには WhisperWoof Cloud に切り替えてください。",
       "createAccount": "アカウント作成",
       "upgrade": "アップグレード",
-      "switchToCloud": "BarkFlow Cloud"
+      "switchToCloud": "WhisperWoof Cloud"
     },
     "meeting": {
       "title": "議事録",
@@ -1712,7 +1712,7 @@
     },
     "tryAgain": "再試行",
     "card": {
-      "brand": "BarkFlow",
+      "brand": "WhisperWoof",
       "signalId": "Signal ID",
       "audioSignature": "あなたの音声シグネチャー",
       "stop": "停止",
@@ -1798,7 +1798,7 @@
       "undo": "元に戻す",
       "accessibilityMissing": {
         "title": "アクセシビリティの許可が必要です",
-        "description": "BarkFlow がホットキーの検出とテキストの貼り付けを行うには、アクセシビリティの許可が必要です。コントロールパネルで有効にしてください。"
+        "description": "WhisperWoof がホットキーの検出とテキストの貼り付けを行うには、アクセシビリティの許可が必要です。コントロールパネルで有効にしてください。"
       }
     },
     "mic": {
@@ -1834,8 +1834,8 @@
       "systemPrompt": "システムプロンプト",
       "systemPromptDescription": "エージェントへのカスタム指示",
       "systemPromptPlaceholder": "カスタムシステムプロンプトを入力...",
-      "openwhisprCloud": "BarkFlow Cloud",
-      "openwhisprCloudDescription": "BarkFlowのクラウドAIをエージェント会話に使用する",
+      "openwhisprCloud": "WhisperWoof Cloud",
+      "openwhisprCloudDescription": "WhisperWoofのクラウドAIをエージェント会話に使用する",
       "customSetup": "カスタム設定 (BYOK)",
       "customSetupDescription": "自分のAPIキーを使用してお好みのモデルを選択する"
     },
@@ -1877,7 +1877,7 @@
       "disconnectConfirm": "{{email}} を切断しますか？",
       "disconnectDescription": "このカレンダーからの会議メモは記録されなくなります。",
       "systemAudioRequired": "システムオーディオの権限が必要です",
-      "systemAudioDescription": "会議を文字起こしするには、BarkFlow に他の参加者の音声を録音するためのシステムオーディオの権限が必要です。画面を録画することはありません。システム設定に移動して有効にします。",
+      "systemAudioDescription": "会議を文字起こしするには、WhisperWoof に他の参加者の音声を録音するためのシステムオーディオの権限が必要です。画面を録画することはありません。システム設定に移動して有効にします。",
       "openSettings": "システム設定を開く"
     },
     "plan": {
@@ -1899,8 +1899,8 @@
       "feedback": "20時間以上必要ですか？ gabe@openwhispr.com までご連絡ください"
     },
     "notABot": {
-      "title": "BarkFlow はミーティング録音ツールであり、ボットではありません",
-      "description": "BarkFlow はシステムから直接オーディオをキャプチャします — 参加者としてミーティングに参加することはありません。カレンダーを接続して、通常通りノートを取るだけです。"
+      "title": "WhisperWoof はミーティング録音ツールであり、ボットではありません",
+      "description": "WhisperWoof はシステムから直接オーディオをキャプチャします — 参加者としてミーティングに参加することはありません。カレンダーを接続して、通常通りノートを取るだけです。"
     }
   },
   "calendar": {
@@ -1948,7 +1948,7 @@
     "signInDescription": "アカウントを作成またはログインして、会議を録音・文字起こしできます。",
     "connectCalendar": "カレンダーを接続",
     "connectCalendarDescription": "Google カレンダーを連携して、今後のミーティングを確認し、自動的にノートを記録します。",
-    "notABot": "BarkFlow はシステムオーディオで録音します — ボットとしてミーティングに参加することはありません。",
+    "notABot": "WhisperWoof はシステムオーディオで録音します — ボットとしてミーティングに参加することはありません。",
     "connectCalendarButton": "カレンダーを接続"
   },
   "notesView": {
@@ -1993,13 +1993,13 @@
     }
   },
   "updateNotification": {
-    "title": "BarkFlow のアップデートあり",
+    "title": "WhisperWoof のアップデートあり",
     "body": "バージョン {{version}} がダウンロード可能です",
     "cta": "今すぐ更新"
   },
   "permissionsGate": {
     "title": "権限が必要です",
-    "description": "BarkFlow がこのコンピュータで動作するために、いくつかの権限が必要です。",
+    "description": "WhisperWoof がこのコンピュータで動作するために、いくつかの権限が必要です。",
     "continue": "続行"
   }
 }

@@ -103,7 +103,7 @@ export function useModelDownload({
         const now = Date.now();
         if (now - lastProgressUpdateRef.current < PROGRESS_THROTTLE_MS) return;
         lastProgressUpdateRef.current = now;
-        // BarkFlow: never let progress go backwards (prevents regression visual glitch)
+        // WhisperWoof: never let progress go backwards (prevents regression visual glitch)
         setDownloadProgress((prev) => {
           const newPct = data.percentage || 0;
           const newBytes = data.downloaded_bytes || 0;

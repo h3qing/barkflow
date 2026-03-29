@@ -599,7 +599,7 @@ export function validateHotkey(
     }
   }
 
-  // BarkFlow: macOS cannot register modifier-only combos (e.g., Control+Alt)
+  // WhisperWoof: macOS cannot register modifier-only combos (e.g., Control+Alt)
   // via Electron's globalShortcut. Reject with a clear message.
   if (!hasBaseKey && modifierCount >= 2 && platform === "darwin") {
     return {

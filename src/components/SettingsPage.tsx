@@ -226,7 +226,7 @@ function TranscriptionSection({
         description={t("settingsPage.transcription.description")}
       />
 
-      {/* BarkFlow: cloud/subscription mode selector hidden — local-first, always show model picker */}
+      {/* WhisperWoof: cloud/subscription mode selector hidden — local-first, always show model picker */}
       {false && isSignedIn && (
         <SettingsPanel>
           <SettingsPanelRow>
@@ -352,7 +352,7 @@ function TranscriptionSection({
         </SettingsPanel>
       )}
 
-      {/* BarkFlow: always show model picker (no cloud gate) */}
+      {/* WhisperWoof: always show model picker (no cloud gate) */}
       {(isCustomMode || !isSignedIn || true) && (
         <TranscriptionModelPicker
           selectedCloudProvider={cloudTranscriptionProvider}
@@ -475,7 +475,7 @@ function AiModelsSection({
 
       {useReasoningModel && (
         <>
-          {/* BarkFlow: cloud/subscription mode selector hidden — local-first, always show model picker */}
+          {/* WhisperWoof: cloud/subscription mode selector hidden — local-first, always show model picker */}
           {false && isSignedIn && (
             <SettingsPanel>
               <SettingsPanelRow>
@@ -598,7 +598,7 @@ function AiModelsSection({
             </SettingsPanel>
           )}
 
-          {/* BarkFlow: always show model picker (no cloud gate) */}
+          {/* WhisperWoof: always show model picker (no cloud gate) */}
           {(isCustomMode || !isSignedIn || true) && (
             <ReasoningModelSelector
               reasoningModel={reasoningModel}
@@ -728,8 +728,8 @@ export default function SettingsPage({ activeSection = "general" }: SettingsPage
   const [isRemovingModels, setIsRemovingModels] = useState(false);
   const cachePathHint =
     typeof navigator !== "undefined" && /Windows/i.test(navigator.userAgent)
-      ? "%USERPROFILE%\\.cache\\barkflow"
-      : "~/.cache/barkflow";
+      ? "%USERPROFILE%\\.cache\\whisperwoof"
+      : "~/.cache/whisperwoof";
 
   const {
     status: updateStatus,
@@ -845,7 +845,7 @@ export default function SettingsPage({ activeSection = "general" }: SettingsPage
 
   const { theme, setTheme } = useTheme();
   const usage = useUsage();
-  // BarkFlow: usage limit toast hidden — local-first, no cloud usage limits
+  // WhisperWoof: usage limit toast hidden — local-first, no cloud usage limits
   // const hasShownApproachingToast = useRef(false);
   // useEffect(() => {
   //   if (usage?.isApproachingLimit && !hasShownApproachingToast.current) {
@@ -1241,7 +1241,7 @@ export default function SettingsPage({ activeSection = "general" }: SettingsPage
   const renderSectionContent = () => {
     switch (activeSection) {
       case "account":
-        // BarkFlow: account section hidden — local-first, no cloud account management
+        // WhisperWoof: account section hidden — local-first, no cloud account management
         return null;
         // Original account section preserved below for future re-enablement
         if (false) return (
@@ -1383,7 +1383,7 @@ export default function SettingsPage({ activeSection = "general" }: SettingsPage
         );
 
       case "plansBilling":
-        // BarkFlow: plans/billing section hidden — local-first, no cloud subscriptions
+        // WhisperWoof: plans/billing section hidden — local-first, no cloud subscriptions
         return null;
         // Original plansBilling section preserved below for future re-enablement
         if (false) return (
@@ -3182,7 +3182,7 @@ EOF`,
                 description={t("settingsPage.privacy.description")}
               />
 
-              {/* BarkFlow: cloud backup section hidden — local-first, no cloud sync */}
+              {/* WhisperWoof: cloud backup section hidden — local-first, no cloud sync */}
               {false && isSignedIn && (
                 <div className="mb-4">
                   <SettingsPanel className="mb-2">

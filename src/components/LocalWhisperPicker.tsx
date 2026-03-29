@@ -81,8 +81,8 @@ export default function LocalWhisperPicker({
     if (!hasLoadedRef.current) {
       hasLoadedRef.current = true;
       loadModels();
-      // BarkFlow: get smart model recommendation based on system memory
-      (window as any).electronAPI?.barkflowGetModelRecommendation?.().then((rec: any) => {
+      // WhisperWoof: get smart model recommendation based on system memory
+      (window as any).electronAPI?.whisperwoofGetModelRecommendation?.().then((rec: any) => {
         if (rec?.recommended) {
           setRecommendedModel(rec.recommended);
           setSystemRAM(rec.systemRAM);

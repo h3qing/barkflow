@@ -4,7 +4,7 @@
       "sectionTitle": "語言",
       "sectionDescription": "分別設定介面語言和轉錄語言",
       "uiLabel": "介面語言",
-      "uiDescription": "選擇 BarkFlow 介面使用的語言",
+      "uiDescription": "選擇 WhisperWoof 介面使用的語言",
       "transcriptionLabel": "轉錄語言",
       "transcriptionDescription": "選擇你說話的語言，以提高轉錄準確度"
     }
@@ -15,12 +15,12 @@
       "hide": "隱藏語音輸入面板"
     },
     "openControlPanel": "開啟控制面板",
-    "quit": "結束 BarkFlow",
-    "tooltip": "BarkFlow - 語音輸入"
+    "quit": "結束 WhisperWoof",
+    "tooltip": "WhisperWoof - 語音輸入"
   },
   "menu": {
-    "appLabel": "BarkFlow",
-    "quit": "結束 BarkFlow",
+    "appLabel": "WhisperWoof",
+    "quit": "結束 WhisperWoof",
     "speech": "語音",
     "help": "說明",
     "learnMore": "瞭解更多",
@@ -38,8 +38,8 @@
       "message": "無法在瀏覽器中開啟連結：\n{{url}}\n\n錯誤：{{error}}"
     },
     "loadFailure": {
-      "title": "BarkFlow 載入失敗",
-      "message": "BarkFlow 無法載入介面。",
+      "title": "WhisperWoof 載入失敗",
+      "message": "WhisperWoof 無法載入介面。",
       "detail": {
         "window": "視窗：{{windowName}}",
         "error": "錯誤 {{errorCode}}：{{errorDescription}}",
@@ -50,17 +50,17 @@
   },
   "startup": {
     "error": {
-      "title": "BarkFlow 啟動錯誤",
+      "title": "WhisperWoof 啟動錯誤",
       "message": "應用程式啟動失敗：\n\n{{error}}\n\n請回報此問題。"
     },
     "globeHotkey": {
       "title": "Globe 快捷鍵無法使用",
-      "message": "BarkFlow 無法啟用 Globe 鍵快捷鍵。",
+      "message": "WhisperWoof 無法啟用 Globe 鍵快捷鍵。",
       "details": {
         "unknown": "啟動 Globe 監聽程式時發生未知錯誤。",
         "fallback": "Globe 鍵快捷鍵將維持停用狀態；現有的鍵盤快捷鍵仍可正常使用。",
         "devHint": "執行 `npm run compile:globe` 並重新建置應用程式以重新產生監聽程式。",
-        "reinstallHint": "請嘗試重新安裝 BarkFlow，或聯絡客服。"
+        "reinstallHint": "請嘗試重新安裝 WhisperWoof，或聯絡客服。"
       }
     }
   },
@@ -82,9 +82,9 @@
     "systemAudio": "系統音訊設定在此平台上不可用。"
   },
   "titleBar": {
-    "quitTitle": "結束 BarkFlow",
-    "quitConfirmTitle": "確定要結束 BarkFlow？",
-    "quitConfirmDescription": "這將關閉 BarkFlow 並停止背景程序。",
+    "quitTitle": "結束 WhisperWoof",
+    "quitConfirmTitle": "確定要結束 WhisperWoof？",
+    "quitConfirmDescription": "這將關閉 WhisperWoof 並停止背景程序。",
     "quit": "結束",
     "cancel": "取消"
   },
@@ -161,14 +161,14 @@
       "accessibilityTitle": "輔助使用",
       "accessibilityDescription": "允許將轉錄文字自動貼上到任何應用程式",
       "testAndGrant": "測試並授權",
-      "requiredForApp": "BarkFlow 運作所需",
+      "requiredForApp": "WhisperWoof 運作所需",
       "microphoneRequired": "需要麥克風存取權限",
       "openSystemSettings": "打開系統設定",
       "systemAudioTitle": "系統音訊",
       "systemAudioDescription": "錄製通話和會議中其他參與者的音訊。我們絕不會錄製您的螢幕。",
       "optional": "可選",
       "recommended": "建議",
-      "accessibilityTroubleshooting": "未偵測到？請在系統設定的輔助使用中移除 BarkFlow，然後重新加入並開啟。您可以跳過此步驟繼續 — 文字將複製到剪貼簿而非自動貼上。"
+      "accessibilityTroubleshooting": "未偵測到？請在系統設定的輔助使用中移除 WhisperWoof，然後重新加入並開啟。您可以跳過此步驟繼續 — 文字將複製到剪貼簿而非自動貼上。"
     },
     "transcription": {
       "title": "轉錄設定",
@@ -195,7 +195,7 @@
       "problemTitle": "更新遇到問題",
       "problemDescription": "無法完成更新。請稍後再試。",
       "installTitle": "安裝更新",
-      "installDescription": "BarkFlow 將重新啟動以套用更新。進行中的工作會自動儲存。",
+      "installDescription": "WhisperWoof 將重新啟動以套用更新。進行中的工作會自動儲存。",
       "couldNotInstallTitle": "無法安裝更新",
       "couldNotInstallDescription": "發生錯誤，請再試一次。",
       "couldNotDownloadTitle": "無法下載更新",
@@ -210,7 +210,7 @@
     },
     "accessibilityMissing": {
       "title": "需要輔助使用權限",
-      "description": "我們偵測到 BarkFlow 需要輔助使用權限才能正常運作。請在下方啟用。"
+      "description": "我們偵測到 WhisperWoof 需要輔助使用權限才能正常運作。請在下方啟用。"
     },
     "billing": {
       "pastDueTitle": "我們無法處理你的付款",
@@ -263,8 +263,8 @@
       "rawTranscript": "原始轉錄"
     },
     "cloudMigration": {
-      "title": "歡迎使用 BarkFlow Pro",
-      "description": "你的 7 天免費試用已啟用！我們已將轉錄切換至 BarkFlow Cloud，提供更快、更準確的結果。你之前的設定已儲存，隨時可在設定中切換回來。",
+      "title": "歡迎使用 WhisperWoof Pro",
+      "description": "你的 7 天免費試用已啟用！我們已將轉錄切換至 WhisperWoof Cloud，提供更快、更準確的結果。你之前的設定已儲存，隨時可在設定中切換回來。",
       "viewSettings": "查看設定"
     },
     "aiCta": {
@@ -417,7 +417,7 @@
       "micErrors": {
         "accessFailed": "麥克風存取失敗。請再試一次。",
         "noMicrophones": "未偵測到麥克風。請在 {{settingsPath}} 中連接或選擇麥克風。",
-        "permissionDenied": "權限被拒絕。請開啟 {{privacyPath}} 並允許 BarkFlow。",
+        "permissionDenied": "權限被拒絕。請開啟 {{privacyPath}} 並允許 WhisperWoof。",
         "couldNotStart": "無法啟動所選的麥克風。請在 {{settingsPath}} 中選擇輸入裝置後重新測試。",
         "noActiveInput": "找不到有效的音訊輸入。請在 {{settingsPath}} 中選擇麥克風。",
         "unknown": "麥克風存取失敗：{{error}}。請選擇其他輸入裝置後再試。",
@@ -446,8 +446,8 @@
         "accessibilityNeeded": "請在系統設定中授予輔助使用權限，以啟用自動貼上功能。",
         "windowsReady": "Windows 不需要特殊權限即可自動貼上。一切就緒！",
         "linuxReadyWithMethod": "已使用 {{method}} 啟用自動貼上。一切就緒！",
-        "waylandClipboardMode": "此 Wayland 工作階段不支援自動貼上。BarkFlow 會將文字複製到剪貼簿，你可以使用 Ctrl+V 貼上。",
-        "optionalPasteTool": "如需自動貼上，請安裝 {{tool}}：\n\n{{installCmd}}{{waylandNote}}\n\n沒有安裝也可以使用 BarkFlow，文字會複製到剪貼簿，你可以使用 Ctrl+V 貼上。"
+        "waylandClipboardMode": "此 Wayland 工作階段不支援自動貼上。WhisperWoof 會將文字複製到剪貼簿，你可以使用 Ctrl+V 貼上。",
+        "optionalPasteTool": "如需自動貼上，請安裝 {{tool}}：\n\n{{installCmd}}{{waylandNote}}\n\n沒有安裝也可以使用 WhisperWoof，文字會複製到剪貼簿，你可以使用 Ctrl+V 貼上。"
       },
       "alerts": {
         "accessibilityNeeded": "需要輔助使用權限！請在系統設定中授權。"
@@ -460,7 +460,7 @@
         "defaultPasteTool": "xdotool",
         "xdotoolXwayland": "xdotool（XWayland 應用程式）"
       },
-      "accessibilityTestText": "BarkFlow 輔助使用測試",
+      "accessibilityTestText": "WhisperWoof 輔助使用測試",
       "warning": {
         "messages": {
           "macos": "請檢查聲音設定以選擇輸入裝置",
@@ -530,7 +530,7 @@
       "continueWithGoogle": "使用 Google 繼續"
     },
     "welcomeSubtitle": "隨時隨地用語音輸入文字",
-    "welcomeTitle": "歡迎使用 BarkFlow",
+    "welcomeTitle": "歡迎使用 WhisperWoof",
     "sessionExpired": "工作階段已過期，請重新登入。"
   },
   "cleanupPrompt": "文字整理",
@@ -736,10 +736,10 @@
     "recheckChecking": "檢查中...",
     "title": "自動貼上",
     "usingMethodPrefix": "使用",
-    "waylandClipboardDescription": "此 Wayland 工作階段不支援自動貼上。BarkFlow 會將文字複製到剪貼簿，你可以使用 Ctrl+V 手動貼上。",
+    "waylandClipboardDescription": "此 Wayland 工作階段不支援自動貼上。WhisperWoof 會將文字複製到剪貼簿，你可以使用 Ctrl+V 手動貼上。",
     "waylandClipboardTitle": "Wayland 剪貼簿模式",
     "windowsReady": "Windows 內建支援自動貼上。不需要額外設定！",
-    "withoutToolPrefix": "若未安裝此工具，BarkFlow 會將文字複製到剪貼簿。你可以使用 Ctrl+V 手動貼上。",
+    "withoutToolPrefix": "若未安裝此工具，WhisperWoof 會將文字複製到剪貼簿。你可以使用 Ctrl+V 手動貼上。",
     "xwaylandAppsOnly": "自動貼上僅適用於 XWayland 應用程式"
   },
   "promptStudio": {
@@ -789,7 +789,7 @@
       "none": "無",
       "outputLabel": "輸出",
       "processing": "處理中...",
-      "openwhisprCloud": "BarkFlow Cloud",
+      "openwhisprCloud": "WhisperWoof Cloud",
       "providerLabel": "供應商",
       "run": "執行測試",
       "customEndpoint": "自訂端點"
@@ -954,7 +954,7 @@
           "price": "$0",
           "period": "永久",
           "features": [
-            "## BarkFlow Cloud",
+            "## WhisperWoof Cloud",
             "2,000 words/week transcription",
             "5 hours of meeting recordings/month",
             "## Always free",
@@ -1045,7 +1045,7 @@
         "button": "刪除我的帳戶",
         "deleting": "正在刪除...",
         "title": "刪除您的帳戶？",
-        "description": "這將永久刪除您的 BarkFlow 帳戶、所有雲端同步筆記和所有本地資料，包括轉錄、音訊錄製、下載的模型、行事曆連線和設定。此操作無法復原。",
+        "description": "這將永久刪除您的 WhisperWoof 帳戶、所有雲端同步筆記和所有本地資料，包括轉錄、音訊錄製、下載的模型、行事曆連線和設定。此操作無法復原。",
         "confirmText": "刪除所有內容",
         "successTitle": "帳戶已刪除",
         "successDescription": "您的帳戶和所有資料已被刪除。應用程式將立即重新載入。",
@@ -1082,13 +1082,13 @@
       "description": "整理轉錄文字、處理指令、修正錯誤，同時保留你的語調。",
       "enableTextCleanup": "啟用文字整理",
       "enableTextCleanupDescription": "AI 自動提升轉錄品質",
-      "openwhisprCloud": "BarkFlow Cloud",
+      "openwhisprCloud": "WhisperWoof Cloud",
       "openwhisprCloudDescription": "即開即用，無需設定。",
       "title": "AI 文字增強",
       "toasts": {
         "switchedCloud": {
-          "description": "文字增強將使用 BarkFlow 雲端服務。",
-          "title": "已切換至 BarkFlow Cloud"
+          "description": "文字增強將使用 WhisperWoof 雲端服務。",
+          "title": "已切換至 WhisperWoof Cloud"
         },
         "switchedCustom": {
           "description": "設定你自己的供應商和 API Key。",
@@ -1151,7 +1151,7 @@
       "appearance": {
         "auto": "自動",
         "dark": "深色",
-        "description": "控制 BarkFlow 的外觀",
+        "description": "控制 WhisperWoof 的外觀",
         "light": "淺色",
         "theme": "主題",
         "themeDescription": "選擇淺色、深色或跟隨系統",
@@ -1197,9 +1197,9 @@
       },
       "startup": {
         "launchAtLogin": "登入時啟動",
-        "launchAtLoginDescription": "登入時自動啟動 BarkFlow",
+        "launchAtLoginDescription": "登入時自動啟動 WhisperWoof",
         "title": "啟動",
-        "description": "控制 BarkFlow 啟動時的行為",
+        "description": "控制 WhisperWoof 啟動時的行為",
         "startMinimized": "啟動時最小化",
         "startMinimizedDescription": "啟動時不顯示控制面板視窗"
       },
@@ -1245,7 +1245,7 @@
           "group": {
             "step1Title": "將你的使用者新增至 input 群組",
             "step2Title": "登出並重新登入",
-            "step2Desc": "群組變更僅在新工作階段後生效。從桌面登出，重新登入，然後重新開啟 BarkFlow。"
+            "step2Desc": "群組變更僅在新工作階段後生效。從桌面登出，重新登入，然後重新開啟 WhisperWoof。"
           },
           "service": {
             "step1Title": "建立服務目錄",
@@ -1293,7 +1293,7 @@
           },
           "installUpdate": {
             "confirmText": "安裝並重新啟動",
-            "description": "BarkFlow 將重新啟動以套用更新。",
+            "description": "WhisperWoof 將重新啟動以套用更新。",
             "title": "安裝更新"
           },
           "noUpdates": {
@@ -1324,13 +1324,13 @@
     "permissions": {
       "accessibilityDescription": "轉錄後自動貼上文字所需的權限",
       "accessibilityTitle": "輔助使用",
-      "description": "測試和管理 BarkFlow 正常運作所需的系統權限",
+      "description": "測試和管理 WhisperWoof 正常運作所需的系統權限",
       "microphoneDescription": "錄製您的聲音用於聽寫和轉錄",
       "microphoneTitle": "麥克風",
       "resetAccessibility": {
-        "description": "這將從輔助使用權限中移除 BarkFlow。你需要在「系統設定 > 隱私權與安全性 > 輔助使用」中重新授權。",
+        "description": "這將從輔助使用權限中移除 WhisperWoof。你需要在「系統設定 > 隱私權與安全性 > 輔助使用」中重新授權。",
         "label": "重設輔助使用權限",
-        "rowDescription": "重新安裝或重新建置應用程式後，透過在系統設定中移除並重新加入 BarkFlow 來修復問題",
+        "rowDescription": "重新安裝或重新建置應用程式後，透過在系統設定中移除並重新加入 WhisperWoof 來修復問題",
         "title": "重設輔助使用權限"
       },
       "optional": "可選",
@@ -1351,7 +1351,7 @@
       "description": "控制哪些資料會離開你的裝置。預設全部關閉。",
       "title": "隱私權",
       "usageAnalytics": "使用分析",
-      "usageAnalyticsDescription": "分享匿名的效能指標，協助我們改善 BarkFlow。我們絕不會傳送轉錄內容——只有計時和錯誤資料。",
+      "usageAnalyticsDescription": "分享匿名的效能指標，協助我們改善 WhisperWoof。我們絕不會傳送轉錄內容——只有計時和錯誤資料。",
       "dataRetention": "資料保留",
       "dataRetentionDescription": "將轉錄和音訊本地儲存至歷史記錄。停用後，轉錄內容會被貼上但不會被儲存。",
       "audioRetention": "音訊保留",
@@ -1372,14 +1372,14 @@
     "transcription": {
       "customSetup": "自訂設定",
       "customSetupDescription": "使用你自己的供應商和 API Key。",
-      "description": "選擇 BarkFlow 轉錄語音的方式",
-      "openwhisprCloud": "BarkFlow Cloud",
+      "description": "選擇 WhisperWoof 轉錄語音的方式",
+      "openwhisprCloud": "WhisperWoof Cloud",
       "openwhisprCloudDescription": "即開即用，無需設定。",
       "title": "語音轉文字",
       "toasts": {
         "switchedCloud": {
-          "description": "轉錄將使用 BarkFlow 雲端服務。",
-          "title": "已切換至 BarkFlow Cloud"
+          "description": "轉錄將使用 WhisperWoof 雲端服務。",
+          "title": "已切換至 WhisperWoof Cloud"
         },
         "switchedCustom": {
           "description": "設定你自己的供應商和 API Key。",
@@ -1519,7 +1519,7 @@
     },
     "tryAgain": "重試",
     "card": {
-      "brand": "BarkFlow",
+      "brand": "WhisperWoof",
       "signalId": "Signal ID",
       "audioSignature": "您的音訊簽名",
       "stop": "停止",
@@ -1593,7 +1593,7 @@
       "setupTitle": "設定轉錄",
       "setupDescription": "選擇音訊轉錄方式。此設定同樣適用於即時聽寫。",
       "continue": "繼續",
-      "openwhisprCloud": "BarkFlow Cloud",
+      "openwhisprCloud": "WhisperWoof Cloud",
       "custom": "自訂",
       "selectFolder": "選擇資料夾",
       "transcriptionFailed": "轉錄失敗",
@@ -1604,15 +1604,15 @@
       "fileTooLarge": "此檔案超過 500 MB 的大小限制。",
       "largeFileNote": "大型檔案將被分割並平行轉錄。",
       "chunkProgress": "正在轉錄第 {{completed}} 部分，共 {{total}} 部分...",
-      "paidPlanRequired": "超過 25 MB 的檔案需要付費方案才能使用雲端轉錄。大型檔案透過 BarkFlow Cloud 處理，確保可靠、高品質的結果。",
+      "paidPlanRequired": "超過 25 MB 的檔案需要付費方案才能使用雲端轉錄。大型檔案透過 WhisperWoof Cloud 處理，確保可靠、高品質的結果。",
       "byokTooLarge": "第三方 API 金鑰僅支援 25 MB 以內的檔案。",
-      "byokTooLargeDetail": "超過 25 MB 的檔案由 BarkFlow Cloud 負責分割、平行處理和重組——無需依賴第三方服務限制，即可獲得可靠的結果。",
-      "byokTooLargeNeedsAccount": "建立帳戶並升級至付費方案，即可使用 BarkFlow Cloud 轉錄更大的檔案。",
-      "byokTooLargeNeedsUpgrade": "升級至付費方案，即可使用 BarkFlow Cloud 轉錄更大的檔案。",
-      "switchToCloudForLargeFiles": "切換到 BarkFlow Cloud 來轉錄此檔案。",
+      "byokTooLargeDetail": "超過 25 MB 的檔案由 WhisperWoof Cloud 負責分割、平行處理和重組——無需依賴第三方服務限制，即可獲得可靠的結果。",
+      "byokTooLargeNeedsAccount": "建立帳戶並升級至付費方案，即可使用 WhisperWoof Cloud 轉錄更大的檔案。",
+      "byokTooLargeNeedsUpgrade": "升級至付費方案，即可使用 WhisperWoof Cloud 轉錄更大的檔案。",
+      "switchToCloudForLargeFiles": "切換到 WhisperWoof Cloud 來轉錄此檔案。",
       "createAccount": "建立帳戶",
       "upgrade": "升級",
-      "switchToCloud": "BarkFlow Cloud"
+      "switchToCloud": "WhisperWoof Cloud"
     },
     "meeting": {
       "title": "會議筆記",
@@ -1798,7 +1798,7 @@
       "undo": "復原",
       "accessibilityMissing": {
         "title": "需要輔助使用權限",
-        "description": "BarkFlow 需要輔助使用權限來偵測快捷鍵和貼上文字。請在控制面板中啟用。"
+        "description": "WhisperWoof 需要輔助使用權限來偵測快捷鍵和貼上文字。請在控制面板中啟用。"
       }
     },
     "mic": {
@@ -1834,8 +1834,8 @@
       "systemPrompt": "系統提示詞",
       "systemPromptDescription": "助手的自訂指令",
       "systemPromptPlaceholder": "輸入自訂系統提示詞...",
-      "openwhisprCloud": "BarkFlow Cloud",
-      "openwhisprCloudDescription": "使用 BarkFlow 的雲端 AI 進行助手對話",
+      "openwhisprCloud": "WhisperWoof Cloud",
+      "openwhisprCloudDescription": "使用 WhisperWoof 的雲端 AI 進行助手對話",
       "customSetup": "自訂配置 (BYOK)",
       "customSetupDescription": "使用自己的 API 金鑰並選擇偏好的模型"
     },
@@ -1877,7 +1877,7 @@
       "disconnectConfirm": "中斷 {{email}} 的連接？",
       "disconnectDescription": "將不再從此日曆記錄會議筆記。",
       "systemAudioRequired": "需要系統音訊權限",
-      "systemAudioDescription": "要轉錄會議，BarkFlow 需要系統音訊權限來錄製其他參與者的音訊。我們絕不會錄製您的螢幕。您將被引導至系統設定以啟用此權限。",
+      "systemAudioDescription": "要轉錄會議，WhisperWoof 需要系統音訊權限來錄製其他參與者的音訊。我們絕不會錄製您的螢幕。您將被引導至系統設定以啟用此權限。",
       "openSettings": "打開系統設定"
     },
     "plan": {
@@ -1899,8 +1899,8 @@
       "feedback": "需要超過 20 小時？請聯繫 gabe@openwhispr.com"
     },
     "notABot": {
-      "title": "BarkFlow 是會議錄製工具，不是機器人",
-      "description": "BarkFlow 直接從您的系統擷取音訊 — 它不會以參與者身分加入您的會議。只需連接日曆，正常記錄筆記即可。"
+      "title": "WhisperWoof 是會議錄製工具，不是機器人",
+      "description": "WhisperWoof 直接從您的系統擷取音訊 — 它不會以參與者身分加入您的會議。只需連接日曆，正常記錄筆記即可。"
     }
   },
   "calendar": {
@@ -1948,7 +1948,7 @@
     "signInDescription": "建立帳戶或登入以錄製和轉錄會議。",
     "connectCalendar": "連接您的日曆",
     "connectCalendarDescription": "關聯 Google 日曆以查看即將到來的會議並自動記錄筆記。",
-    "notABot": "BarkFlow 透過系統音訊錄製 — 它不會以機器人身分加入您的會議。",
+    "notABot": "WhisperWoof 透過系統音訊錄製 — 它不會以機器人身分加入您的會議。",
     "connectCalendarButton": "連接日曆"
   },
   "notesView": {
@@ -1993,13 +1993,13 @@
     }
   },
   "updateNotification": {
-    "title": "BarkFlow 有可用更新",
+    "title": "WhisperWoof 有可用更新",
     "body": "版本 {{version}} 已可下載",
     "cta": "立即更新"
   },
   "permissionsGate": {
     "title": "需要權限",
-    "description": "BarkFlow 需要一些權限才能在此電腦上正常運作。",
+    "description": "WhisperWoof 需要一些權限才能在此電腦上正常運作。",
     "continue": "繼續"
   }
 }
