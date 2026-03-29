@@ -353,6 +353,34 @@ export default function App() {
     return () => document.removeEventListener("keydown", handleKeyPress);
   }, [isCommandMenuOpen]);
 
+  // BarkFlow: Track active hotkey route during recording
+  const [activeRoute, setActiveRoute] = useState(null);
+
+  useEffect(() => {
+    if (!isRecording) {
+      setActiveRoute(null);
+      return;
+    }
+    // Poll for active hotkey slot while recording
+    const poll = setInterval(async () => {
+      try {
+        const slot = await window.electronAPI?.barkflowGetActiveHotkey?.();
+        if (slot && slot !== "Fn" && slot !== "GLOBE") {
+          setActiveRoute(slot);
+        } else {
+          setActiveRoute(null);
+        }
+      } catch { /* ignore */ }
+    }, 200);
+    return () => clearInterval(poll);
+  }, [isRecording]);
+
+  const ROUTE_LABELS = {
+    "Fn+N": "📝 Note",
+    "Fn+T": "✓ Todo",
+    "Fn+P": "📁 Project",
+  };
+
   // Determine current mic state
   const getMicState = () => {
     if (isRecording) return "recording";
@@ -501,14 +529,22 @@ export default function App() {
                   "transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.25s ease-out",
               }}
             >
-              {/* BarkFlow indicator — soundbar with dog head, no extra chrome */}
-              {micState === "idle" || micState === "hover" ? (
-                <BarkFlowIndicator state="idle" size={16} />
-              ) : micState === "recording" ? (
-                <BarkFlowIndicator state="recording" size={16} animated={true} speaking={isRecording} />
-              ) : micState === "processing" ? (
-                <BarkFlowIndicator state="processing" size={16} animated={true} />
-              ) : null}
+              {/* BarkFlow indicator — soundbar + route label */}
+              <div className="flex flex-col items-center gap-1">
+                {/* Active route label (shows when Fn+key combo is pressed) */}
+                {activeRoute && ROUTE_LABELS[activeRoute] && (
+                  <div className="px-2 py-0.5 rounded-full bg-amber-600 text-white text-[10px] font-semibold shadow-lg animate-pulse whitespace-nowrap">
+                    {ROUTE_LABELS[activeRoute]}
+                  </div>
+                )}
+                {micState === "idle" || micState === "hover" ? (
+                  <BarkFlowIndicator state="idle" size={16} />
+                ) : micState === "recording" ? (
+                  <BarkFlowIndicator state="recording" size={16} animated={true} speaking={isRecording} />
+                ) : micState === "processing" ? (
+                  <BarkFlowIndicator state="processing" size={16} animated={true} />
+                ) : null}
+              </div>
             </button>
           </Tooltip>
           {isCommandMenuOpen && (

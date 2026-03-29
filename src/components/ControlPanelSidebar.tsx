@@ -73,8 +73,7 @@ export default function ControlPanelSidebar({
     { id: "home", label: t("sidebar.home"), icon: Home },
     { id: "personal-notes", label: t("sidebar.notes"), icon: NotebookPen },
     { id: "upload", label: t("sidebar.upload"), icon: Upload },
-    { id: "dictionary", label: t("sidebar.dictionary"), icon: BookOpen },
-    // BarkFlow: "Integrations" hidden — OpenWhispr's Google Calendar integration, not BarkFlow's MCP plugins
+    // BarkFlow: Dictionary and Integrations moved to bottom / hidden
     // { id: "integrations", label: t("sidebar.integrations"), icon: Blocks },
   ];
 
@@ -284,7 +283,25 @@ export default function ControlPanelSidebar({
           </span>
         </button>
 
-        {/* BarkFlow: Support dropdown removed — no cloud support to offer */}
+        <button
+          onClick={() => onViewChange("dictionary")}
+          aria-label={t("sidebar.dictionary")}
+          className={cn(
+            "group flex items-center gap-2.5 w-full h-8 px-2.5 rounded-md text-left outline-none transition-colors duration-150",
+            "focus-visible:ring-1 focus-visible:ring-primary/30",
+            activeView === "dictionary"
+              ? "bg-foreground/8 dark:bg-white/8"
+              : "hover:bg-foreground/4 dark:hover:bg-white/4"
+          )}
+        >
+          <BookOpen
+            size={15}
+            className="shrink-0 text-foreground/60 group-hover:text-foreground/75 dark:text-foreground/50 dark:group-hover:text-foreground/65 transition-colors duration-150"
+          />
+          <span className="text-xs text-foreground/80 group-hover:text-foreground dark:text-foreground/70 dark:group-hover:text-foreground/85 transition-colors duration-150">
+            {t("sidebar.dictionary")}
+          </span>
+        </button>
 
         <div className="mx-1 h-px bg-border/10 dark:bg-white/6 my-1.5!" />
 

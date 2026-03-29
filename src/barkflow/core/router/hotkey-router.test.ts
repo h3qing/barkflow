@@ -16,10 +16,10 @@ describe('HotkeyRouter', () => {
       expect(route!.destination).toBe('paste-at-cursor');
     });
 
-    it('has Fn+T mapped to copy-to-clipboard', () => {
+    it('has Fn+T mapped to todo', () => {
       const route = router.resolve('Fn+T');
       expect(route).not.toBeNull();
-      expect(route!.destination).toBe('copy-to-clipboard');
+      expect(route!.destination).toBe('todo');
     });
 
     it('has Fn+N mapped to save-as-markdown', () => {

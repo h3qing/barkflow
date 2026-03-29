@@ -33,21 +33,46 @@ function savePlugins(plugins) {
 
 function getPlugins() { return loadPlugins(); }
 
+// Security: only allow these fields to be updated from renderer
+const ALLOWED_UPDATE_FIELDS = new Set(["enabled", "hotkeyBinding", "description"]);
+
 function updatePlugin(id, updates) {
   const plugins = loadPlugins();
   const idx = plugins.findIndex(p => p.id === id);
   if (idx === -1) return null;
-  plugins[idx] = { ...plugins[idx], ...updates };
+  // Whitelist: only safe fields can be updated
+  const safeUpdates = {};
+  for (const [key, value] of Object.entries(updates)) {
+    if (ALLOWED_UPDATE_FIELDS.has(key)) {
+      safeUpdates[key] = value;
+    }
+  }
+  plugins[idx] = { ...plugins[idx], ...safeUpdates };
   savePlugins(plugins);
   return plugins[idx];
 }
 
 function addPlugin(config) {
   const plugins = loadPlugins();
+  // Validate required fields
+  if (!config || typeof config.id !== "string" || typeof config.name !== "string") return null;
   if (plugins.some(p => p.id === config.id)) return null; // duplicate
-  plugins.push(config);
+  // Security: only allow known MCP package commands
+  const command = String(config.command || "");
+  if (command && !command.startsWith("npx @barkflow/") && !command.startsWith("npx ")) {
+    debugLogger.warn("[BarkFlow] Rejected plugin with suspicious command", { command });
+    return null;
+  }
+  plugins.push({
+    id: String(config.id),
+    name: String(config.name),
+    description: String(config.description || ""),
+    command: command,
+    enabled: false, // always start disabled
+    hotkeyBinding: config.hotkeyBinding || null,
+  });
   savePlugins(plugins);
-  return config;
+  return plugins[plugins.length - 1];
 }
 
 function removePlugin(id) {

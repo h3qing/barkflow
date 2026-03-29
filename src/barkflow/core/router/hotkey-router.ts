@@ -6,7 +6,7 @@
  *
  * Default routes:
  *   Fn          -> paste-at-cursor
- *   Fn+T        -> copy-to-clipboard (todo)
+ *   Fn+T        -> todo (Phase 2: Todoist plugin)
  *   Fn+N        -> save-as-markdown
  *   Fn+P        -> project
  *
@@ -17,7 +17,7 @@ import type { RouteDefinition, RouteResult } from './types';
 
 const DEFAULT_ROUTES: readonly RouteDefinition[] = [
   { hotkey: 'Fn', destination: 'paste-at-cursor', label: 'Paste at cursor', enabled: true },
-  { hotkey: 'Fn+T', destination: 'copy-to-clipboard', label: 'Todo', enabled: true },
+  { hotkey: 'Fn+T', destination: 'todo', label: 'Todo', enabled: true },
   { hotkey: 'Fn+N', destination: 'save-as-markdown', label: 'Markdown note', enabled: true },
   { hotkey: 'Fn+P', destination: 'project', label: 'Project', enabled: true },
 ];

@@ -1,129 +1,87 @@
 # BarkFlow
 
-**Voice-first personal automation for power users.**
+<!-- TODO: Add logo — ![BarkFlow](docs/assets/logo.png) -->
 
-Speak a command. BarkFlow transcribes it, polishes it with a local LLM, and routes it to the right place — all without leaving your keyboard.
-
-> Named after Mando, a dog who listens faithfully, fetches what you need, and gets things done.
-> "Bark" is your voice into the mic. "Flow" is the workflow pipeline that carries your command to completion.
+**Voice-first personal automation — speak, and it transcribes, polishes, routes, and stores.**
 
 ---
 
-## What is BarkFlow?
+## What It Does
 
-BarkFlow is an open-source, voice-first personal automation tool built on top of [OpenWhispr](https://github.com/OpenWhispr/openwhispr). OpenWhispr handles the voice layer. BarkFlow adds the workflow layer: hotkey-triggered, async workflows with a plugin system that lets your voice drive real actions.
+- **Voice to polished text.** Local Whisper STT + local Ollama LLM removes filler words, fixes grammar, and formats cleanly — your voice never leaves your machine.
+- **Hotkey-driven routing.** Press a key combo to decide where your words go. Fn+N saves a Markdown note. Fn+T adds a todo. Fn+P captures to a project. No AI intent guessing — you're in control.
+- **Unified capture.** Voice transcripts and clipboard history live in one searchable system with favorites, audio playback, and full-text search.
 
-### The Problem
+## Quick Start
 
-Voice transcription tools are good at turning speech into text, but they stop there. You still have to manually route the output — copy-paste into a todo app, open a browser, switch windows.
-
-The open-source landscape has two mature layers that exist independently:
-
-- **Voice/Transcription:** OpenWhispr, Whispering, VoiceInk — speech-to-text with local Whisper/Parakeet models
-- **Workflow Automation:** n8n, Activepieces, Huginn — workflow engines with hundreds of connectors
-
-Nobody has built the bridge between them. **BarkFlow is that bridge.**
-
-### How It Works
-
-```
-Hold hotkey → Speak → Release
-
-    Voice ──▶ Local STT (Whisper/Parakeet)
-                 │
-                 ▼
-            Local LLM Polish (Ollama)
-            Removes filler, fixes grammar, formats cleanly
-                 │
-                 ▼
-            Hotkey-driven routing
-                 │
-                 ├──▶ Fn         → Paste polished text at cursor
-                 ├──▶ Fn + T     → Add to todo list
-                 ├──▶ Fn + N     → Save as Markdown note
-                 ├──▶ Fn + C     → Add to calendar
-                 └──▶ All entries saved to searchable history
+```bash
+git clone https://github.com/h3qing/barkflow.git
+cd barkflow && npm install
+npm run compile:native && npm run download:whisper-cpp
+npm run build:renderer && npm start
 ```
 
-Every hotkey combo maps to a destination. You control where your voice goes — explicitly, not by AI guessing.
+Requires macOS and a microphone.
+
+### Optional: Ollama for Text Polish
+
+BarkFlow works without Ollama (you get raw transcripts). To enable AI text polish:
+
+```bash
+brew install ollama && ollama pull llama3.2:1b && ollama serve
+```
 
 ## Features
 
-### Phase 1 — MVP (in development)
+| Feature | Description |
+|---------|-------------|
+| Local STT | Whisper and Parakeet models, fully offline |
+| LLM Polish | 5 presets — Clean, Professional, Casual, Minimal, Structured |
+| Clipboard Monitoring | Tracks clipboard changes + image capture, deduped |
+| Projects | "Wandering mind" capture buckets for open-ended thinking |
+| Command Bar | Cmd+K with prefix routing (`/todo`, `/note`, `/project`) |
+| MCP Plugin System | BarkFlow is an MCP client — any MCP server works as a plugin |
+| Meeting Recording | Dual-channel mic + system audio with speaker differentiation |
+| File Import | Drop audio files for background transcription |
+| Smart Model Advisor | Recommends Whisper model based on your system RAM |
+| Floating Indicator | Dog ear silhouettes that perk up when you speak |
+| History + Search | FTS5 full-text search across all voice and clipboard entries |
+| Favorites | Star any transcript for quick access |
 
-- **Local AI text polish** — Like Wispr Flow's clean output, but running through a local LLM (Ollama) instead of cloud APIs. Your voice never leaves your machine.
-- **Hotkey-driven routing** — Different key combos send your voice to different destinations. Fn to paste, Fn+T to todo, Fn+N for notes. Fully configurable.
-- **Unified capture layer** — Voice history + clipboard history in one searchable system. Everything you ever said or copied, retrievable.
-- **Audio playback** — Tap any history entry to replay the original recording. "What did I actually say?"
-- **Voice-to-Markdown** — Think out loud, get a polished Markdown note saved to your preferred directory (Obsidian, ~/Notes, anywhere).
-- **Floating speaking indicator** — Visual feedback when recording. Choose between Classic (waveform) and Bark (animated dog ear) styles.
-- **Storage management** — See your disk usage, clear audio cache, configure retention.
-- **Onboarding wizard** — Guided setup for STT model, Ollama, and storage preferences.
+## Screenshots
 
-### Phase 2 — MCP Plugin System (planned)
+<!-- Replace with actual screenshots -->
 
-- **Plugins are MCP servers** — BarkFlow is an [MCP](https://modelcontextprotocol.io/) client. Any existing MCP server works as a BarkFlow plugin.
-- **First-party plugins** — Todoist, Notion, Google Calendar, Slack.
-- **Build your own** — Write an MCP server, connect it to BarkFlow, trigger it with your voice.
+![Home](docs/screenshots/home.png)
+![History](docs/screenshots/history.png)
+![Command Bar](docs/screenshots/command-bar.png)
+![Settings](docs/screenshots/settings.png)
 
-## Design Principles
+## Architecture
 
-1. **Hotkey = intent.** The key combination you press determines where your voice goes. Explicit over magic.
-2. **Local-first.** Everything runs on your machine. No cloud dependency. No data leaving your device.
-3. **Fork, don't reinvent.** Built on OpenWhispr's proven STT engine and Electron shell.
-4. **Power users first.** Built for people who care about control, customization, and owning their tools.
+All BarkFlow code lives in `src/barkflow/`, isolated from the upstream OpenWhispr codebase. A bridge layer (`src/barkflow/bridge/`) is the only place that imports OpenWhispr internals — this keeps merge conflicts minimal and the codebase clean.
 
-## Tech Stack
-
-- **Runtime:** Electron + React 19 + TypeScript + Tailwind CSS v4 (inherited from OpenWhispr)
-- **STT:** OpenAI Whisper / NVIDIA Parakeet (local, via OpenWhispr)
-- **LLM Polish:** Ollama (local, optional — BarkFlow works without it)
-- **Storage:** SQLite with FTS5 full-text search (abstracted behind a provider interface for future backends)
-- **Plugins:** Model Context Protocol (MCP)
-
-## Requirements
-
-- **macOS** (Mac-first; cross-platform support via Electron is possible but not the initial focus)
-- **Ollama** (optional, recommended) — for AI text polishing. [Install Ollama](https://ollama.com/)
-- A microphone
-
-## Getting Started
-
-> BarkFlow is in early development. Setup instructions will be added as the project matures.
-
-```bash
-# Clone the repo
-git clone https://github.com/[your-username]/barkflow.git
-cd barkflow
-
-# Install dependencies
-npm install
-
-# Start the app
-npm start
+```
+src/barkflow/
+  core/       Main process — storage, polish, routing, clipboard, pipeline
+  ui/         Renderer — history, indicator, settings, projects
+  bridge/     Hooks into OpenWhispr STT, hotkeys, and app lifecycle
 ```
 
-## Credits & Acknowledgments
+Storage is abstracted behind a `StorageProvider` interface (currently SQLite with Kysely ORM). Data stays local.
 
-BarkFlow is a fork of **[OpenWhispr](https://github.com/OpenWhispr/openwhispr)** — an open-source voice-to-text dictation app with local and cloud STT models. OpenWhispr provides BarkFlow's speech-to-text engine, global hotkey system, and Electron application shell. We are grateful to the OpenWhispr team and community for building such a solid foundation.
+## Built on OpenWhispr
 
-BarkFlow also builds on the shoulders of:
-
-- **[OpenAI Whisper](https://github.com/openai/whisper)** — Open-source speech recognition model
-- **[NVIDIA Parakeet](https://huggingface.co/nvidia/parakeet-tdt-0.6b-v2)** — High-accuracy ASR model
-- **[Ollama](https://ollama.com/)** — Local LLM runtime for AI text polishing
-- **[Model Context Protocol](https://modelcontextprotocol.io/)** — Open standard for AI tool integration
+BarkFlow is a fork of [OpenWhispr](https://github.com/OpenWhispr/openwhispr), which provides the STT engine, global hotkey system, and Electron shell. We're grateful to the OpenWhispr team for building such a solid foundation.
 
 ## License
 
-MIT License — see [LICENSE](LICENSE) for details.
-
-This project is a fork of [OpenWhispr](https://github.com/OpenWhispr/openwhispr), which is also MIT licensed.
+MIT — see [LICENSE](LICENSE) for details.
 
 ## Contributing
 
-BarkFlow is in its early stages. Contributions, feedback, and ideas are welcome! Please open an issue to discuss before submitting a PR.
+Contributions welcome. Please open an issue to discuss before submitting a PR. See [CONTRIBUTING.md](CONTRIBUTING.md) for architecture details and dev commands.
 
 ---
 
-*Built with care by Heqing. Inspired by Mando, who always listens.*
+*Named after Mando, Heqing's dog — who listens faithfully, fetches what you need, and gets things done.*

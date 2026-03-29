@@ -671,6 +671,10 @@ contextBridge.exposeInMainWorld("electronAPI", {
   barkflowGetPolishPresets: () => ipcRenderer.invoke("barkflow-get-polish-presets"),
   barkflowSaveEntry: (entry) => ipcRenderer.invoke("barkflow-save-entry", entry),
 
+  // BarkFlow: Hotkey routing — get/consume the active hotkey slot from main process
+  barkflowGetActiveHotkey: () => ipcRenderer.invoke("barkflow-get-active-hotkey"),
+  barkflowConsumeActiveHotkey: () => ipcRenderer.invoke("barkflow-consume-active-hotkey"),
+
   // BarkFlow: Markdown notes (Fn+N)
   barkflowSaveMarkdown: (text) => ipcRenderer.invoke("barkflow-save-markdown", text),
   barkflowGetNotesDir: () => ipcRenderer.invoke("barkflow-get-notes-dir"),

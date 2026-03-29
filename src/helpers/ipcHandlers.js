@@ -1865,15 +1865,21 @@ class IPCHandlers {
     });
 
     // BarkFlow: Read image file as base64 (for History view)
+    // Security: restricted to barkflow-images directory only
     ipcMain.handle("barkflow-get-image", async (_event, imagePath) => {
       try {
         const fs = require("fs");
-        if (!fs.existsSync(imagePath)) return { success: false, error: "File not found" };
-        const data = fs.readFileSync(imagePath);
+        const resolved = path.resolve(imagePath);
+        const allowedDir = path.join(app.getPath("userData"), "barkflow-images");
+        if (!resolved.startsWith(allowedDir)) {
+          return { success: false, error: "Access denied" };
+        }
+        if (!fs.existsSync(resolved)) return { success: false, error: "File not found" };
+        const data = fs.readFileSync(resolved);
         return { success: true, data: data.toString("base64") };
       } catch (error) {
         debugLogger.log(`[BarkFlow] get-image failed: ${error.message}`);
-        return { success: false, error: error.message };
+        return { success: false, error: "Failed to read image" };
       }
     });
 
