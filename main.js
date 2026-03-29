@@ -713,44 +713,19 @@ async function startApp() {
     const MIN_HOLD_DURATION_MS = 150;
     const POST_STOP_COOLDOWN_MS = 300;
 
-    // BarkFlow: Fn+letter combo detection.
-    // While Fn is held, register temporary global shortcuts for T, N, P.
-    // If one fires before dictation starts, set the active routing slot.
-    const BARKFLOW_COMBO_KEYS = {
-      T: "Fn+T",
-      N: "Fn+N",
-      P: "Fn+P",
-    };
-    let barkflowComboRegistered = false;
-
+    // BarkFlow: Hotkey routing via dedicated shortcuts (not single letters).
+    // Single letter globalShortcut during Fn hold causes "ttttt" key repeat.
+    // Instead, route via Command Bar (Cmd+K → /todo, /note, /project) or
+    // register full modifier combos as separate hotkey slots.
+    //
+    // For now, combo routing is handled post-hoc via the Command Bar and
+    // the renderer's routing UI. The active slot defaults to "Fn" (paste).
     function registerBarkflowComboKeys() {
-      if (barkflowComboRegistered) return;
-      for (const [key, slot] of Object.entries(BARKFLOW_COMBO_KEYS)) {
-        try {
-          const registered = globalShortcut.register(key, () => {
-            barkflowActiveHotkeySlot = slot;
-            debugLogger?.debug("[BarkFlow] Combo key detected", { slot });
-          });
-          if (!registered) {
-            debugLogger?.debug("[BarkFlow] Could not register combo key", { key });
-          }
-        } catch (err) {
-          debugLogger?.debug("[BarkFlow] Combo key registration error", { key, error: err.message });
-        }
-      }
-      barkflowComboRegistered = true;
+      // No-op for v1.0 — combos handled via Command Bar (Cmd+K)
     }
 
     function unregisterBarkflowComboKeys() {
-      if (!barkflowComboRegistered) return;
-      for (const key of Object.keys(BARKFLOW_COMBO_KEYS)) {
-        try {
-          globalShortcut.unregister(key);
-        } catch {
-          // Ignore — may not have been registered
-        }
-      }
-      barkflowComboRegistered = false;
+      // No-op for v1.0
     }
 
     globeKeyManager.on("globe-down", async () => {
