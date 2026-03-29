@@ -4,11 +4,11 @@ import {
   NotebookPen,
   BookOpen,
   Upload,
-  // Blocks,        // BarkFlow: unused — Integrations view hidden
-  // Gift,          // BarkFlow: unused — Referrals removed
+  // Blocks,        // WhisperWoof: unused — Integrations view hidden
+  // Gift,          // WhisperWoof: unused — Referrals removed
   Settings,
-  // HelpCircle,    // BarkFlow: unused — Support dropdown removed
-  // UserCircle,    // BarkFlow: unused — User profile replaced with branding
+  // HelpCircle,    // WhisperWoof: unused — Support dropdown removed
+  // UserCircle,    // WhisperWoof: unused — User profile replaced with branding
   X,
   Search,
   Clock,
@@ -19,12 +19,12 @@ import {
 import logoIcon from "../assets/icon.png";
 import { useTranslation } from "react-i18next";
 import { cn } from "./lib/utils";
-// import SupportDropdown from "./ui/SupportDropdown"; // BarkFlow: unused — Support dropdown removed
+// import SupportDropdown from "./ui/SupportDropdown"; // WhisperWoof: unused — Support dropdown removed
 import { getCachedPlatform } from "../utils/platform";
 
 const platform = getCachedPlatform();
 
-export type ControlPanelView = "home" | "personal-notes" | "dictionary" | "upload" | "integrations" | "barkflow-history" | "barkflow-projects" | "barkflow-plugins" | "barkflow-settings";
+export type ControlPanelView = "home" | "personal-notes" | "dictionary" | "upload" | "integrations" | "whisperwoof-history" | "whisperwoof-projects" | "whisperwoof-plugins" | "whisperwoof-settings";
 
 interface ControlPanelSidebarProps {
   activeView: ControlPanelView;
@@ -35,7 +35,7 @@ interface ControlPanelSidebarProps {
   onUpgrade?: () => void;
   onUpgradeCheckout?: () => void;
   isOverLimit?: boolean;
-  // BarkFlow: Auth props kept in interface for compatibility but no longer used
+  // WhisperWoof: Auth props kept in interface for compatibility but no longer used
   userName?: string | null;
   userEmail?: string | null;
   userImage?: string | null;
@@ -61,7 +61,7 @@ export default function ControlPanelSidebar({
     () => localStorage.getItem("upgradeProDismissed") === "true"
   );
 
-  // BarkFlow: No cloud subscription — disable all upgrade/limit banners
+  // WhisperWoof: No cloud subscription — disable all upgrade/limit banners
   const showLimitBanner = false;
   const showUpgradeBanner = false;
 
@@ -74,7 +74,7 @@ export default function ControlPanelSidebar({
     { id: "personal-notes", label: t("sidebar.notes"), icon: NotebookPen },
     { id: "upload", label: t("sidebar.upload"), icon: Upload },
     { id: "dictionary", label: t("sidebar.dictionary"), icon: BookOpen },
-    // BarkFlow: "Integrations" hidden — OpenWhispr's Google Calendar integration, not BarkFlow's MCP plugins
+    // WhisperWoof: "Integrations" hidden — OpenWhispr's Google Calendar integration, not WhisperWoof's MCP plugins
     // { id: "integrations", label: t("sidebar.integrations"), icon: Blocks },
   ];
 
@@ -214,15 +214,15 @@ export default function ControlPanelSidebar({
           </div>
         )}
 
-        {/* BarkFlow: Referral system removed — cloud-only feature */}
+        {/* WhisperWoof: Referral system removed — cloud-only feature */}
 
         <button
-          onClick={() => onViewChange("barkflow-history")}
-          aria-label="BarkFlow History"
+          onClick={() => onViewChange("whisperwoof-history")}
+          aria-label="WhisperWoof History"
           className={cn(
             "group flex items-center gap-2.5 w-full h-8 px-2.5 rounded-md text-left outline-none transition-colors duration-150",
             "focus-visible:ring-1 focus-visible:ring-primary/30",
-            activeView === "barkflow-history"
+            activeView === "whisperwoof-history"
               ? "bg-foreground/8 dark:bg-white/8"
               : "hover:bg-foreground/4 dark:hover:bg-white/4"
           )}
@@ -232,10 +232,10 @@ export default function ControlPanelSidebar({
         </button>
 
         <button
-          onClick={() => onViewChange("barkflow-projects")}
-          aria-label="BarkFlow Projects"
+          onClick={() => onViewChange("whisperwoof-projects")}
+          aria-label="WhisperWoof Projects"
           className={`group flex items-center gap-2.5 w-full h-8 px-2.5 rounded-md text-left outline-none ${
-            activeView === "barkflow-projects"
+            activeView === "whisperwoof-projects"
               ? "bg-foreground/8 dark:bg-white/8"
               : "hover:bg-foreground/4 dark:hover:bg-white/4"
           } focus-visible:ring-1 focus-visible:ring-primary/30 transition-colors duration-150`}
@@ -245,10 +245,10 @@ export default function ControlPanelSidebar({
         </button>
 
         <button
-          onClick={() => onViewChange("barkflow-plugins")}
-          aria-label="BarkFlow Plugins"
+          onClick={() => onViewChange("whisperwoof-plugins")}
+          aria-label="WhisperWoof Plugins"
           className={`group flex items-center gap-2.5 w-full h-8 px-2.5 rounded-md text-left outline-none ${
-            activeView === "barkflow-plugins"
+            activeView === "whisperwoof-plugins"
               ? "bg-foreground/8 dark:bg-white/8"
               : "hover:bg-foreground/4 dark:hover:bg-white/4"
           } focus-visible:ring-1 focus-visible:ring-primary/30 transition-colors duration-150`}
@@ -258,16 +258,16 @@ export default function ControlPanelSidebar({
         </button>
 
         <button
-          onClick={() => onViewChange("barkflow-settings")}
-          aria-label="BarkFlow Settings"
+          onClick={() => onViewChange("whisperwoof-settings")}
+          aria-label="WhisperWoof Settings"
           className={`group flex items-center gap-2.5 w-full h-8 px-2.5 rounded-md text-left outline-none ${
-            activeView === "barkflow-settings"
+            activeView === "whisperwoof-settings"
               ? "bg-foreground/8 dark:bg-white/8"
               : "hover:bg-foreground/4 dark:hover:bg-white/4"
           } focus-visible:ring-1 focus-visible:ring-primary/30 transition-colors duration-150`}
         >
           <Sparkles size={15} className="shrink-0 text-foreground/60" />
-          <span className="text-xs text-foreground/80">BarkFlow</span>
+          <span className="text-xs text-foreground/80">WhisperWoof</span>
         </button>
 
         <button
@@ -284,15 +284,15 @@ export default function ControlPanelSidebar({
           </span>
         </button>
 
-        {/* BarkFlow: Support dropdown removed — no cloud support to offer */}
+        {/* WhisperWoof: Support dropdown removed — no cloud support to offer */}
 
         <div className="mx-1 h-px bg-border/10 dark:bg-white/6 my-1.5!" />
 
-        {/* BarkFlow: Auth removed — show app branding instead of user profile */}
+        {/* WhisperWoof: Auth removed — show app branding instead of user profile */}
         <div className="flex items-center gap-2.5 px-2.5 py-1.5 rounded-md">
           <img src={logoIcon} alt="" className="w-5 h-5 rounded-sm shrink-0" />
           <p className="text-xs text-foreground/60 dark:text-foreground/55 font-medium">
-            BarkFlow
+            WhisperWoof
           </p>
         </div>
       </div>

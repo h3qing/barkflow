@@ -13,11 +13,11 @@ require("dotenv").config({ path: path.join(__dirname, ".env") });
 
 const VALID_CHANNELS = new Set(["development", "staging", "production"]);
 const DEFAULT_OAUTH_PROTOCOL_BY_CHANNEL = {
-  development: "barkflow-dev",
-  staging: "barkflow-staging",
-  production: "barkflow",
+  development: "whisperwoof-dev",
+  staging: "whisperwoof-staging",
+  production: "whisperwoof",
 };
-const BASE_WINDOWS_APP_ID = "com.barkflow.app";
+const BASE_WINDOWS_APP_ID = "com.whisperwoof.app";
 const DEFAULT_AUTH_BRIDGE_PORT = 5199;
 
 function isElectronBinaryExec() {
@@ -56,7 +56,7 @@ function configureChannelUserDataPath() {
     return;
   }
 
-  const isolatedPath = path.join(app.getPath("appData"), `BarkFlow-${APP_CHANNEL}`);
+  const isolatedPath = path.join(app.getPath("appData"), `WhisperWoof-${APP_CHANNEL}`);
   app.setPath("userData", isolatedPath);
 }
 
@@ -92,7 +92,7 @@ if (process.platform === "linux" && process.env.XDG_SESSION_TYPE === "wayland") 
 // Set desktop filename so Wayland compositors can match windows to the .desktop entry.
 // This allows XDG portals (e.g. PipeWire) to persist permissions across sessions.
 if (process.platform === "linux") {
-  app.setDesktopName("barkflow.desktop");
+  app.setDesktopName("whisperwoof.desktop");
 }
 
 // Group all windows under single taskbar entry on Windows
@@ -150,8 +150,8 @@ if (!gotSingleInstanceLock) {
 const isLiveWindow = (window) => window && !window.isDestroyed();
 
 // Ensure macOS menus use the proper casing for the app name
-if (process.platform === "darwin" && app.getName() !== "BarkFlow") {
-  app.setName("BarkFlow");
+if (process.platform === "darwin" && app.getName() !== "WhisperWoof") {
+  app.setName("WhisperWoof");
 }
 
 // Add global error handling for uncaught exceptions
@@ -490,7 +490,7 @@ function startAuthBridgeServer() {
 
     res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
     res.end(
-      "<html><body><h3>BarkFlow sign-in complete.</h3><p>You can close this tab.</p></body></html>"
+      "<html><body><h3>WhisperWoof sign-in complete.</h3><p>You can close this tab.</p></body></html>"
     );
   });
 
@@ -515,9 +515,9 @@ async function startApp() {
   initializeCoreManagers();
   startAuthBridgeServer();
 
-  // BarkFlow: Initialize BarkFlow subsystems
-  const { initializeBarkFlow } = require("./src/barkflow/bridge/app-init");
-  await initializeBarkFlow();
+  // WhisperWoof: Initialize WhisperWoof subsystems
+  const { initializeWhisperWoof } = require("./src/whisperwoof/bridge/app-init");
+  await initializeWhisperWoof();
 
   // Electron's file:// sends no Origin header, which Neon Auth rejects.
   session.defaultSession.webRequest.onBeforeSendHeaders(
@@ -532,7 +532,7 @@ async function startApp() {
     }
   );
 
-  // BarkFlow security: Add Content Security Policy to all responses
+  // WhisperWoof security: Add Content Security Policy to all responses
   session.defaultSession.webRequest.onHeadersReceived((details, callback) => {
     callback({
       responseHeaders: {
@@ -1121,9 +1121,9 @@ if (gotSingleInstanceLock) {
   });
 
   app.on("will-quit", () => {
-    // BarkFlow: Shutdown BarkFlow subsystems
-    const { shutdownBarkFlow } = require("./src/barkflow/bridge/app-init");
-    shutdownBarkFlow().catch(() => {});
+    // WhisperWoof: Shutdown WhisperWoof subsystems
+    const { shutdownWhisperWoof } = require("./src/whisperwoof/bridge/app-init");
+    shutdownWhisperWoof().catch(() => {});
 
     if (authBridgeServer) {
       authBridgeServer.close();

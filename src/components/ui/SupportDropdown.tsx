@@ -60,9 +60,9 @@ export default function SupportDropdown({ className, trigger }: SupportDropdownP
         </DropdownMenuItem>
         <DropdownMenuItem
           onClick={async () => {
-            const result = await window.electronAPI?.openExternal("mailto:heqing@barkflow.app");
+            const result = await window.electronAPI?.openExternal("mailto:heqing@whisperwoof.app");
             if (!result?.success) {
-              openExternal("https://mail.google.com/mail/?view=cm&to=heqing@barkflow.app");
+              openExternal("https://mail.google.com/mail/?view=cm&to=heqing@whisperwoof.app");
             }
           }}
         >

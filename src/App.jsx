@@ -10,9 +10,9 @@ import { useWindowDrag } from "./hooks/useWindowDrag";
 import { useAudioRecording } from "./hooks/useAudioRecording";
 import { useSettingsStore } from "./stores/settingsStore";
 
-// BarkFlow Indicator — black soundbar with realistic dog ears, mic icon, red dot
+// WhisperWoof Indicator — black soundbar with realistic dog ears, mic icon, red dot
 // Matches the user's mockup: [mic] |||||||||||| [●]  with ears on top
-const BarkFlowIndicator = ({ state = 'idle', size = 48, animated = false, speaking = false }) => {
+const WhisperWoofIndicator = ({ state = 'idle', size = 48, animated = false, speaking = false }) => {
   // Ear perk: taller when speaking/recording
   const earH = speaking ? 20 : (state === 'recording' ? 16 : 12);
   const earOp = state === 'idle' ? 0.7 : 1;
@@ -364,7 +364,7 @@ export default function App() {
   const micState = getMicState();
 
   const getMicButtonProps = () => {
-    // BarkFlow: no background on button — the SVG indicator IS the visual
+    // WhisperWoof: no background on button — the SVG indicator IS the visual
     const baseClasses =
       "w-auto h-auto flex items-center justify-center relative overflow-visible cursor-pointer";
 
@@ -501,13 +501,13 @@ export default function App() {
                   "transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.25s ease-out",
               }}
             >
-              {/* BarkFlow indicator — soundbar with dog head, no extra chrome */}
+              {/* WhisperWoof indicator — soundbar with dog head, no extra chrome */}
               {micState === "idle" || micState === "hover" ? (
-                <BarkFlowIndicator state="idle" size={16} />
+                <WhisperWoofIndicator state="idle" size={16} />
               ) : micState === "recording" ? (
-                <BarkFlowIndicator state="recording" size={16} animated={true} speaking={isRecording} />
+                <WhisperWoofIndicator state="recording" size={16} animated={true} speaking={isRecording} />
               ) : micState === "processing" ? (
-                <BarkFlowIndicator state="processing" size={16} animated={true} />
+                <WhisperWoofIndicator state="processing" size={16} animated={true} />
               ) : null}
             </button>
           </Tooltip>

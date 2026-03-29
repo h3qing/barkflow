@@ -33,11 +33,11 @@ const DictionaryView = React.lazy(() => import("./DictionaryView"));
 const UploadAudioView = React.lazy(() => import("./notes/UploadAudioView"));
 const IntegrationsView = React.lazy(() => import("./IntegrationsView"));
 const CommandSearch = React.lazy(() => import("./CommandSearch"));
-const BarkFlowHistory = React.lazy(() => import("../barkflow/ui/history/BarkFlowHistory"));
-const BarkFlowProjects = React.lazy(() => import("../barkflow/ui/projects/BarkFlowProjects"));
-const BarkFlowSettings = React.lazy(() => import("../barkflow/ui/settings/BarkFlowSettings"));
-const BarkFlowPlugins = React.lazy(() => import("../barkflow/ui/plugins/BarkFlowPlugins"));
-const CommandBar = React.lazy(() => import("../barkflow/ui/command-bar/CommandBar"));
+const WhisperWoofHistory = React.lazy(() => import("../whisperwoof/ui/history/WhisperWoofHistory"));
+const WhisperWoofProjects = React.lazy(() => import("../whisperwoof/ui/projects/WhisperWoofProjects"));
+const WhisperWoofSettings = React.lazy(() => import("../whisperwoof/ui/settings/WhisperWoofSettings"));
+const WhisperWoofPlugins = React.lazy(() => import("../whisperwoof/ui/plugins/WhisperWoofPlugins"));
+const CommandBar = React.lazy(() => import("../whisperwoof/ui/command-bar/CommandBar"));
 
 export default function ControlPanel() {
   const { t } = useTranslation();
@@ -104,7 +104,7 @@ export default function ControlPanel() {
       const mod = platform === "darwin" ? e.metaKey : e.ctrlKey;
       if (mod && e.key === "k") {
         e.preventDefault();
-        // BarkFlow: Cmd+K opens command bar instead of search
+        // WhisperWoof: Cmd+K opens command bar instead of search
         setShowCommandBar((prev: boolean) => !prev);
       }
     };
@@ -496,7 +496,7 @@ export default function ControlPanel() {
         </Suspense>
       )}
 
-      {/* BarkFlow: Command Bar (Cmd+K) */}
+      {/* WhisperWoof: Command Bar (Cmd+K) */}
       <Suspense fallback={null}>
         <CommandBar isOpen={showCommandBar} onClose={() => setShowCommandBar(false)} />
       </Suspense>
@@ -515,7 +515,7 @@ export default function ControlPanel() {
               setShowSettings(true);
             }}
             onOpenReferrals={() => setShowReferrals(true)}
-            // BarkFlow: Auth removed — no user props needed
+            // WhisperWoof: Auth removed — no user props needed
             updateAction={
               !updateStatus.isDevelopment &&
               (updateStatus.updateAvailable ||
@@ -628,7 +628,7 @@ export default function ControlPanel() {
                   setSettingsSection(section);
                   setShowSettings(true);
                 }}
-                onNavigateToHistory={() => setActiveView("barkflow-history")}
+                onNavigateToHistory={() => setActiveView("whisperwoof-history")}
               />
             )}
             {activeView === "personal-notes" && (
@@ -669,24 +669,24 @@ export default function ControlPanel() {
                 <IntegrationsView />
               </Suspense>
             )}
-            {activeView === "barkflow-history" && (
+            {activeView === "whisperwoof-history" && (
               <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading...</span></div>}>
-                <BarkFlowHistory />
+                <WhisperWoofHistory />
               </Suspense>
             )}
-            {activeView === "barkflow-projects" && (
+            {activeView === "whisperwoof-projects" && (
               <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading...</span></div>}>
-                <BarkFlowProjects />
+                <WhisperWoofProjects />
               </Suspense>
             )}
-            {activeView === "barkflow-plugins" && (
+            {activeView === "whisperwoof-plugins" && (
               <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading...</span></div>}>
-                <BarkFlowPlugins />
+                <WhisperWoofPlugins />
               </Suspense>
             )}
-            {activeView === "barkflow-settings" && (
+            {activeView === "whisperwoof-settings" && (
               <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading...</span></div>}>
-                <BarkFlowSettings />
+                <WhisperWoofSettings />
               </Suspense>
             )}
           </div>

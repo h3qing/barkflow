@@ -4,7 +4,7 @@
       "sectionTitle": "Idioma",
       "sectionDescription": "Configura por separado el idioma de la interfaz y de la transcripción",
       "uiLabel": "Idioma de la interfaz",
-      "uiDescription": "Elige el idioma usado en la interfaz de BarkFlow",
+      "uiDescription": "Elige el idioma usado en la interfaz de WhisperWoof",
       "transcriptionLabel": "Idioma de transcripción",
       "transcriptionDescription": "Elige el idioma que hablas para mejorar la precisión"
     }
@@ -15,12 +15,12 @@
       "hide": "Ocultar panel de dictado"
     },
     "openControlPanel": "Abrir panel de control",
-    "quit": "Salir de BarkFlow",
-    "tooltip": "BarkFlow - Dictado por voz"
+    "quit": "Salir de WhisperWoof",
+    "tooltip": "WhisperWoof - Dictado por voz"
   },
   "menu": {
-    "appLabel": "BarkFlow",
-    "quit": "Salir de BarkFlow",
+    "appLabel": "WhisperWoof",
+    "quit": "Salir de WhisperWoof",
     "speech": "Voz",
     "help": "Ayuda",
     "learnMore": "Más información",
@@ -38,8 +38,8 @@
       "message": "No se pudo abrir el enlace en tu navegador:\n{{url}}\n\nError: {{error}}"
     },
     "loadFailure": {
-      "title": "BarkFlow no pudo cargarse",
-      "message": "BarkFlow no pudo cargar su interfaz.",
+      "title": "WhisperWoof no pudo cargarse",
+      "message": "WhisperWoof no pudo cargar su interfaz.",
       "detail": {
         "window": "Ventana: {{windowName}}",
         "error": "Error {{errorCode}}: {{errorDescription}}",
@@ -50,17 +50,17 @@
   },
   "startup": {
     "error": {
-      "title": "Error de inicio de BarkFlow",
+      "title": "Error de inicio de WhisperWoof",
       "message": "No se pudo iniciar la aplicación:\n\n{{error}}\n\nPor favor, reporta este problema."
     },
     "globeHotkey": {
       "title": "Atajo Globe no disponible",
-      "message": "BarkFlow no pudo activar el atajo de la tecla Globe.",
+      "message": "WhisperWoof no pudo activar el atajo de la tecla Globe.",
       "details": {
         "unknown": "Ocurrió un error desconocido al iniciar el proceso de escucha de Globe.",
         "fallback": "El atajo Globe permanecerá deshabilitado; los atajos actuales seguirán funcionando.",
         "devHint": "Ejecuta `npm run compile:globe` y recompila la app para regenerar el binario.",
-        "reinstallHint": "Reinstala BarkFlow o contacta soporte si el problema persiste."
+        "reinstallHint": "Reinstala WhisperWoof o contacta soporte si el problema persiste."
       }
     }
   },
@@ -82,9 +82,9 @@
     "systemAudio": "La configuración de audio del sistema no está disponible en esta plataforma."
   },
   "titleBar": {
-    "quitTitle": "Salir de BarkFlow",
-    "quitConfirmTitle": "¿Salir de BarkFlow?",
-    "quitConfirmDescription": "Esto cerrará BarkFlow y detendrá los procesos en segundo plano.",
+    "quitTitle": "Salir de WhisperWoof",
+    "quitConfirmTitle": "¿Salir de WhisperWoof?",
+    "quitConfirmDescription": "Esto cerrará WhisperWoof y detendrá los procesos en segundo plano.",
     "quit": "Salir",
     "cancel": "Cancelar"
   },
@@ -161,14 +161,14 @@
       "accessibilityTitle": "Accesibilidad",
       "accessibilityDescription": "Permite pegar automáticamente el texto transcrito en cualquier aplicación",
       "testAndGrant": "Probar y conceder",
-      "requiredForApp": "Necesario para que BarkFlow funcione",
+      "requiredForApp": "Necesario para que WhisperWoof funcione",
       "microphoneRequired": "Se requiere acceso al micrófono",
       "openSystemSettings": "Abrir Ajustes del Sistema",
       "systemAudioTitle": "Audio del Sistema",
       "systemAudioDescription": "Captura el audio de otros participantes en llamadas y reuniones. Nunca grabamos tu pantalla.",
       "optional": "Opcional",
       "recommended": "Recomendado",
-      "accessibilityTroubleshooting": "¿No detectado? Elimina BarkFlow de Accesibilidad en Configuración del Sistema, vuelve a añadirlo y actívalo. Puedes omitir esto y continuar — el texto se copiará al portapapeles en lugar de pegarse automáticamente."
+      "accessibilityTroubleshooting": "¿No detectado? Elimina WhisperWoof de Accesibilidad en Configuración del Sistema, vuelve a añadirlo y actívalo. Puedes omitir esto y continuar — el texto se copiará al portapapeles en lugar de pegarse automáticamente."
     },
     "transcription": {
       "title": "Configuración de transcripción",
@@ -195,7 +195,7 @@
       "problemTitle": "Hubo un problema con la actualización",
       "problemDescription": "No pudimos completar la actualización. Inténtalo más tarde.",
       "installTitle": "Instalar actualización",
-      "installDescription": "BarkFlow se reiniciará para aplicar la actualización. Se guardará el trabajo en curso.",
+      "installDescription": "WhisperWoof se reiniciará para aplicar la actualización. Se guardará el trabajo en curso.",
       "couldNotInstallTitle": "No se pudo instalar la actualización",
       "couldNotInstallDescription": "Algo salió mal. Inténtalo de nuevo.",
       "couldNotDownloadTitle": "No se pudo descargar la actualización",
@@ -210,7 +210,7 @@
     },
     "accessibilityMissing": {
       "title": "Se necesitan permisos de accesibilidad",
-      "description": "Hemos detectado que BarkFlow necesita permisos de accesibilidad para funcionar correctamente. Actívalos a continuación."
+      "description": "Hemos detectado que WhisperWoof necesita permisos de accesibilidad para funcionar correctamente. Actívalos a continuación."
     },
     "billing": {
       "pastDueTitle": "No pudimos procesar tu pago",
@@ -263,8 +263,8 @@
       "rawTranscript": "Transcripción sin procesar"
     },
     "cloudMigration": {
-      "title": "Bienvenido a BarkFlow Pro",
-      "description": "Tu prueba gratuita de 7 días está activa. Cambiamos tu transcripción a BarkFlow Cloud para resultados más rápidos y precisos. Tu configuración anterior se guardó: puedes volver cuando quieras en Ajustes.",
+      "title": "Bienvenido a WhisperWoof Pro",
+      "description": "Tu prueba gratuita de 7 días está activa. Cambiamos tu transcripción a WhisperWoof Cloud para resultados más rápidos y precisos. Tu configuración anterior se guardó: puedes volver cuando quieras en Ajustes.",
       "viewSettings": "Ver ajustes"
     },
     "aiCta": {
@@ -417,7 +417,7 @@
       "micErrors": {
         "accessFailed": "Falló el acceso al micrófono. Inténtalo de nuevo.",
         "noMicrophones": "No se detectaron micrófonos. Conecta o selecciona un micrófono en {{settingsPath}}.",
-        "permissionDenied": "Permiso denegado. Abre {{privacyPath}} y permite BarkFlow.",
+        "permissionDenied": "Permiso denegado. Abre {{privacyPath}} y permite WhisperWoof.",
         "couldNotStart": "No se pudo iniciar el micrófono seleccionado. Elige un dispositivo en {{settingsPath}} y vuelve a probar.",
         "noActiveInput": "No se encontró una entrada de audio activa. Elige un micrófono en {{settingsPath}}.",
         "unknown": "Falló el acceso al micrófono: {{error}}. Selecciona otro dispositivo e inténtalo de nuevo.",
@@ -446,8 +446,8 @@
         "accessibilityNeeded": "Concede permisos de accesibilidad en la configuración del sistema para habilitar el pegado automático.",
         "windowsReady": "Windows no requiere permisos especiales para pegado automático. ¡Todo listo!",
         "linuxReadyWithMethod": "El pegado automático está disponible usando {{method}}. ¡Todo listo!",
-        "waylandClipboardMode": "El pegado automático no está disponible en esta sesión Wayland. BarkFlow copiará el texto al portapapeles y podrás pegar con Ctrl+V.",
-        "optionalPasteTool": "Para pegado automático, instala {{tool}}:\n\n{{installCmd}}{{waylandNote}}\n\nSin esto, aún puedes usar BarkFlow: el texto se copiará al portapapeles y podrás pegar con Ctrl+V."
+        "waylandClipboardMode": "El pegado automático no está disponible en esta sesión Wayland. WhisperWoof copiará el texto al portapapeles y podrás pegar con Ctrl+V.",
+        "optionalPasteTool": "Para pegado automático, instala {{tool}}:\n\n{{installCmd}}{{waylandNote}}\n\nSin esto, aún puedes usar WhisperWoof: el texto se copiará al portapapeles y podrás pegar con Ctrl+V."
       },
       "alerts": {
         "accessibilityNeeded": "Se requieren permisos de accesibilidad. Concédelos en la configuración del sistema."
@@ -460,7 +460,7 @@
         "defaultPasteTool": "xdotool",
         "xdotoolXwayland": "xdotool (apps XWayland)"
       },
-      "accessibilityTestText": "Prueba de accesibilidad de BarkFlow",
+      "accessibilityTestText": "Prueba de accesibilidad de WhisperWoof",
       "warning": {
         "messages": {
           "macos": "Revisa la configuración de Sonido para seleccionar tu dispositivo de entrada",
@@ -530,7 +530,7 @@
       "continueWithGoogle": "Continuar con Google"
     },
     "welcomeSubtitle": "Dicta en cualquier lugar usando tu voz",
-    "welcomeTitle": "Bienvenido a BarkFlow",
+    "welcomeTitle": "Bienvenido a WhisperWoof",
     "sessionExpired": "Sesión expirada"
   },
   "cleanupPrompt": "Corrección",
@@ -736,10 +736,10 @@
     "recheckChecking": "Verificando...",
     "title": "Pegado automático",
     "usingMethodPrefix": "Usando",
-    "waylandClipboardDescription": "El pegado automático no está disponible en esta sesión Wayland. BarkFlow copiará el texto al portapapeles para que puedas pegarlo manualmente con Ctrl+V.",
+    "waylandClipboardDescription": "El pegado automático no está disponible en esta sesión Wayland. WhisperWoof copiará el texto al portapapeles para que puedas pegarlo manualmente con Ctrl+V.",
     "waylandClipboardTitle": "Modo portapapeles en Wayland",
     "windowsReady": "Windows es compatible con el pegado automático de forma nativa. ¡No se requiere configuración!",
-    "withoutToolPrefix": "Sin esta herramienta, BarkFlow copiará el texto al portapapeles. Luego puedes pegarlo manualmente con Ctrl+V.",
+    "withoutToolPrefix": "Sin esta herramienta, WhisperWoof copiará el texto al portapapeles. Luego puedes pegarlo manualmente con Ctrl+V.",
     "xwaylandAppsOnly": "el pegado automático funciona solo en apps XWayland"
   },
   "promptStudio": {
@@ -789,7 +789,7 @@
       "none": "Ninguno",
       "outputLabel": "Salida",
       "processing": "Procesando...",
-      "openwhisprCloud": "BarkFlow Cloud",
+      "openwhisprCloud": "WhisperWoof Cloud",
       "providerLabel": "Proveedor",
       "run": "Ejecutar prueba",
       "customEndpoint": "Endpoint personalizado"
@@ -934,7 +934,7 @@
           "price": "$0",
           "period": "para siempre",
           "features": [
-            "## BarkFlow Cloud",
+            "## WhisperWoof Cloud",
             "2,000 words/week transcription",
             "5 hours of meeting recordings/month",
             "## Always free",
@@ -1045,7 +1045,7 @@
         "button": "Eliminar mi cuenta",
         "deleting": "Eliminando...",
         "title": "¿Eliminar tu cuenta?",
-        "description": "Esto eliminará permanentemente tu cuenta de BarkFlow, todas las notas sincronizadas en la nube y todos los datos locales, incluyendo transcripciones, grabaciones de audio, modelos descargados, conexiones de calendario y configuraciones. Esta acción no se puede deshacer.",
+        "description": "Esto eliminará permanentemente tu cuenta de WhisperWoof, todas las notas sincronizadas en la nube y todos los datos locales, incluyendo transcripciones, grabaciones de audio, modelos descargados, conexiones de calendario y configuraciones. Esta acción no se puede deshacer.",
         "confirmText": "Eliminar todo",
         "successTitle": "Cuenta eliminada",
         "successDescription": "Tu cuenta y todos los datos han sido eliminados. La aplicación se recargará ahora.",
@@ -1082,13 +1082,13 @@
       "description": "Corrige transcripciones, gestiona comandos y soluciona errores preservando tu tono.",
       "enableTextCleanup": "Activar corrección de texto",
       "enableTextCleanupDescription": "La IA mejora la calidad de transcripción",
-      "openwhisprCloud": "BarkFlow Cloud",
+      "openwhisprCloud": "WhisperWoof Cloud",
       "openwhisprCloudDescription": "Funciona de inmediato. Sin configuración necesaria.",
       "title": "Mejora de texto con IA",
       "toasts": {
         "switchedCloud": {
-          "description": "La mejora de texto usará el servicio en la nube de BarkFlow.",
-          "title": "Cambiado a BarkFlow Cloud"
+          "description": "La mejora de texto usará el servicio en la nube de WhisperWoof.",
+          "title": "Cambiado a WhisperWoof Cloud"
         },
         "switchedCustom": {
           "description": "Configura tu propio proveedor y clave API.",
@@ -1151,7 +1151,7 @@
       "appearance": {
         "auto": "Auto",
         "dark": "Oscuro",
-        "description": "Controla el aspecto de BarkFlow",
+        "description": "Controla el aspecto de WhisperWoof",
         "light": "Claro",
         "theme": "Tema",
         "themeDescription": "Elige claro, oscuro o según tu sistema",
@@ -1197,9 +1197,9 @@
       },
       "startup": {
         "launchAtLogin": "Abrir al iniciar sesión",
-        "launchAtLoginDescription": "Inicia BarkFlow automáticamente al iniciar sesión",
+        "launchAtLoginDescription": "Inicia WhisperWoof automáticamente al iniciar sesión",
         "title": "Inicio",
-        "description": "Controla el comportamiento de BarkFlow al iniciar",
+        "description": "Controla el comportamiento de WhisperWoof al iniciar",
         "startMinimized": "Iniciar minimizado",
         "startMinimizedDescription": "Iniciar sin mostrar la ventana del panel de control"
       },
@@ -1245,7 +1245,7 @@
           "group": {
             "step1Title": "Añade tu usuario al grupo input",
             "step2Title": "Cierra sesión y vuelve a entrar",
-            "step2Desc": "Los cambios de grupo solo surten efecto tras una nueva sesión. Cierra sesión en tu escritorio, vuelve a entrar y reabre BarkFlow."
+            "step2Desc": "Los cambios de grupo solo surten efecto tras una nueva sesión. Cierra sesión en tu escritorio, vuelve a entrar y reabre WhisperWoof."
           },
           "service": {
             "step1Title": "Crear el directorio del servicio",
@@ -1293,7 +1293,7 @@
           },
           "installUpdate": {
             "confirmText": "Instalar y reiniciar",
-            "description": "BarkFlow se reiniciará para aplicar la actualización.",
+            "description": "WhisperWoof se reiniciará para aplicar la actualización.",
             "title": "Instalar actualización"
           },
           "noUpdates": {
@@ -1324,13 +1324,13 @@
     "permissions": {
       "accessibilityDescription": "Necesario para que el pegado automático funcione tras la transcripción",
       "accessibilityTitle": "Accesibilidad",
-      "description": "Prueba y administra los permisos del sistema necesarios para que BarkFlow funcione correctamente",
+      "description": "Prueba y administra los permisos del sistema necesarios para que WhisperWoof funcione correctamente",
       "microphoneDescription": "Captura tu voz para dictado y transcripción",
       "microphoneTitle": "Micrófono",
       "resetAccessibility": {
-        "description": "Esto eliminará a BarkFlow de los permisos de accesibilidad. Tendrás que volver a conceder acceso en Configuración del sistema > Privacidad y seguridad > Accesibilidad.",
+        "description": "Esto eliminará a WhisperWoof de los permisos de accesibilidad. Tendrás que volver a conceder acceso en Configuración del sistema > Privacidad y seguridad > Accesibilidad.",
         "label": "Restablecer permisos de accesibilidad",
-        "rowDescription": "Soluciona problemas tras reinstalar o recompilar la app eliminando y volviendo a agregar BarkFlow en Configuración del sistema",
+        "rowDescription": "Soluciona problemas tras reinstalar o recompilar la app eliminando y volviendo a agregar WhisperWoof en Configuración del sistema",
         "title": "Restablecer permisos de accesibilidad"
       },
       "optional": "Opcional",
@@ -1351,7 +1351,7 @@
       "description": "Controla qué datos salen de tu dispositivo. Todo está desactivado por defecto.",
       "title": "Privacidad",
       "usageAnalytics": "Analíticas de uso",
-      "usageAnalyticsDescription": "Ayúdanos a mejorar BarkFlow compartiendo métricas de rendimiento anónimas. Nunca enviamos contenido de transcripciones, solo datos de tiempo y errores.",
+      "usageAnalyticsDescription": "Ayúdanos a mejorar WhisperWoof compartiendo métricas de rendimiento anónimas. Nunca enviamos contenido de transcripciones, solo datos de tiempo y errores.",
       "dataRetention": "Retención de datos",
       "dataRetentionDescription": "Almacenar transcripciones y audio localmente en tu historial. Cuando está desactivado, las transcripciones se pegan pero no se guardan.",
       "audioRetention": "Retención de audio",
@@ -1372,14 +1372,14 @@
     "transcription": {
       "customSetup": "Configuración personalizada",
       "customSetupDescription": "Usa tu propio proveedor y clave API.",
-      "description": "Elige cómo BarkFlow transcribe tu voz",
-      "openwhisprCloud": "BarkFlow Cloud",
+      "description": "Elige cómo WhisperWoof transcribe tu voz",
+      "openwhisprCloud": "WhisperWoof Cloud",
       "openwhisprCloudDescription": "Funciona de inmediato. Sin configuración necesaria.",
       "title": "Voz a texto",
       "toasts": {
         "switchedCloud": {
-          "description": "La transcripción usará el servicio en la nube de BarkFlow.",
-          "title": "Cambiado a BarkFlow Cloud"
+          "description": "La transcripción usará el servicio en la nube de WhisperWoof.",
+          "title": "Cambiado a WhisperWoof Cloud"
         },
         "switchedCustom": {
           "description": "Configura tu propio proveedor y clave API.",
@@ -1519,7 +1519,7 @@
     },
     "tryAgain": "Intentar de nuevo",
     "card": {
-      "brand": "BarkFlow",
+      "brand": "WhisperWoof",
       "signalId": "Signal ID",
       "audioSignature": "Tu firma de audio",
       "stop": "Detener",
@@ -1593,7 +1593,7 @@
       "setupTitle": "Configurar transcripción",
       "setupDescription": "Elige cómo transcribir tu audio. Esto también se aplica al dictado en vivo.",
       "continue": "Continuar",
-      "openwhisprCloud": "BarkFlow Cloud",
+      "openwhisprCloud": "WhisperWoof Cloud",
       "custom": "Personalizado",
       "selectFolder": "Seleccionar carpeta",
       "transcriptionFailed": "Error en la transcripción",
@@ -1604,15 +1604,15 @@
       "fileTooLarge": "Este archivo supera el límite de 500 MB.",
       "largeFileNote": "Los archivos grandes se dividen y transcriben en paralelo.",
       "chunkProgress": "Transcribiendo parte {{completed}} de {{total}}...",
-      "paidPlanRequired": "La transcripción en la nube para archivos de más de 25 MB requiere un plan de pago. Los archivos grandes se procesan con BarkFlow Cloud para resultados fiables y de alta calidad.",
+      "paidPlanRequired": "La transcripción en la nube para archivos de más de 25 MB requiere un plan de pago. Los archivos grandes se procesan con WhisperWoof Cloud para resultados fiables y de alta calidad.",
       "byokTooLarge": "Las claves API de terceros solo admiten archivos de hasta 25 MB.",
-      "byokTooLargeDetail": "Para archivos de más de 25 MB, BarkFlow Cloud se encarga de dividir, procesar en paralelo y reensamblar, obteniendo resultados fiables sin depender de los límites de proveedores de terceros.",
-      "byokTooLargeNeedsAccount": "Crea una cuenta y cambia a un plan de pago para transcribir archivos más grandes con BarkFlow Cloud.",
-      "byokTooLargeNeedsUpgrade": "Cambia a un plan de pago para transcribir archivos más grandes con BarkFlow Cloud.",
-      "switchToCloudForLargeFiles": "Cambia a BarkFlow Cloud para transcribir este archivo.",
+      "byokTooLargeDetail": "Para archivos de más de 25 MB, WhisperWoof Cloud se encarga de dividir, procesar en paralelo y reensamblar, obteniendo resultados fiables sin depender de los límites de proveedores de terceros.",
+      "byokTooLargeNeedsAccount": "Crea una cuenta y cambia a un plan de pago para transcribir archivos más grandes con WhisperWoof Cloud.",
+      "byokTooLargeNeedsUpgrade": "Cambia a un plan de pago para transcribir archivos más grandes con WhisperWoof Cloud.",
+      "switchToCloudForLargeFiles": "Cambia a WhisperWoof Cloud para transcribir este archivo.",
       "createAccount": "Crear cuenta",
       "upgrade": "Mejorar plan",
-      "switchToCloud": "BarkFlow Cloud"
+      "switchToCloud": "WhisperWoof Cloud"
     },
     "meeting": {
       "title": "Notas de reunión",
@@ -1798,7 +1798,7 @@
       "undo": "Deshacer",
       "accessibilityMissing": {
         "title": "Se requieren permisos de accesibilidad",
-        "description": "BarkFlow necesita permisos de accesibilidad para detectar tu atajo y pegar texto. Actívalos en el Panel de Control."
+        "description": "WhisperWoof necesita permisos de accesibilidad para detectar tu atajo y pegar texto. Actívalos en el Panel de Control."
       }
     },
     "mic": {
@@ -1834,8 +1834,8 @@
       "systemPrompt": "Prompt del Sistema",
       "systemPromptDescription": "Instrucciones personalizadas para el agente",
       "systemPromptPlaceholder": "Introduce un prompt de sistema personalizado...",
-      "openwhisprCloud": "BarkFlow Cloud",
-      "openwhisprCloudDescription": "Usar la IA en la nube de BarkFlow para conversaciones del agente",
+      "openwhisprCloud": "WhisperWoof Cloud",
+      "openwhisprCloudDescription": "Usar la IA en la nube de WhisperWoof para conversaciones del agente",
       "customSetup": "Configuración personalizada (BYOK)",
       "customSetupDescription": "Usa tus propias claves API y elige tu modelo preferido"
     },
@@ -1877,7 +1877,7 @@
       "disconnectConfirm": "¿Desconectar {{email}}?",
       "disconnectDescription": "Ya no se grabarán notas de reuniones de este calendario.",
       "systemAudioRequired": "Se requiere permiso de Audio del Sistema",
-      "systemAudioDescription": "Para transcribir reuniones, BarkFlow necesita el permiso de Audio del Sistema para capturar el audio de otros participantes. Nunca grabamos tu pantalla. Serás dirigido a Ajustes del Sistema para activarlo.",
+      "systemAudioDescription": "Para transcribir reuniones, WhisperWoof necesita el permiso de Audio del Sistema para capturar el audio de otros participantes. Nunca grabamos tu pantalla. Serás dirigido a Ajustes del Sistema para activarlo.",
       "openSettings": "Abrir Ajustes del Sistema"
     },
     "plan": {
@@ -1899,8 +1899,8 @@
       "feedback": "¿Necesitas más de 20 horas? Contacta a gabe@openwhispr.com"
     },
     "notABot": {
-      "title": "BarkFlow es un grabador de reuniones, no un bot",
-      "description": "BarkFlow captura el audio directamente de tu sistema — nunca se une a tus reuniones como participante. Solo conecta tu calendario y toma notas con normalidad."
+      "title": "WhisperWoof es un grabador de reuniones, no un bot",
+      "description": "WhisperWoof captura el audio directamente de tu sistema — nunca se une a tus reuniones como participante. Solo conecta tu calendario y toma notas con normalidad."
     }
   },
   "calendar": {
@@ -1948,7 +1948,7 @@
     "signInDescription": "Crea una cuenta o inicia sesión para grabar y transcribir reuniones.",
     "connectCalendar": "Conecta tu calendario",
     "connectCalendarDescription": "Vincula tu Google Calendar para ver próximas reuniones y grabar notas automáticamente.",
-    "notABot": "BarkFlow graba usando el audio de tu sistema — nunca se une a las reuniones como un bot.",
+    "notABot": "WhisperWoof graba usando el audio de tu sistema — nunca se une a las reuniones como un bot.",
     "connectCalendarButton": "Conectar calendario"
   },
   "notesView": {
@@ -1993,13 +1993,13 @@
     }
   },
   "updateNotification": {
-    "title": "Actualización de BarkFlow disponible",
+    "title": "Actualización de WhisperWoof disponible",
     "body": "La versión {{version}} está lista para descargar",
     "cta": "Actualizar ahora"
   },
   "permissionsGate": {
     "title": "Permisos necesarios",
-    "description": "BarkFlow necesita algunos permisos para funcionar en este ordenador.",
+    "description": "WhisperWoof necesita algunos permisos para funcionar en este ordenador.",
     "continue": "Continuar"
   }
 }

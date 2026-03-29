@@ -90,7 +90,7 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
   } = useSettings();
 
   const [hotkey, setHotkey] = useState(dictationKey || getDefaultHotkey());
-  const [agentName, setAgentName] = useState("BarkFlow");
+  const [agentName, setAgentName] = useState("WhisperWoof");
   const [skipAuth, setSkipAuth] = useState(false);
   const [isModelDownloaded, setIsModelDownloaded] = useState(false);
   const [isUsingNativeShortcut, setIsUsingNativeShortcut] = useState(false);
@@ -601,7 +601,7 @@ export default function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
     }
   };
 
-  // BarkFlow: Noto Sans is bundled locally (src/assets/fonts/noto-sans.css)
+  // WhisperWoof: Noto Sans is bundled locally (src/assets/fonts/noto-sans.css)
   // No need to load from Google CDN — blocked by CSP and unnecessary
 
   const onboardingPlatform =

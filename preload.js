@@ -665,48 +665,48 @@ contextBridge.exposeInMainWorld("electronAPI", {
   updateNotificationReady: () => ipcRenderer.invoke("update-notification-ready"),
   updateNotificationRespond: (action) => ipcRenderer.invoke("update-notification-respond", action),
 
-  // BarkFlow: Ollama text polish
-  barkflowOllamaPolish: (text, options) => ipcRenderer.invoke("barkflow-ollama-polish", text, options),
-  barkflowOllamaCheck: () => ipcRenderer.invoke("barkflow-ollama-check"),
-  barkflowGetPolishPresets: () => ipcRenderer.invoke("barkflow-get-polish-presets"),
-  barkflowSaveEntry: (entry) => ipcRenderer.invoke("barkflow-save-entry", entry),
+  // WhisperWoof: Ollama text polish
+  whisperwoofOllamaPolish: (text, options) => ipcRenderer.invoke("whisperwoof-ollama-polish", text, options),
+  whisperwoofOllamaCheck: () => ipcRenderer.invoke("whisperwoof-ollama-check"),
+  whisperwoofGetPolishPresets: () => ipcRenderer.invoke("whisperwoof-get-polish-presets"),
+  whisperwoofSaveEntry: (entry) => ipcRenderer.invoke("whisperwoof-save-entry", entry),
 
-  // BarkFlow: Markdown notes (Fn+N)
-  barkflowSaveMarkdown: (text) => ipcRenderer.invoke("barkflow-save-markdown", text),
-  barkflowGetNotesDir: () => ipcRenderer.invoke("barkflow-get-notes-dir"),
+  // WhisperWoof: Markdown notes (Fn+N)
+  whisperwoofSaveMarkdown: (text) => ipcRenderer.invoke("whisperwoof-save-markdown", text),
+  whisperwoofGetNotesDir: () => ipcRenderer.invoke("whisperwoof-get-notes-dir"),
 
-  // BarkFlow: History entries (voice + clipboard unified view)
-  barkflowGetEntries: (limit, offset) => ipcRenderer.invoke("barkflow-get-entries", limit, offset),
-  barkflowSearchEntries: (query, limit) => ipcRenderer.invoke("barkflow-search-entries", query, limit),
-  barkflowDeleteEntry: (id) => ipcRenderer.invoke("barkflow-delete-entry", id),
-  barkflowToggleFavorite: (id) => ipcRenderer.invoke("barkflow-toggle-favorite", id),
-  barkflowGetFavorites: (limit) => ipcRenderer.invoke("barkflow-get-favorites", limit),
-  barkflowGetImage: (imagePath) => ipcRenderer.invoke("barkflow-get-image", imagePath),
-  barkflowClipboardToggle: (enabled) => ipcRenderer.invoke("barkflow-clipboard-toggle", enabled),
+  // WhisperWoof: History entries (voice + clipboard unified view)
+  whisperwoofGetEntries: (limit, offset) => ipcRenderer.invoke("whisperwoof-get-entries", limit, offset),
+  whisperwoofSearchEntries: (query, limit) => ipcRenderer.invoke("whisperwoof-search-entries", query, limit),
+  whisperwoofDeleteEntry: (id) => ipcRenderer.invoke("whisperwoof-delete-entry", id),
+  whisperwoofToggleFavorite: (id) => ipcRenderer.invoke("whisperwoof-toggle-favorite", id),
+  whisperwoofGetFavorites: (limit) => ipcRenderer.invoke("whisperwoof-get-favorites", limit),
+  whisperwoofGetImage: (imagePath) => ipcRenderer.invoke("whisperwoof-get-image", imagePath),
+  whisperwoofClipboardToggle: (enabled) => ipcRenderer.invoke("whisperwoof-clipboard-toggle", enabled),
 
-  // BarkFlow: Projects — named buckets for voice capture routing
-  barkflowCreateProject: (name) => ipcRenderer.invoke("barkflow-create-project", name),
-  barkflowGetProjects: () => ipcRenderer.invoke("barkflow-get-projects"),
-  barkflowDeleteProject: (id) => ipcRenderer.invoke("barkflow-delete-project", id),
-  barkflowGetProjectEntries: (projectId, limit) => ipcRenderer.invoke("barkflow-get-project-entries", projectId, limit),
+  // WhisperWoof: Projects — named buckets for voice capture routing
+  whisperwoofCreateProject: (name) => ipcRenderer.invoke("whisperwoof-create-project", name),
+  whisperwoofGetProjects: () => ipcRenderer.invoke("whisperwoof-get-projects"),
+  whisperwoofDeleteProject: (id) => ipcRenderer.invoke("whisperwoof-delete-project", id),
+  whisperwoofGetProjectEntries: (projectId, limit) => ipcRenderer.invoke("whisperwoof-get-project-entries", projectId, limit),
 
-  // BarkFlow: Model advisor — recommend model based on system memory
-  barkflowGetModelRecommendation: () => ipcRenderer.invoke("barkflow-get-model-recommendation"),
-  barkflowGetModelFailureAdvice: (model, stderr) => ipcRenderer.invoke("barkflow-get-model-failure-advice", model, stderr),
+  // WhisperWoof: Model advisor — recommend model based on system memory
+  whisperwoofGetModelRecommendation: () => ipcRenderer.invoke("whisperwoof-get-model-recommendation"),
+  whisperwoofGetModelFailureAdvice: (model, stderr) => ipcRenderer.invoke("whisperwoof-get-model-failure-advice", model, stderr),
 
-  // BarkFlow: File import — upload audio files for transcription
-  barkflowImportAudio: (filePath) => ipcRenderer.invoke("barkflow-import-audio", filePath),
-  barkflowImportSupportedExtensions: () => ipcRenderer.invoke("barkflow-import-supported-extensions"),
+  // WhisperWoof: File import — upload audio files for transcription
+  whisperwoofImportAudio: (filePath) => ipcRenderer.invoke("whisperwoof-import-audio", filePath),
+  whisperwoofImportSupportedExtensions: () => ipcRenderer.invoke("whisperwoof-import-supported-extensions"),
 
-  // BarkFlow: Meeting transcription — bridge to bf_entries with source='meeting'
-  barkflowMeetingStart: (options) => ipcRenderer.invoke("barkflow-meeting-start", options),
-  barkflowMeetingSegment: (text) => ipcRenderer.invoke("barkflow-meeting-segment", text),
-  barkflowMeetingEnd: () => ipcRenderer.invoke("barkflow-meeting-end"),
-  barkflowMeetingStatus: () => ipcRenderer.invoke("barkflow-meeting-status"),
+  // WhisperWoof: Meeting transcription — bridge to bf_entries with source='meeting'
+  whisperwoofMeetingStart: (options) => ipcRenderer.invoke("whisperwoof-meeting-start", options),
+  whisperwoofMeetingSegment: (text) => ipcRenderer.invoke("whisperwoof-meeting-segment", text),
+  whisperwoofMeetingEnd: () => ipcRenderer.invoke("whisperwoof-meeting-end"),
+  whisperwoofMeetingStatus: () => ipcRenderer.invoke("whisperwoof-meeting-status"),
 
-  // BarkFlow: Plugin management (MCP server plugins)
-  barkflowGetPlugins: () => ipcRenderer.invoke("barkflow-get-plugins"),
-  barkflowUpdatePlugin: (id, updates) => ipcRenderer.invoke("barkflow-update-plugin", id, updates),
-  barkflowAddPlugin: (config) => ipcRenderer.invoke("barkflow-add-plugin", config),
-  barkflowRemovePlugin: (id) => ipcRenderer.invoke("barkflow-remove-plugin", id),
+  // WhisperWoof: Plugin management (MCP server plugins)
+  whisperwoofGetPlugins: () => ipcRenderer.invoke("whisperwoof-get-plugins"),
+  whisperwoofUpdatePlugin: (id, updates) => ipcRenderer.invoke("whisperwoof-update-plugin", id, updates),
+  whisperwoofAddPlugin: (config) => ipcRenderer.invoke("whisperwoof-add-plugin", config),
+  whisperwoofRemovePlugin: (id) => ipcRenderer.invoke("whisperwoof-remove-plugin", id),
 });

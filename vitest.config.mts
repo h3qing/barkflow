@@ -5,12 +5,12 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
-    include: ['src/barkflow/**/*.test.ts', 'src/barkflow/**/*.test.tsx'],
+    include: ['src/whisperwoof/**/*.test.ts', 'src/whisperwoof/**/*.test.tsx'],
     exclude: ['node_modules', 'src/dist'],
     coverage: {
       provider: 'v8',
-      include: ['src/barkflow/**/*.ts', 'src/barkflow/**/*.tsx'],
-      exclude: ['src/barkflow/**/*.test.ts', 'src/barkflow/**/*.test.tsx'],
+      include: ['src/whisperwoof/**/*.ts', 'src/whisperwoof/**/*.tsx'],
+      exclude: ['src/whisperwoof/**/*.test.ts', 'src/whisperwoof/**/*.test.tsx'],
       thresholds: {
         statements: 80,
         branches: 80,
@@ -22,7 +22,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, 'src'),
-      '@barkflow': path.resolve(__dirname, 'src/barkflow'),
+      '@whisperwoof': path.resolve(__dirname, 'src/whisperwoof'),
     },
   },
 })

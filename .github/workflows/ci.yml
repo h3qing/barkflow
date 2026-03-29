@@ -1,4 +1,4 @@
-name: BarkFlow CI
+name: WhisperWoof CI
 
 on:
   push:
@@ -95,6 +95,6 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: BarkFlow-macOS-arm64
+          name: WhisperWoof-macOS-arm64
           path: dist/*.dmg
           retention-days: 7

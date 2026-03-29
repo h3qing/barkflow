@@ -1,7 +1,7 @@
-# Task Plan: BarkFlow — Voice-First Personal Automation
+# Task Plan: WhisperWoof — Voice-First Personal Automation
 
 ## Goal
-Fork OpenWhispr and build BarkFlow: a voice-first personal automation tool that transcribes, polishes (local LLM), routes (hotkey-driven), and stores (unified capture layer) voice and clipboard input.
+Fork OpenWhispr and build WhisperWoof: a voice-first personal automation tool that transcribes, polishes (local LLM), routes (hotkey-driven), and stores (unified capture layer) voice and clipboard input.
 
 ## Current Phase
 Phase 0 (in_progress)
@@ -14,8 +14,8 @@ Phase 0 (in_progress)
 - [x] Proxy cloud API calls — CSP connect-src allowlist configured
 - [x] Set up Vitest + write tests (70 tests passing across 4 files)
 - [x] Rebrand: package.json, electron-builder.json, main.js, windowConfig.js
-- [x] BarkFlow core modules built: StorageProvider, SqliteProvider, OllamaService, HotkeyRouter, ClipboardMonitor, Pipeline
-- [x] Wire BarkFlow init into main.js (startApp + will-quit)
+- [x] WhisperWoof core modules built: StorageProvider, SqliteProvider, OllamaService, HotkeyRouter, ClipboardMonitor, Pipeline
+- [x] Wire WhisperWoof init into main.js (startApp + will-quit)
 - [ ] Validate Fn key works reliably on target macOS version (GO/NO-GO gate) — **needs manual test**
 - **Status:** in_progress (nearly complete)
 - **Depends on:** Nothing — this is the starting point
@@ -29,7 +29,7 @@ Phase 0 (in_progress)
 - [x] History query/search/delete API via IPC
 - [x] Learning mode toast (before/after polish, first 20 captures)
 - [ ] Extend HotkeyManager → destination routing (Fn+key → arbitrary destinations)
-- [ ] **GATE: Use BarkFlow daily for 3 days. Fix issues before proceeding.**
+- [ ] **GATE: Use WhisperWoof daily for 3 days. Fix issues before proceeding.**
 - **Status:** nearly complete (hotkey routing remaining)
 - **Depends on:** Phase 0 complete ✓
 - **Gate criteria:** Daily-usable. If Ollama latency bad → fix or cut. If Fn key broken → switch default.
@@ -37,18 +37,18 @@ Phase 0 (in_progress)
 ### Phase 1b: New Features (parallel — start only after 1a gate passes)
 - [x] ClipboardMonitor (polling every 500ms, dedup, saves to bf_entries)
 - [x] Floating indicator reskin (dog ear SVG, amber brand, centered, 48px)
-- [x] Voice-to-Markdown route (Fn+N → .md file to ~/Documents/BarkFlow Notes/)
+- [x] Voice-to-Markdown route (Fn+N → .md file to ~/Documents/WhisperWoof Notes/)
 - [x] History UI (search + filters + detail pane + sidebar nav)
 - [x] Projects system (create/delete projects, view entries, FolderOpen sidebar)
 - [x] File import pipeline (validate + read + STT + polish + save to bf_entries)
 - [x] Settings panel (Ollama status, clipboard toggle, notes dir, Sparkles sidebar)
-- [x] Onboarding adaptation (removed dead auth code, BarkFlow-themed text, local-first flow)
+- [x] Onboarding adaptation (removed dead auth code, WhisperWoof-themed text, local-first flow)
 - [x] Meeting recording (meeting-bridge.js — session tracking, transcript assembly, bf_entries)
 - **Status:** complete
 - **Depends on:** Phase 1a gate passed
 
 ### Phase 2: MCP Plugin System
-- [ ] Implement BarkFlow as MCP client
+- [ ] Implement WhisperWoof as MCP client
 - [ ] Build 3-4 first-party MCP server plugins (Todoist, Notion, Calendar, Slack)
 - [ ] MCP server discovery + management UI
 - [ ] MCP plugin permission model (declared network domains, data minimization, sandbox)
@@ -79,8 +79,8 @@ Phase 0 (in_progress)
 |----------|-----------|
 | Fork OpenWhispr (not Tauri rewrite) | Fastest path to daily-use. Inherits STT, hotkeys, UI, audio. |
 | Keep Kysely ORM | Less migration work, existing OpenWhispr code stays compatible |
-| src/barkflow/ isolation | Minimizes merge conflicts with upstream. Bridge pattern for OpenWhispr hooks. |
-| Strict TypeScript for BarkFlow only | Type safety for new code without fixing all OpenWhispr type errors |
+| src/whisperwoof/ isolation | Minimizes merge conflicts with upstream. Bridge pattern for OpenWhispr hooks. |
+| Strict TypeScript for WhisperWoof only | Type safety for new code without fixing all OpenWhispr type errors |
 | Vitest for testing | Integrates with existing Vite config, native ESM/TS support |
 | IPC hardening over sandbox | sandbox:true impossible with native modules. Focus on CSP + preload audit. |
 | FileVault for DB, safeStorage for audio | FTS5 incompatible with field-level encryption. Audio is biometric → stronger protection. |

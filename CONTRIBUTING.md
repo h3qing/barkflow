@@ -1,12 +1,12 @@
-# Contributing to BarkFlow
+# Contributing to WhisperWoof
 
-BarkFlow is a voice-first personal automation tool built on top of OpenWhispr. We welcome contributions!
+WhisperWoof is a voice-first personal automation tool built on top of OpenWhispr. We welcome contributions!
 
 ## Quick Start
 
 ```bash
-git clone https://github.com/h3qing/barkflow.git
-cd barkflow
+git clone https://github.com/h3qing/whisperwoof.git
+cd whisperwoof
 npm install
 npm run compile:native    # Build native binaries (macOS Globe key, paste helpers)
 npm run download:whisper-cpp  # Download Whisper STT binary
@@ -25,10 +25,10 @@ npx vitest run --coverage # Run with coverage report
 
 ## Architecture
 
-BarkFlow code lives in `src/barkflow/` — isolated from OpenWhispr core to minimize merge conflicts.
+WhisperWoof code lives in `src/whisperwoof/` — isolated from OpenWhispr core to minimize merge conflicts.
 
 ```
-src/barkflow/
+src/whisperwoof/
   core/           ← Main process (strict TypeScript)
     storage/      StorageProvider interface + SqliteProvider
     polish/       OllamaService for transcript cleanup
@@ -39,12 +39,12 @@ src/barkflow/
   ui/             ← Renderer (React + TSX)
     history/      Unified voice + clipboard history view
     indicator/    Floating dog ear indicator
-    settings/     BarkFlow settings panel
+    settings/     WhisperWoof settings panel
     projects/     Project capture buckets
     plugins/      Plugin management UI
     command-bar/  Cmd+K text routing overlay
   bridge/         ← ONLY place that imports OpenWhispr code
-    app-init.js   BarkFlow init at startup
+    app-init.js   WhisperWoof init at startup
     ollama-bridge.js  Ollama HTTP API wrapper
     polish-presets.js  5 personality presets for text cleanup
     model-advisor.js   RAM-based model recommendations
@@ -56,10 +56,10 @@ src/barkflow/
 
 ## Key Rules
 
-- **All BarkFlow code in `src/barkflow/`** — bridge pattern for OpenWhispr imports
-- **Strict TypeScript** for BarkFlow code (`src/barkflow/tsconfig.json`)
+- **All WhisperWoof code in `src/whisperwoof/`** — bridge pattern for OpenWhispr imports
+- **Strict TypeScript** for WhisperWoof code (`src/whisperwoof/tsconfig.json`)
 - **Immutable patterns** — return new objects, never mutate inputs
-- **Tests required** — 80%+ coverage target on new BarkFlow code
+- **Tests required** — 80%+ coverage target on new WhisperWoof code
 - **Files < 400 lines** — extract when larger
 - **Functions < 50 lines** — one job per function
 
@@ -79,7 +79,7 @@ node eval/run-eval.js --preset all      # Polish quality eval
 
 ## Adding a New Feature
 
-1. Create files in `src/barkflow/core/` (main process) or `src/barkflow/ui/` (renderer)
+1. Create files in `src/whisperwoof/core/` (main process) or `src/whisperwoof/ui/` (renderer)
 2. Add IPC handlers in `src/helpers/ipcHandlers.js`
 3. Expose in `preload.js`
 4. Wire into `ControlPanel.tsx` / `ControlPanelSidebar.tsx` if it's a new view

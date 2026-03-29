@@ -1,7 +1,7 @@
 # Changelog
 
-All notable changes to BarkFlow will be documented in this file.
-BarkFlow is a fork of OpenWhispr — see below for inherited changes.
+All notable changes to WhisperWoof will be documented in this file.
+WhisperWoof is a fork of OpenWhispr — see below for inherited changes.
 
 ## [0.5.0] - 2026-03-28 — Phase 4: UX Refinements
 
@@ -30,9 +30,9 @@ BarkFlow is a fork of OpenWhispr — see below for inherited changes.
 - CONTRIBUTING.md with architecture guide and dev commands
 
 ### Changed
-- Default view: BarkFlow History (was OpenWhispr "Home")
+- Default view: WhisperWoof History (was OpenWhispr "Home")
 - Removed Integrations, Support sidebar items
-- Simplified user profile to BarkFlow branding
+- Simplified user profile to WhisperWoof branding
 
 ## [0.3.0] - 2026-03-27 — Phase 2: MCP Plugins & Quality
 
@@ -42,7 +42,7 @@ BarkFlow is a fork of OpenWhispr — see below for inherited changes.
 - Smart Model Advisor — recommends Whisper model based on system RAM
 - Polish Presets — 5 styles (Clean, Professional, Casual, Minimal, Structured)
 - Eval Framework — 8 test cases with WER/filler scoring
-- BarkFlow CI (tests + lint + macOS build)
+- WhisperWoof CI (tests + lint + macOS build)
 
 ### Fixed
 - Progress bar regression during model download
@@ -57,7 +57,7 @@ BarkFlow is a fork of OpenWhispr — see below for inherited changes.
 - Clipboard monitoring (500ms polling, dedup)
 - File import pipeline, Voice-to-Markdown (Fn+N)
 - Dog ear indicator (centered, amber brand)
-- BarkFlow settings, Meeting recording bridge
+- WhisperWoof settings, Meeting recording bridge
 - Learning mode toast (first 20 captures)
 - StorageProvider + SqliteProvider + Pipeline orchestrator
 - 70 unit tests
@@ -70,7 +70,7 @@ BarkFlow is a fork of OpenWhispr — see below for inherited changes.
 ### Added
 - Forked OpenWhispr v1.6.6, security hardening (CSP, validation)
 - 620+ string rebranding, Pro upsell removed (-858 lines)
-- BarkFlow directory structure with bridge pattern
+- WhisperWoof directory structure with bridge pattern
 - Strict TypeScript, Vitest framework
 
 ---

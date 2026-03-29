@@ -35,7 +35,7 @@ class WindowManager {
     this._cachedActivationMode = "tap";
     this._floatingIconAutoHide = false;
     this._agentAnimationState = null;
-    this._panelStartPosition = "center"; // BarkFlow: center by default
+    this._panelStartPosition = "center"; // WhisperWoof: center by default
     this._isDictatingToggle = false;
 
     app.on("before-quit", () => {

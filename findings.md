@@ -20,7 +20,7 @@
 
 ### What OpenWhispr Provides (free from fork)
 - **STT engines:** Whisper (local), Parakeet/sherpa-onnx (local), cloud BYOK (OpenAI, Groq, Deepgram streaming, AssemblyAI streaming, Mistral)
-- **LLM polish:** ReasoningService + llamaServer.js (local llama.cpp) — BarkFlow will adapt to Ollama
+- **LLM polish:** ReasoningService + llamaServer.js (local llama.cpp) — WhisperWoof will adapt to Ollama
 - **Globe/Fn key:** Native Swift binary (`macos-globe-listener.swift`) using IOKit HID. Emits FN_DOWN/FN_UP via stdout.
 - **Audio:** AudioManager (Web Audio API), AudioStorageManager, AudioTapManager (macOS CoreAudio for meeting capture)
 - **Clipboard:** Native paste helpers (Swift macOS, C Windows/Linux) — paste only, NOT monitoring
@@ -91,8 +91,8 @@ openwhispr/
 ### Eng Review (9 issues, 0 critical gaps)
 - Cloud providers: keep but proxy through main process
 - Kysely ORM: keep (less migration)
-- Code isolation: src/barkflow/ with bridge pattern
-- TypeScript: strict for BarkFlow only (separate tsconfig)
+- Code isolation: src/whisperwoof/ with bridge pattern
+- TypeScript: strict for WhisperWoof only (separate tsconfig)
 - Test framework: Vitest
 - Sandbox: accept false, focus on IPC hardening
 - Phase 1 gate: explicit 1a/1b split with daily-use checkpoint
@@ -129,7 +129,7 @@ openwhispr/
 10. No CSP configured anywhere
 11. `webSecurity: false` on control panel and agent overlay
 
-### BarkFlow Phase 0 Security Fixes (planned)
+### WhisperWoof Phase 0 Security Fixes (planned)
 - [x] Audit complete — 241 methods catalogued
 - [ ] Add URL validation to `open-external` (allowlist protocols)
 - [ ] Add path validation to file read handlers

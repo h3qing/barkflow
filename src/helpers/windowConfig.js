@@ -39,7 +39,7 @@ const WINDOW_SIZES = {
 const MAIN_WINDOW_CONFIG = {
   width: WINDOW_SIZES.BASE.width,
   height: WINDOW_SIZES.BASE.height,
-  title: "BarkFlow",
+  title: "WhisperWoof",
   webPreferences: {
     preload: path.join(__dirname, "..", "..", "preload.js"),
     nodeIntegration: false,
@@ -72,7 +72,7 @@ const CONTROL_PANEL_CONFIG = {
     // sandbox: false is required because the preload script bridges IPC
     // between the renderer and main process.
     sandbox: false,
-    // BarkFlow: webSecurity re-enabled. Cross-origin API calls are allowed
+    // WhisperWoof: webSecurity re-enabled. Cross-origin API calls are allowed
     // via CSP connect-src in main.js. Cloud API calls should be proxied
     // through the main process for full security.
     webSecurity: true,
@@ -122,7 +122,7 @@ const NOTIFICATION_WINDOW_CONFIG = {
 class WindowPositionUtil {
   static getMainWindowPosition(display, customSize = null, position = "center") {
     const { width, height } = customSize || WINDOW_SIZES.BASE;
-    const MARGIN = 48; // BarkFlow: 48px from bottom edge per design spec
+    const MARGIN = 48; // WhisperWoof: 48px from bottom edge per design spec
     const workArea = display.workArea || display.bounds;
 
     let x, y;
@@ -200,7 +200,7 @@ const AGENT_OVERLAY_CONFIG = {
     nodeIntegration: false,
     contextIsolation: true,
     sandbox: false,
-    // BarkFlow: webSecurity re-enabled (same as control panel)
+    // WhisperWoof: webSecurity re-enabled (same as control panel)
     webSecurity: true,
     spellcheck: false,
     backgroundThrottling: false,

@@ -17,7 +17,7 @@ export function isBuiltInMicrophone(label: string): boolean {
     lowerLabel.includes("macbook") ||
     lowerLabel.includes("integrated") ||
     lowerLabel.includes("laptop") ||
-    lowerLabel.includes("default") // BarkFlow: catch "Default" labeled devices
+    lowerLabel.includes("default") // WhisperWoof: catch "Default" labeled devices
   ) {
     return true;
   }

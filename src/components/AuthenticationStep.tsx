@@ -4,14 +4,14 @@ import logoIcon from "../assets/icon.png";
 
 interface AuthenticationStepProps {
   onContinueWithoutAccount: () => void;
-  /** @deprecated Kept for interface compatibility; BarkFlow removed cloud auth. */
+  /** @deprecated Kept for interface compatibility; WhisperWoof removed cloud auth. */
   onAuthComplete?: () => void;
-  /** @deprecated Kept for interface compatibility; BarkFlow removed cloud auth. */
+  /** @deprecated Kept for interface compatibility; WhisperWoof removed cloud auth. */
   onNeedsVerification?: (email: string) => void;
 }
 
 /**
- * AuthenticationStep — BarkFlow welcome screen.
+ * AuthenticationStep — WhisperWoof welcome screen.
  * Cloud auth removed; this is a simple entry point that calls onContinueWithoutAccount.
  */
 export default function AuthenticationStep({
@@ -22,11 +22,11 @@ export default function AuthenticationStep({
       <div className="text-center mb-4">
         <img
           src={logoIcon}
-          alt="BarkFlow"
+          alt="WhisperWoof"
           className="w-12 h-12 mx-auto mb-2.5 rounded-lg shadow-sm"
         />
         <p className="text-lg font-semibold text-foreground tracking-tight leading-tight">
-          Welcome to BarkFlow
+          Welcome to WhisperWoof
         </p>
         <p className="text-muted-foreground text-sm mt-1 leading-tight">
           Voice-first personal automation. Speak and it transcribes, polishes, and routes — all

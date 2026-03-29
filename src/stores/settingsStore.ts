@@ -221,8 +221,8 @@ function invalidateApiKeyCaches(
 
 export const useSettingsStore = create<SettingsState>()((set, get) => ({
   uiLanguage: normalizeUiLanguage(isBrowser ? localStorage.getItem("uiLanguage") : null),
-  useLocalWhisper: readBoolean("useLocalWhisper", true), // BarkFlow: local-first by default
-  whisperModel: readString("whisperModel", "small"), // BarkFlow: "small" for better accuracy (244MB vs 74MB "base")
+  useLocalWhisper: readBoolean("useLocalWhisper", true), // WhisperWoof: local-first by default
+  whisperModel: readString("whisperModel", "small"), // WhisperWoof: "small" for better accuracy (244MB vs 74MB "base")
   localTranscriptionProvider: (readString("localTranscriptionProvider", "whisper") === "nvidia"
     ? "nvidia"
     : "whisper") as LocalTranscriptionProvider,
@@ -284,8 +284,8 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
   dataRetentionEnabled: readBoolean("dataRetentionEnabled", true),
   audioCuesEnabled: readBoolean("audioCuesEnabled", true),
   pauseMediaOnDictation: readBoolean("pauseMediaOnDictation", false),
-  floatingIconAutoHide: readBoolean("floatingIconAutoHide", true), // BarkFlow: hide when not recording
-  startMinimized: readBoolean("startMinimized", true), // BarkFlow: start in menu bar, not as visible window
+  floatingIconAutoHide: readBoolean("floatingIconAutoHide", true), // WhisperWoof: hide when not recording
+  startMinimized: readBoolean("startMinimized", true), // WhisperWoof: start in menu bar, not as visible window
   ...(() => {
     let accounts: GoogleCalendarAccount[] = [];
     try {
@@ -303,9 +303,9 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
   meetingProcessDetection: readBoolean("meetingProcessDetection", true),
   meetingAudioDetection: readBoolean("meetingAudioDetection", true),
   panelStartPosition: (() => {
-    const v = readString("panelStartPosition", "center"); // BarkFlow: center by default
+    const v = readString("panelStartPosition", "center"); // WhisperWoof: center by default
     if (v === "bottom-right" || v === "center" || v === "bottom-left") return v;
-    return "center" as const; // BarkFlow: center by default
+    return "center" as const; // WhisperWoof: center by default
   })(),
   keepTranscriptionInClipboard: readBoolean("keepTranscriptionInClipboard", false),
   isSignedIn: readBoolean("isSignedIn", false),

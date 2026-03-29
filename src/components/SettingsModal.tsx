@@ -37,7 +37,7 @@ export default function SettingsModal({ open, onOpenChange, initialSection }: Se
   const { t } = useTranslation();
   const sidebarItems: SidebarItem<SettingsSectionType>[] = useMemo(
     () => [
-      // BarkFlow: account and billing sections hidden — local-first, no cloud subscriptions
+      // WhisperWoof: account and billing sections hidden — local-first, no cloud subscriptions
       // {
       //   id: "account",
       //   label: t("settingsModal.sections.account.label"),
@@ -105,7 +105,7 @@ export default function SettingsModal({ open, onOpenChange, initialSection }: Se
     [t]
   );
 
-  // BarkFlow: default to "general" since account section is hidden
+  // WhisperWoof: default to "general" since account section is hidden
   const [activeSection, setActiveSection] = React.useState<SettingsSectionType>("general");
 
   // Navigate to initial section when modal opens, resolving legacy aliases
