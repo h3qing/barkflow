@@ -48,16 +48,18 @@ const PRESETS = {
   professional: {
     id: "professional",
     name: "Professional",
-    description: "Clean, formal tone. Good for work emails and notes.",
+    description: "Clean, confident tone. Removes filler words, hedging, and verbal tics. Default.",
     prompt:
-      "Rewrite this voice transcript for a professional context. Rules:\n" +
-      "- Remove all filler words and verbal tics\n" +
-      "- Use formal grammar and complete sentences\n" +
+      "Rewrite this voice transcript to sound professional and confident. Rules:\n" +
+      "- Remove ALL filler words: um, uh, like, you know, so, basically, actually, right, I mean, I guess\n" +
+      "- Remove hedging language: I think, I feel like, kind of, sort of, maybe, probably, it seems like, you know what I mean\n" +
+      "- Remove verbal padding: blah blah blah, and stuff, and things, or whatever, or something\n" +
+      "- Use direct, confident statements (\"We should redesign\" not \"I think maybe we should redesign\")\n" +
+      "- ALWAYS add proper punctuation: periods, commas, question marks\n" +
+      "- Capitalize first word of each sentence\n" +
       "- Convert spoken lists to numbered or bulleted format\n" +
-      "- Capitalize proper nouns and abbreviations\n" +
-      "- Add appropriate punctuation (periods, commas, colons)\n" +
-      "- Keep the factual content identical — only change style\n" +
-      "- Return ONLY the rewritten text",
+      "- Keep the factual content identical — only change style and remove noise\n" +
+      "- Return ONLY the rewritten text, no explanations",
   },
 
   casual: {
@@ -105,7 +107,7 @@ const PRESETS = {
   },
 };
 
-const DEFAULT_PRESET_ID = "clean";
+const DEFAULT_PRESET_ID = "professional"; // WhisperWoof: professional is the best default for most users
 
 /**
  * Get all available presets.

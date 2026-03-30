@@ -49,7 +49,7 @@ function buildInitialState(): SettingsState {
     polishEnabled: localStorage.getItem("whisperwoof-polish-enabled") !== "false",
     ollamaModel: localStorage.getItem("whisperwoof-ollama-model") || "llama3.2:1b",
     ollama: { checking: true, available: false, models: [] },
-    polishPreset: localStorage.getItem("whisperwoof-polish-preset") || "clean",
+    polishPreset: localStorage.getItem("whisperwoof-polish-preset") || "professional",
     presets: [],
     clipboardEnabled: localStorage.getItem("whisperwoof-clipboard-enabled") !== "false",
     notesDir: "",
