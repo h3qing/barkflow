@@ -180,9 +180,18 @@ export const useAudioRecording = (toast, options = {}) => {
               const polishStart = performance.now();
               const polishPreset = localStorage.getItem("whisperwoof-polish-preset") || "clean";
               const customPrompt = localStorage.getItem("whisperwoof-custom-prompt") || "";
+              const polishProvider = localStorage.getItem("whisperwoof-polish-provider") || "ollama";
+              const polishModel = localStorage.getItem("whisperwoof-polish-model") || "";
+              const polishApiKey = localStorage.getItem(`whisperwoof-${polishProvider}-api-key`) || "";
               const polishResult = await window.electronAPI?.whisperwoofOllamaPolish?.(
                 transcribedText,
-                { preset: polishPreset, customPrompt }
+                {
+                  preset: polishPreset,
+                  customPrompt,
+                  provider: polishProvider,
+                  model: polishModel || undefined,
+                  apiKey: polishApiKey || undefined,
+                }
               );
               timings.polishMs = Math.round(performance.now() - polishStart);
             if (polishResult?.polished && polishResult.text) {

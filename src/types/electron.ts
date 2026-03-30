@@ -1222,6 +1222,9 @@ declare global {
       whisperwoofDeleteProject: (id: string) => Promise<void>;
       whisperwoofGetProjectEntries: (projectId: string, limit: number) => Promise<any[]>;
 
+      // WhisperWoof — LLM providers (BYOM)
+      whisperwoofGetProviders: () => Promise<Array<{ id: string; name: string; description: string; requiresApiKey: boolean; defaultModel: string; models: string[] }>>;
+
       // WhisperWoof — Voice editing commands
       whisperwoofVoiceCommand: (spokenText: string, selectedText: string, options?: Record<string, unknown>) => Promise<{ success: boolean; text?: string; isCommand: boolean; command?: string; error?: string }>;
       whisperwoofDetectVoiceCommand: (spokenText: string) => Promise<{ isCommand: boolean; command: string | null }>;

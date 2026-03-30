@@ -1770,6 +1770,17 @@ class IPCHandlers {
       }
     });
 
+    // WhisperWoof: LLM provider management (BYOM)
+    ipcMain.handle("whisperwoof-get-providers", async () => {
+      try {
+        const { getProviders } = require("../whisperwoof/bridge/llm-providers");
+        return getProviders();
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] get-providers failed: ${error.message}`);
+        return [];
+      }
+    });
+
     // WhisperWoof: Polish presets (personality selection)
     ipcMain.handle("whisperwoof-get-polish-presets", async () => {
       const { getPolishPresets } = require("../whisperwoof/bridge/polish-presets");
