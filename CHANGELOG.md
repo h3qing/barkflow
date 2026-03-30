@@ -3,6 +3,16 @@
 All notable changes to WhisperWoof will be documented in this file.
 WhisperWoof is a fork of OpenWhispr — see below for inherited changes.
 
+## [1.4.0] - 2026-03-30 — Structured Capture & Workflows
+
+Phase 9: 4 features. 562 tests across 34 files. 55 PRs. 67 features total.
+
+### Phase 9: Structured Capture
+- **Entry templates** — 5 built-in (standup, meeting, bug, email, update) + custom, section-by-section voice fill
+- **Smart reply drafting** — 4 modes (email/slack/comment/general), app-aware mode, reply intent detection
+- **Recurring capture** — cron-style scheduler, 4 presets, weekday/time config, template+tag linking
+- **Entry chaining** — SQLite parent-child links, tree traversal, cycle detection, branching, chain stats
+
 ## [1.3.0] - 2026-03-30 — AI Intelligence Layer
 
 Phase 8: 4 AI-powered features. 497 tests across 30 files. 50 PRs.
