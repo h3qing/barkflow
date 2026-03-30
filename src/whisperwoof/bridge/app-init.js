@@ -408,6 +408,30 @@ function getProjectEntries(projectId, limit = 50) {
   ).all(projectId, limit).map(mapRow);
 }
 
+/**
+ * Bind a project to an MCP plugin (integration_target).
+ * Pass null to unbind.
+ */
+function updateProjectIntegration(projectId, pluginId) {
+  if (!whisperwoofDb) return null;
+  const project = whisperwoofDb.prepare('SELECT * FROM bf_projects WHERE id = ?').get(projectId);
+  if (!project) return null;
+  whisperwoofDb.prepare('UPDATE bf_projects SET integration_target = ? WHERE id = ?').run(pluginId, projectId);
+  whisperwoofDb.prepare(
+    'INSERT INTO bf_audit_log (action, entity_id, detail) VALUES (?, ?, ?)'
+  ).run('project_integration_updated', projectId, JSON.stringify({ pluginId }));
+  return { ...project, integration_target: pluginId };
+}
+
+/**
+ * Get the integration target for a project.
+ */
+function getProjectIntegration(projectId) {
+  if (!whisperwoofDb) return null;
+  const project = whisperwoofDb.prepare('SELECT integration_target FROM bf_projects WHERE id = ?').get(projectId);
+  return project?.integration_target ?? null;
+}
+
 module.exports = {
   initializeWhisperWoof,
   shutdownWhisperWoof,
@@ -423,4 +447,6 @@ module.exports = {
   getWhisperWoofProjects,
   deleteWhisperWoofProject,
   getProjectEntries,
+  updateProjectIntegration,
+  getProjectIntegration,
 };

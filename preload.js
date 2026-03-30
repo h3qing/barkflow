@@ -709,4 +709,9 @@ contextBridge.exposeInMainWorld("electronAPI", {
   whisperwoofUpdatePlugin: (id, updates) => ipcRenderer.invoke("whisperwoof-update-plugin", id, updates),
   whisperwoofAddPlugin: (config) => ipcRenderer.invoke("whisperwoof-add-plugin", config),
   whisperwoofRemovePlugin: (id) => ipcRenderer.invoke("whisperwoof-remove-plugin", id),
+
+  // WhisperWoof: Project → MCP plugin dispatch
+  whisperwoofUpdateProjectIntegration: (projectId, pluginId) => ipcRenderer.invoke("whisperwoof-update-project-integration", projectId, pluginId),
+  whisperwoofGetProjectIntegration: (projectId) => ipcRenderer.invoke("whisperwoof-get-project-integration", projectId),
+  whisperwoofDispatchEntry: (entryId, pluginId, text) => ipcRenderer.invoke("whisperwoof-dispatch-entry", entryId, pluginId, text),
 });
