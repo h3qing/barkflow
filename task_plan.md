@@ -48,7 +48,7 @@ Pre-release (v1.0 prep)
 - **Depends on:** Phase 1a gate passed
 
 ### Phase 2: MCP Plugin System
-- [ ] Implement WhisperWoof as MCP client
+- [x] Implement WhisperWoof as MCP client (@modelcontextprotocol/sdk v1.28.0)
 - [ ] Build 3-4 first-party MCP server plugins (Todoist, Notion, Calendar, Slack)
 - [ ] MCP server discovery + management UI
 - [ ] MCP plugin permission model (declared network domains, data minimization, sandbox)
@@ -63,7 +63,7 @@ Pre-release (v1.0 prep)
 - [x] UI cleanup (removed Integrations, Support, simplified profile)
 - [x] Smart model advisor (RAM-based recommendations)
 - [x] Polish presets (5 personalities with eval framework)
-- [ ] Run /design-consultation → create DESIGN.md
+- [x] DESIGN.md created with Mando palette
 - [ ] First public release
 - **Status:** in_progress
 - **Depends on:** Phase 2 complete ✓
