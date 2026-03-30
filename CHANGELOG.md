@@ -3,6 +3,21 @@
 All notable changes to WhisperWoof will be documented in this file.
 WhisperWoof is a fork of OpenWhispr — see below for inherited changes.
 
+## [0.9.0] - 2026-03-30 — Pre-release
+
+### Added
+- Mando's actual traced ear SVGs (from photo) as floating indicator
+- Ear flop animation (CSS ±3° when speaking)
+- Landing page (website/) with animated hero, typing effect, download link
+- GitHub Release workflow (.dmg auto-built on version tags)
+- Mando dark theme CSS (warm brown palette sampled from dog's fur)
+- DESIGN.md with complete design system
+
+### Changed
+- Renamed BarkFlow → WhisperWoof (99 files, 10 locale files)
+- Indicator: HTML img elements with CSS positioning (not SVG bezier paths)
+- Version bump to 0.9.0
+
 ## [0.5.0] - 2026-03-28 — Phase 4: UX Refinements
 
 ### Added

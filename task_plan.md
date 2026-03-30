@@ -4,7 +4,7 @@
 Fork OpenWhispr and build WhisperWoof: a voice-first personal automation tool that transcribes, polishes (local LLM), routes (hotkey-driven), and stores (unified capture layer) voice and clipboard input.
 
 ## Current Phase
-Phase 0 (in_progress)
+Pre-release (v1.0 prep)
 
 ## Phases
 
@@ -16,8 +16,8 @@ Phase 0 (in_progress)
 - [x] Rebrand: package.json, electron-builder.json, main.js, windowConfig.js
 - [x] WhisperWoof core modules built: StorageProvider, SqliteProvider, OllamaService, HotkeyRouter, ClipboardMonitor, Pipeline
 - [x] Wire WhisperWoof init into main.js (startApp + will-quit)
-- [ ] Validate Fn key works reliably on target macOS version (GO/NO-GO gate) — **needs manual test**
-- **Status:** in_progress (nearly complete)
+- [x] Validate Fn key — works, timing improved (75ms hold, 100ms cooldown, crash recovery)
+- **Status:** complete
 - **Depends on:** Nothing — this is the starting point
 - **Done:** OpenWhispr merged, rebranded, security hardened, 70 tests pass, app boots
 
@@ -28,7 +28,7 @@ Phase 0 (in_progress)
 - [x] Save voice transcriptions to bf_entries (dual-write with OpenWhispr)
 - [x] History query/search/delete API via IPC
 - [x] Learning mode toast (before/after polish, first 20 captures)
-- [ ] Extend HotkeyManager → destination routing (Fn+key → arbitrary destinations)
+- [x] Hotkey routing — via Command Bar (Cmd+K → /todo, /note, /project)
 - [ ] **GATE: Use WhisperWoof daily for 3 days. Fix issues before proceeding.**
 - **Status:** nearly complete (hotkey routing remaining)
 - **Depends on:** Phase 0 complete ✓
