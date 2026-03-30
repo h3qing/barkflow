@@ -677,6 +677,13 @@ contextBridge.exposeInMainWorld("electronAPI", {
   whisperwoofClearStyleExamples: () => ipcRenderer.invoke("whisperwoof-clear-style-examples"),
   whisperwoofGetStyleExamples: () => ipcRenderer.invoke("whisperwoof-get-style-examples"),
 
+  // WhisperWoof: Voice snippets
+  whisperwoofGetSnippets: () => ipcRenderer.invoke("whisperwoof-get-snippets"),
+  whisperwoofAddSnippet: (trigger, body) => ipcRenderer.invoke("whisperwoof-add-snippet", trigger, body),
+  whisperwoofUpdateSnippet: (id, updates) => ipcRenderer.invoke("whisperwoof-update-snippet", id, updates),
+  whisperwoofRemoveSnippet: (id) => ipcRenderer.invoke("whisperwoof-remove-snippet", id),
+  whisperwoofExpandSnippet: (text) => ipcRenderer.invoke("whisperwoof-expand-snippet", text),
+
   // WhisperWoof: Markdown notes (Fn+N)
   whisperwoofSaveMarkdown: (text) => ipcRenderer.invoke("whisperwoof-save-markdown", text),
   whisperwoofGetNotesDir: () => ipcRenderer.invoke("whisperwoof-get-notes-dir"),

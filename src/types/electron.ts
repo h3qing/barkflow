@@ -1222,6 +1222,13 @@ declare global {
       whisperwoofDeleteProject: (id: string) => Promise<void>;
       whisperwoofGetProjectEntries: (projectId: string, limit: number) => Promise<any[]>;
 
+      // WhisperWoof — Voice snippets
+      whisperwoofGetSnippets: () => Promise<Array<{ id: string; trigger: string; body: string; createdAt: string; usageCount: number }>>;
+      whisperwoofAddSnippet: (trigger: string, body: string) => Promise<{ success: boolean; snippet?: any; error?: string }>;
+      whisperwoofUpdateSnippet: (id: string, updates: { trigger?: string; body?: string }) => Promise<{ success: boolean; error?: string }>;
+      whisperwoofRemoveSnippet: (id: string) => Promise<{ success: boolean; error?: string }>;
+      whisperwoofExpandSnippet: (text: string) => Promise<{ matched: boolean; trigger: string; body: string; matchType: string } | null>;
+
       // WhisperWoof — Adaptive style learning
       whisperwoofGetStyleStats: () => Promise<{ exampleCount: number; maxExamples: number; oldestExample: string | null; newestExample: string | null }>;
       whisperwoofClearStyleExamples: () => Promise<{ success: boolean }>;

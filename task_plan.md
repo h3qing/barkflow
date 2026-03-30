@@ -73,6 +73,7 @@ Pre-release (v1.0 prep)
 - [x] Voice editing commands (10 commands: rewrite, translate, summarize, fix, shorten, expand, format, simplify)
 - [x] BYOM for LLM polish (Ollama, OpenAI, Anthropic, Groq — provider abstraction)
 - [x] Adaptive learning (few-shot style examples from user edits, injected into polish prompt)
+- [x] Voice snippets (trigger phrases → expand to saved text blocks, exact/prefix/fuzzy matching)
 - [ ] Mobile companion (iOS app or Telegram bot for voice capture on the go)
 - **Status:** in_progress
 - **Depends on:** Phase 3 complete ✓
