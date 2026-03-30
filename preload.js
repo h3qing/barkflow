@@ -686,6 +686,18 @@ contextBridge.exposeInMainWorld("electronAPI", {
   // WhisperWoof: Usage analytics
   whisperwoofGetAnalytics: (options) => ipcRenderer.invoke("whisperwoof-get-analytics", options),
 
+  // WhisperWoof: Entry tagging
+  whisperwoofGetTags: () => ipcRenderer.invoke("whisperwoof-get-tags"),
+  whisperwoofCreateTag: (name, color) => ipcRenderer.invoke("whisperwoof-create-tag", name, color),
+  whisperwoofUpdateTag: (id, updates) => ipcRenderer.invoke("whisperwoof-update-tag", id, updates),
+  whisperwoofDeleteTag: (id) => ipcRenderer.invoke("whisperwoof-delete-tag", id),
+  whisperwoofAddTagToEntry: (entryId, tagId) => ipcRenderer.invoke("whisperwoof-add-tag-to-entry", entryId, tagId),
+  whisperwoofRemoveTagFromEntry: (entryId, tagId) => ipcRenderer.invoke("whisperwoof-remove-tag-from-entry", entryId, tagId),
+  whisperwoofGetEntryTags: (entryId) => ipcRenderer.invoke("whisperwoof-get-entry-tags", entryId),
+  whisperwoofGetEntriesByTag: (tagId, limit) => ipcRenderer.invoke("whisperwoof-get-entries-by-tag", tagId, limit),
+  whisperwoofBulkTagEntries: (entryIds, tagId) => ipcRenderer.invoke("whisperwoof-bulk-tag-entries", entryIds, tagId),
+  whisperwoofGetTagStats: () => ipcRenderer.invoke("whisperwoof-get-tag-stats"),
+
   // WhisperWoof: Focus mode
   whisperwoofFocusStart: (options) => ipcRenderer.invoke("whisperwoof-focus-start", options),
   whisperwoofFocusEnd: (summary) => ipcRenderer.invoke("whisperwoof-focus-end", summary),

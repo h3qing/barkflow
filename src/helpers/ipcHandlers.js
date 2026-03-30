@@ -1854,6 +1854,77 @@ class IPCHandlers {
       }
     });
 
+    // WhisperWoof: Entry tagging
+    ipcMain.handle("whisperwoof-get-tags", async () => {
+      try {
+        const { getAllTags } = require("../whisperwoof/bridge/entry-tags");
+        return getAllTags();
+      } catch (error) { return []; }
+    });
+
+    ipcMain.handle("whisperwoof-create-tag", async (_event, name, color) => {
+      try {
+        const { createTag } = require("../whisperwoof/bridge/entry-tags");
+        return createTag(name, color);
+      } catch (error) { return { success: false, error: error.message }; }
+    });
+
+    ipcMain.handle("whisperwoof-update-tag", async (_event, id, updates) => {
+      try {
+        const { updateTag } = require("../whisperwoof/bridge/entry-tags");
+        return updateTag(id, updates);
+      } catch (error) { return { success: false, error: error.message }; }
+    });
+
+    ipcMain.handle("whisperwoof-delete-tag", async (_event, id) => {
+      try {
+        const { deleteTag } = require("../whisperwoof/bridge/entry-tags");
+        return deleteTag(id);
+      } catch (error) { return { success: false, error: error.message }; }
+    });
+
+    ipcMain.handle("whisperwoof-add-tag-to-entry", async (_event, entryId, tagId) => {
+      try {
+        const { addTagToEntry } = require("../whisperwoof/bridge/entry-tags");
+        return addTagToEntry(entryId, tagId);
+      } catch (error) { return { success: false, error: error.message }; }
+    });
+
+    ipcMain.handle("whisperwoof-remove-tag-from-entry", async (_event, entryId, tagId) => {
+      try {
+        const { removeTagFromEntry } = require("../whisperwoof/bridge/entry-tags");
+        return removeTagFromEntry(entryId, tagId);
+      } catch (error) { return { success: false, error: error.message }; }
+    });
+
+    ipcMain.handle("whisperwoof-get-entry-tags", async (_event, entryId) => {
+      try {
+        const { getEntryTags } = require("../whisperwoof/bridge/entry-tags");
+        return getEntryTags(entryId);
+      } catch (error) { return []; }
+    });
+
+    ipcMain.handle("whisperwoof-get-entries-by-tag", async (_event, tagId, limit) => {
+      try {
+        const { getEntriesByTag } = require("../whisperwoof/bridge/entry-tags");
+        return getEntriesByTag(tagId, limit);
+      } catch (error) { return []; }
+    });
+
+    ipcMain.handle("whisperwoof-bulk-tag-entries", async (_event, entryIds, tagId) => {
+      try {
+        const { bulkTagEntries } = require("../whisperwoof/bridge/entry-tags");
+        return bulkTagEntries(entryIds, tagId);
+      } catch (error) { return { success: false, error: error.message }; }
+    });
+
+    ipcMain.handle("whisperwoof-get-tag-stats", async () => {
+      try {
+        const { getTagStats } = require("../whisperwoof/bridge/entry-tags");
+        return getTagStats();
+      } catch (error) { return { totalTags: 0, totalTaggings: 0, topTags: [], untaggedCount: 0 }; }
+    });
+
     // WhisperWoof: Focus mode
     ipcMain.handle("whisperwoof-focus-start", async (_event, options) => {
       try {

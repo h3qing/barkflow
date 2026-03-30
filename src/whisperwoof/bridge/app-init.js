@@ -228,6 +228,15 @@ async function initializeWhisperWoof() {
       if (!err.message.includes("duplicate column")) throw err;
     }
 
+    // Create tag tables for entry labeling
+    try {
+      const { createTagTables, setDatabase: setTagDb } = require("./entry-tags");
+      createTagTables(db);
+      setTagDb(db);
+    } catch (err) {
+      debugLogger.debug("[WhisperWoof] Tag tables init skipped", { error: err.message });
+    }
+
     whisperwoofDb = db;
     debugLogger.log("[WhisperWoof] Database tables initialized");
 
