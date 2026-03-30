@@ -501,14 +501,21 @@ export default function App() {
                   "transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.25s ease-out",
               }}
             >
-              {/* WhisperWoof indicator — soundbar with dog head, no extra chrome */}
-              {micState === "idle" || micState === "hover" ? (
-                <WhisperWoofIndicator state="idle" size={16} />
-              ) : micState === "recording" ? (
-                <WhisperWoofIndicator state="recording" size={16} animated={true} speaking={isRecording} />
-              ) : micState === "processing" ? (
-                <WhisperWoofIndicator state="processing" size={16} animated={true} />
-              ) : null}
+              {/* WhisperWoof indicator — soundbar + processing status */}
+              <div className="flex flex-col items-center gap-0.5">
+                {micState === "idle" || micState === "hover" ? (
+                  <WhisperWoofIndicator state="idle" size={16} />
+                ) : micState === "recording" ? (
+                  <WhisperWoofIndicator state="recording" size={16} animated={true} speaking={isRecording} />
+                ) : micState === "processing" ? (
+                  <>
+                    <WhisperWoofIndicator state="processing" size={16} animated={true} />
+                    <span className="text-[9px] text-amber-400/80 font-medium animate-pulse whitespace-nowrap">
+                      Processing...
+                    </span>
+                  </>
+                ) : null}
+              </div>
             </button>
           </Tooltip>
           {isCommandMenuOpen && (

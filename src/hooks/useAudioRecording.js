@@ -117,15 +117,25 @@ export const useAudioRecording = (toast, options = {}) => {
             return;
           }
 
+          // WhisperWoof: Pipeline timing for debug
+          const pipelineStart = performance.now();
+          const timings = {};
+
           // WhisperWoof: Ollama text polish (if available)
           let textToPaste = result.text;
           let rawText = result.rawText ?? result.text;
-          try {
-            const polishPreset = localStorage.getItem("whisperwoof-polish-preset") || "clean";
-            const polishResult = await window.electronAPI?.whisperwoofOllamaPolish?.(
-              transcribedText,
-              { preset: polishPreset }
-            );
+
+          const polishEnabled = localStorage.getItem("whisperwoof-polish-enabled") !== "false";
+
+          if (polishEnabled) {
+            try {
+              const polishStart = performance.now();
+              const polishPreset = localStorage.getItem("whisperwoof-polish-preset") || "clean";
+              const polishResult = await window.electronAPI?.whisperwoofOllamaPolish?.(
+                transcribedText,
+                { preset: polishPreset }
+              );
+              timings.polishMs = Math.round(performance.now() - polishStart);
             if (polishResult?.polished && polishResult.text) {
               rawText = transcribedText;
               textToPaste = polishResult.text;
@@ -153,9 +163,26 @@ export const useAudioRecording = (toast, options = {}) => {
                 });
               }
             }
-          } catch (polishError) {
-            // Polish failed — use raw STT text. Never block the pipeline.
-            logger.warn("WhisperWoof Ollama polish failed", { error: polishError }, "whisperwoof");
+            } catch (polishError) {
+              timings.polishMs = Math.round(performance.now() - (pipelineStart + (timings.polishMs || 0)));
+              logger.warn("WhisperWoof Ollama polish failed", { error: polishError }, "whisperwoof");
+            }
+          } else {
+            timings.polishMs = 0; // skipped
+          }
+
+          // WhisperWoof: Log full pipeline timing
+          timings.totalMs = Math.round(performance.now() - pipelineStart);
+          logger.info("WhisperWoof pipeline timing", timings, "whisperwoof");
+
+          // Show timing in debug mode
+          if (localStorage.getItem("whisperwoof-debug") === "true") {
+            toast({
+              title: `Pipeline: ${timings.totalMs}ms`,
+              description: `Polish: ${timings.polishMs ?? "?"}ms`,
+              variant: "default",
+              duration: 3000,
+            });
           }
 
           setTranscript(textToPaste);
