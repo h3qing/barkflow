@@ -686,6 +686,13 @@ contextBridge.exposeInMainWorld("electronAPI", {
   // WhisperWoof: Usage analytics
   whisperwoofGetAnalytics: (options) => ipcRenderer.invoke("whisperwoof-get-analytics", options),
 
+  // WhisperWoof: Entry templates
+  whisperwoofGetTemplates: () => ipcRenderer.invoke("whisperwoof-get-templates"),
+  whisperwoofCreateTemplate: (config) => ipcRenderer.invoke("whisperwoof-create-template", config),
+  whisperwoofDeleteTemplate: (id) => ipcRenderer.invoke("whisperwoof-delete-template", id),
+  whisperwoofRenderTemplate: (templateId, values) => ipcRenderer.invoke("whisperwoof-render-template", templateId, values),
+  whisperwoofGetNextSection: (templateId, filledSections) => ipcRenderer.invoke("whisperwoof-get-next-section", templateId, filledSections),
+
   // WhisperWoof: Semantic search
   whisperwoofSemanticSearch: (query, options) => ipcRenderer.invoke("whisperwoof-semantic-search", query, options),
   whisperwoofFindSimilar: (entryId, options) => ipcRenderer.invoke("whisperwoof-find-similar", entryId, options),
