@@ -1266,6 +1266,12 @@ declare global {
       whisperwoofFocusHistory: (options?: { days?: number; limit?: number }) => Promise<any[]>;
       whisperwoofFocusPresets: () => Promise<Array<{ id: string; name: string; durationMin: number; description: string }>>;
 
+      // WhisperWoof — Entry chaining
+      whisperwoofLinkEntries: (childId: string, parentId: string) => Promise<{ success: boolean; error?: string }>;
+      whisperwoofUnlinkEntry: (childId: string) => Promise<{ success: boolean; removed?: boolean; error?: string }>;
+      whisperwoofGetChain: (entryId: string) => Promise<Array<{ id: string; createdAt: string; source: string; text: string }>>;
+      whisperwoofGetChainStats: () => Promise<{ totalChains: number; totalLinks: number; avgChainLength: number }>;
+
       // WhisperWoof — Recurring capture
       whisperwoofGetSchedules: () => Promise<any[]>;
       whisperwoofAddSchedule: (config: { prompt: string; time: string; days?: number[]; templateId?: string; tagId?: string }) => Promise<{ success: boolean; schedule?: any; error?: string }>;
