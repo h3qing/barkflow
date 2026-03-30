@@ -1248,6 +1248,11 @@ declare global {
       whisperwoofDetectLanguage: (text: string) => Promise<{ lang: string; name: string; confidence: string }>;
       whisperwoofGetSupportedLanguages: () => Promise<Array<{ code: string; name: string }>>;
 
+      // WhisperWoof — Intent capture
+      whisperwoofDetectRambling: (text: string) => Promise<{ score: number; signals: Record<string, number>; isRambling: boolean }>;
+      whisperwoofExtractIntent: (text: string, options?: { mode?: string }) => Promise<{ text: string; mode: string; ramblingScore: number; extracted: boolean; error?: string }>;
+      whisperwoofGetIntentModes: () => Promise<Array<{ id: string; name: string; description: string }>>;
+
       // WhisperWoof — Vibe coding
       whisperwoofGetCodingPrompt: (bundleId: string, spokenText: string) => Promise<{ prompt: string | null; mode: 'code' | 'shell' | 'prose' }>;
 

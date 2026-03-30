@@ -686,6 +686,11 @@ contextBridge.exposeInMainWorld("electronAPI", {
   // WhisperWoof: Usage analytics
   whisperwoofGetAnalytics: (options) => ipcRenderer.invoke("whisperwoof-get-analytics", options),
 
+  // WhisperWoof: Intent capture
+  whisperwoofDetectRambling: (text) => ipcRenderer.invoke("whisperwoof-detect-rambling", text),
+  whisperwoofExtractIntent: (text, options) => ipcRenderer.invoke("whisperwoof-extract-intent", text, options),
+  whisperwoofGetIntentModes: () => ipcRenderer.invoke("whisperwoof-get-intent-modes"),
+
   // WhisperWoof: Vibe coding
   whisperwoofGetCodingPrompt: (bundleId, spokenText) => ipcRenderer.invoke("whisperwoof-get-coding-prompt", bundleId, spokenText),
 
