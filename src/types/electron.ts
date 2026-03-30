@@ -1266,6 +1266,12 @@ declare global {
       whisperwoofFocusHistory: (options?: { days?: number; limit?: number }) => Promise<any[]>;
       whisperwoofFocusPresets: () => Promise<Array<{ id: string; name: string; durationMin: number; description: string }>>;
 
+      // WhisperWoof — Screen context
+      whisperwoofGetSelectedText: () => Promise<string | null>;
+      whisperwoofDetectScreenCommand: (text: string) => Promise<{ id: string; prompt: string; label: string } | null>;
+      whisperwoofExecuteScreenCommand: (commandId: string, selectedText?: string, options?: Record<string, any>) => Promise<{ success: boolean; result?: string; command?: string; error?: string }>;
+      whisperwoofGetScreenCommands: () => Promise<Array<{ id: string; label: string }>>;
+
       // WhisperWoof — Entry chaining
       whisperwoofLinkEntries: (childId: string, parentId: string) => Promise<{ success: boolean; error?: string }>;
       whisperwoofUnlinkEntry: (childId: string) => Promise<{ success: boolean; removed?: boolean; error?: string }>;
