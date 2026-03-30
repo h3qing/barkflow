@@ -683,6 +683,12 @@ contextBridge.exposeInMainWorld("electronAPI", {
   // WhisperWoof: Voice Activity Detection
   whisperwoofGetVadConfig: () => ipcRenderer.invoke("whisperwoof-get-vad-config"),
 
+  // WhisperWoof: Settings export/import
+  whisperwoofExportSettings: (options) => ipcRenderer.invoke("whisperwoof-export-settings", options),
+  whisperwoofImportSettings: (bundle, options) => ipcRenderer.invoke("whisperwoof-import-settings", bundle, options),
+  whisperwoofSaveExportFile: (filePath, bundle) => ipcRenderer.invoke("whisperwoof-save-export-file", filePath, bundle),
+  whisperwoofLoadImportFile: (filePath) => ipcRenderer.invoke("whisperwoof-load-import-file", filePath),
+
   // WhisperWoof: Custom vocabulary
   whisperwoofGetVocabulary: (options) => ipcRenderer.invoke("whisperwoof-get-vocabulary", options),
   whisperwoofAddWord: (word, options) => ipcRenderer.invoke("whisperwoof-add-word", word, options),

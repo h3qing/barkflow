@@ -1843,6 +1843,47 @@ class IPCHandlers {
       }
     });
 
+    // WhisperWoof: Settings export/import
+    ipcMain.handle("whisperwoof-export-settings", async (_event, options) => {
+      try {
+        const { exportSettings } = require("../whisperwoof/bridge/settings-export");
+        return exportSettings(options || {});
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] export-settings failed: ${error.message}`);
+        return { bundle: null, stats: {}, error: error.message };
+      }
+    });
+
+    ipcMain.handle("whisperwoof-import-settings", async (_event, bundle, options) => {
+      try {
+        const { importSettings } = require("../whisperwoof/bridge/settings-export");
+        return importSettings(bundle, options || {});
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] import-settings failed: ${error.message}`);
+        return { success: false, imported: {}, errors: [error.message] };
+      }
+    });
+
+    ipcMain.handle("whisperwoof-save-export-file", async (_event, filePath, bundle) => {
+      try {
+        const { saveExportFile } = require("../whisperwoof/bridge/settings-export");
+        return saveExportFile(filePath, bundle);
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] save-export-file failed: ${error.message}`);
+        return { success: false, error: error.message };
+      }
+    });
+
+    ipcMain.handle("whisperwoof-load-import-file", async (_event, filePath) => {
+      try {
+        const { loadImportFile } = require("../whisperwoof/bridge/settings-export");
+        return loadImportFile(filePath);
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] load-import-file failed: ${error.message}`);
+        return { success: false, error: error.message };
+      }
+    });
+
     // WhisperWoof: Custom vocabulary
     ipcMain.handle("whisperwoof-get-vocabulary", async (_event, options) => {
       try {

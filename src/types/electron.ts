@@ -1225,6 +1225,12 @@ declare global {
       // WhisperWoof — Voice Activity Detection
       whisperwoofGetVadConfig: () => Promise<{ silenceThreshold: number; autoStopSilenceMs: number; minRecordingMs: number; frameSizeSamples: number; trimPaddingMs: number }>;
 
+      // WhisperWoof — Settings export/import
+      whisperwoofExportSettings: (options?: { appPresetMap?: Record<string, string>; localStorageKeys?: Record<string, string> }) => Promise<{ bundle: any; stats: Record<string, number>; error?: string }>;
+      whisperwoofImportSettings: (bundle: any, options?: { merge?: boolean }) => Promise<{ success: boolean; imported: Record<string, any>; errors: string[]; appPresetMap?: Record<string, string>; preferences?: Record<string, string> }>;
+      whisperwoofSaveExportFile: (filePath: string, bundle: any) => Promise<{ success: boolean; path?: string; sizeBytes?: number; error?: string }>;
+      whisperwoofLoadImportFile: (filePath: string) => Promise<{ success: boolean; bundle?: any; error?: string }>;
+
       // WhisperWoof — Custom vocabulary
       whisperwoofGetVocabulary: (options?: { category?: string; search?: string; sortBy?: string }) => Promise<Array<{ id: string; word: string; category: string; alternatives: string[]; createdAt: string; source: string; usageCount: number }>>;
       whisperwoofAddWord: (word: string, options?: { category?: string; alternatives?: string[]; source?: string }) => Promise<{ success: boolean; entry?: any; error?: string }>;

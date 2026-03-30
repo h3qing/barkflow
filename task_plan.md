@@ -83,7 +83,7 @@ Pre-release (v1.0 prep)
 - [x] Backtrack correction (detect "no wait", "I mean", "scratch that" → resolve self-corrections)
 - [x] Custom vocabulary (categories, alternatives, STT hints, bulk import/export, usage tracking)
 - [x] Voice Activity Detection (RMS energy analysis, auto-stop on silence, audio trimming, speech ratio)
-- [ ] Export/import settings (snippets, style examples, app-preset map — portable config)
+- [x] Export/import settings (bundle all config into single JSON, merge/replace import, API key stripping)
 - [ ] Usage analytics dashboard (entries/day, polish improvement ratio, top commands)
 - **Status:** in_progress
 - **Depends on:** Phase 4 complete ✓
