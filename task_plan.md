@@ -90,7 +90,7 @@ Pre-release (v1.0 prep)
 
 ### Phase 6: Internationalization & Advanced (post-v1.0)
 - [x] Multi-language auto-detection (script + word-frequency heuristic, 22 languages, auto-adapt polish prompt)
-- [ ] Voice-to-code / vibe coding mode (developer-specific dictation for IDE contexts)
+- [x] Voice-to-code / vibe coding mode (code intent detection, IDE/terminal auto-switch, code + shell prompts)
 - [ ] Intent-based capture ("capture what I meant" mode — beyond polish, restructures rambling into clear intent)
 - [ ] Real-time streaming partial results (show transcription as user speaks, not just after stop)
 - **Status:** in_progress

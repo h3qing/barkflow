@@ -1854,6 +1854,17 @@ class IPCHandlers {
       }
     });
 
+    // WhisperWoof: Vibe coding
+    ipcMain.handle("whisperwoof-get-coding-prompt", async (_event, bundleId, spokenText) => {
+      try {
+        const { getCodingPrompt } = require("../whisperwoof/bridge/vibe-coding");
+        return getCodingPrompt(bundleId, spokenText);
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] get-coding-prompt failed: ${error.message}`);
+        return { prompt: null, mode: "prose" };
+      }
+    });
+
     // WhisperWoof: Language detection
     ipcMain.handle("whisperwoof-detect-language", async (_event, text) => {
       try {

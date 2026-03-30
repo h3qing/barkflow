@@ -18,6 +18,7 @@ const { polishWithProvider } = require("./llm-providers");
 const { buildStylePrompt } = require("./style-learner");
 const { hasBacktrack, applyBacktrackCorrection } = require("./backtrack");
 const { detectLanguage, getLanguagePolishSuffix } = require("./language-detect");
+const { getCodingPrompt } = require("./vibe-coding");
 
 const DEFAULT_BASE_URL = "http://localhost:11434";
 
@@ -45,11 +46,28 @@ async function polishWithOllama(text, options = {}) {
     }
   }
 
-  presetId = presetId || DEFAULT_PRESET_ID;
-  const basePrompt = getPresetPrompt(presetId);
+  // Vibe coding: if active app is an IDE and text has code intent,
+  // override the polish prompt with a code-generation prompt
+  let codingMode = null;
+  if (options.vibeCoding !== false && detectedApp?.bundleId) {
+    const coding = getCodingPrompt(detectedApp.bundleId, text);
+    if (coding.prompt) {
+      codingMode = coding.mode;
+      debugLogger.info("[WhisperWoof] Vibe coding mode activated", {
+        app: detectedApp.name,
+        mode: codingMode,
+      });
+    }
+  }
 
-  // Adaptive learning: inject few-shot style examples if available
-  const styleSection = options.adaptiveLearning !== false ? buildStylePrompt(text) : "";
+  presetId = presetId || DEFAULT_PRESET_ID;
+  const basePrompt = codingMode
+    ? getCodingPrompt(detectedApp?.bundleId, text).prompt
+    : getPresetPrompt(presetId);
+
+  // Adaptive learning: skip for code mode (style examples are prose-based)
+  const styleSection = !codingMode && options.adaptiveLearning !== false
+    ? buildStylePrompt(text) : "";
 
   let systemPrompt = customPrompt
     ? `${basePrompt}\n\nAdditional instructions from user:\n${customPrompt}`
@@ -114,6 +132,7 @@ async function polishWithOllama(text, options = {}) {
     text: result.text,
     polished: result.polished,
     backtrackApplied,
+    ...(codingMode ? { codingMode } : {}),
     elapsed: result.elapsed,
     preset: presetId,
     provider: result.provider,

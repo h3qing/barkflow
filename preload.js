@@ -686,6 +686,9 @@ contextBridge.exposeInMainWorld("electronAPI", {
   // WhisperWoof: Usage analytics
   whisperwoofGetAnalytics: (options) => ipcRenderer.invoke("whisperwoof-get-analytics", options),
 
+  // WhisperWoof: Vibe coding
+  whisperwoofGetCodingPrompt: (bundleId, spokenText) => ipcRenderer.invoke("whisperwoof-get-coding-prompt", bundleId, spokenText),
+
   // WhisperWoof: Language detection
   whisperwoofDetectLanguage: (text) => ipcRenderer.invoke("whisperwoof-detect-language", text),
   whisperwoofGetSupportedLanguages: () => ipcRenderer.invoke("whisperwoof-get-supported-languages"),

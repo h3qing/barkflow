@@ -1248,6 +1248,9 @@ declare global {
       whisperwoofDetectLanguage: (text: string) => Promise<{ lang: string; name: string; confidence: string }>;
       whisperwoofGetSupportedLanguages: () => Promise<Array<{ code: string; name: string }>>;
 
+      // WhisperWoof — Vibe coding
+      whisperwoofGetCodingPrompt: (bundleId: string, spokenText: string) => Promise<{ prompt: string | null; mode: 'code' | 'shell' | 'prose' }>;
+
       // WhisperWoof — Custom vocabulary
       whisperwoofGetVocabulary: (options?: { category?: string; search?: string; sortBy?: string }) => Promise<Array<{ id: string; word: string; category: string; alternatives: string[]; createdAt: string; source: string; usageCount: number }>>;
       whisperwoofAddWord: (word: string, options?: { category?: string; alternatives?: string[]; source?: string }) => Promise<{ success: boolean; entry?: any; error?: string }>;
