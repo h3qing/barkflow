@@ -130,10 +130,11 @@ export const useAudioRecording = (toast, options = {}) => {
           if (polishEnabled) {
             try {
               const polishStart = performance.now();
-              const polishPreset = localStorage.getItem("whisperwoof-polish-preset") || "professional";
+              const polishPreset = localStorage.getItem("whisperwoof-polish-preset") || "clean";
+              const customPrompt = localStorage.getItem("whisperwoof-custom-prompt") || "";
               const polishResult = await window.electronAPI?.whisperwoofOllamaPolish?.(
                 transcribedText,
-                { preset: polishPreset }
+                { preset: polishPreset, customPrompt }
               );
               timings.polishMs = Math.round(performance.now() - polishStart);
             if (polishResult?.polished && polishResult.text) {

@@ -107,7 +107,7 @@ const PRESETS = {
   },
 };
 
-const DEFAULT_PRESET_ID = "professional"; // WhisperWoof: professional is the best default for most users
+const DEFAULT_PRESET_ID = "clean";
 
 /**
  * Get all available presets.

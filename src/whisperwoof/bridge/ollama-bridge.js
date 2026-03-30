@@ -18,7 +18,12 @@ async function polishWithOllama(text, options = {}) {
   const model = options.model || DEFAULT_MODEL;
   const timeoutMs = options.timeoutMs || DEFAULT_TIMEOUT_MS;
   const presetId = options.preset || DEFAULT_PRESET_ID;
-  const systemPrompt = getPresetPrompt(presetId);
+  const customPrompt = options.customPrompt || "";
+  const basePrompt = getPresetPrompt(presetId);
+  // Append custom instructions if user has set them
+  const systemPrompt = customPrompt
+    ? `${basePrompt}\n\nAdditional instructions from user:\n${customPrompt}`
+    : basePrompt;
 
   if (!text || !text.trim()) {
     return { success: true, text: text || "", polished: false };
