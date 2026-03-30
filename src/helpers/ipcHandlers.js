@@ -1854,6 +1854,24 @@ class IPCHandlers {
       }
     });
 
+    // WhisperWoof: Screen context
+    ipcMain.handle("whisperwoof-get-selected-text", async () => {
+      try { const { getSelectedText } = require("../whisperwoof/bridge/screen-context"); return await getSelectedText(); }
+      catch (error) { return null; }
+    });
+    ipcMain.handle("whisperwoof-detect-screen-command", async (_event, text) => {
+      try { const { detectScreenCommand } = require("../whisperwoof/bridge/screen-context"); return detectScreenCommand(text); }
+      catch (error) { return null; }
+    });
+    ipcMain.handle("whisperwoof-execute-screen-command", async (_event, commandId, selectedText, options) => {
+      try { const { executeScreenCommand } = require("../whisperwoof/bridge/screen-context"); return await executeScreenCommand(commandId, selectedText, options); }
+      catch (error) { return { success: false, error: error.message }; }
+    });
+    ipcMain.handle("whisperwoof-get-screen-commands", async () => {
+      try { const { getScreenCommands } = require("../whisperwoof/bridge/screen-context"); return getScreenCommands(); }
+      catch (error) { return []; }
+    });
+
     // WhisperWoof: Entry chaining
     ipcMain.handle("whisperwoof-link-entries", async (_event, childId, parentId) => {
       try { const { linkEntries } = require("../whisperwoof/bridge/entry-chains"); return linkEntries(childId, parentId); }
