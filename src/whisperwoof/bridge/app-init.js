@@ -237,6 +237,15 @@ async function initializeWhisperWoof() {
       debugLogger.debug("[WhisperWoof] Tag tables init skipped", { error: err.message });
     }
 
+    // Create entry chain table
+    try {
+      const { createChainTable, setDatabase: setChainDb } = require("./entry-chains");
+      createChainTable(db);
+      setChainDb(db);
+    } catch (err) {
+      debugLogger.debug("[WhisperWoof] Chain table init skipped", { error: err.message });
+    }
+
     whisperwoofDb = db;
     debugLogger.log("[WhisperWoof] Database tables initialized");
 

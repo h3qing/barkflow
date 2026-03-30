@@ -1854,6 +1854,24 @@ class IPCHandlers {
       }
     });
 
+    // WhisperWoof: Entry chaining
+    ipcMain.handle("whisperwoof-link-entries", async (_event, childId, parentId) => {
+      try { const { linkEntries } = require("../whisperwoof/bridge/entry-chains"); return linkEntries(childId, parentId); }
+      catch (error) { return { success: false, error: error.message }; }
+    });
+    ipcMain.handle("whisperwoof-unlink-entry", async (_event, childId) => {
+      try { const { unlinkEntry } = require("../whisperwoof/bridge/entry-chains"); return unlinkEntry(childId); }
+      catch (error) { return { success: false, error: error.message }; }
+    });
+    ipcMain.handle("whisperwoof-get-chain", async (_event, entryId) => {
+      try { const { getChain } = require("../whisperwoof/bridge/entry-chains"); return getChain(entryId); }
+      catch (error) { return []; }
+    });
+    ipcMain.handle("whisperwoof-get-chain-stats", async () => {
+      try { const { getChainStats } = require("../whisperwoof/bridge/entry-chains"); return getChainStats(); }
+      catch (error) { return { totalChains: 0, totalLinks: 0, avgChainLength: 0 }; }
+    });
+
     // WhisperWoof: Recurring capture
     ipcMain.handle("whisperwoof-get-schedules", async () => {
       try { const { getSchedules } = require("../whisperwoof/bridge/recurring-capture"); return getSchedules(); }
