@@ -246,7 +246,7 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
   customDictionary: readStringArray("customDictionary", []),
   assemblyAiStreaming: readBoolean("assemblyAiStreaming", true),
 
-  useReasoningModel: readBoolean("useReasoningModel", true),
+  useReasoningModel: readBoolean("useReasoningModel", false), // WhisperWoof: disabled — we use Ollama polish instead of llama.cpp reasoning (was adding 40s!)
   reasoningModel: readString("reasoningModel", ""),
   reasoningProvider: readString("reasoningProvider", "openai"),
 

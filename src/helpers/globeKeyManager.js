@@ -150,16 +150,9 @@ class GlobeKeyManager extends EventEmitter {
         return;
       }
 
-      if (code !== 0) {
-        const error = new Error(
-          `Globe key listener exited with code ${code ?? "null"} signal ${signal ?? "null"}`
-        );
-        this.reportError(error);
-        return;
-      }
-
-      // Exit code 0 but we didn't request stop — the event tap was likely
-      // invalidated (e.g. after sleep/wake). Attempt automatic restart.
+      // WhisperWoof: restart on ANY unexpected exit (not just code 0)
+      // Previously, non-zero exit was terminal — hotkey would stop working.
+      // Now we always try to restart, with exponential backoff.
       if (this._restartCount < MAX_RESTART_ATTEMPTS) {
         this._restartCount++;
         debugLogger.warn(

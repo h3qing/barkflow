@@ -39,6 +39,7 @@ interface SettingsState {
   readonly ollama: OllamaStatus;
   readonly polishPreset: string;
   readonly presets: readonly PolishPreset[];
+  readonly customPrompt: string;
   readonly clipboardEnabled: boolean;
   readonly notesDir: string;
   readonly notesDirLoading: boolean;
@@ -51,6 +52,7 @@ function buildInitialState(): SettingsState {
     ollama: { checking: true, available: false, models: [] },
     polishPreset: localStorage.getItem("whisperwoof-polish-preset") || "clean",
     presets: [],
+    customPrompt: localStorage.getItem("whisperwoof-custom-prompt") || "",
     clipboardEnabled: localStorage.getItem("whisperwoof-clipboard-enabled") !== "false",
     notesDir: "",
     notesDirLoading: true,
@@ -236,6 +238,26 @@ export default function WhisperWoofSettings({ className }: WhisperWoofSettingsPr
               className="h-7 w-40 rounded-md border border-border/50 dark:border-white/10 bg-background px-2 text-xs text-foreground outline-none focus:ring-1 focus:ring-primary/30"
             />
           </SettingsRow>
+
+          <div className="space-y-1.5">
+            <label className="block text-xs font-medium text-foreground/80">
+              Custom instructions <span className="text-muted-foreground/50 font-normal">(optional)</span>
+            </label>
+            <p className="text-[11px] text-muted-foreground/60">
+              Added to every polish request. Example: "Write in first person" or "Keep it under 2 sentences"
+            </p>
+            <textarea
+              value={state.customPrompt}
+              onChange={(e) => {
+                const val = e.target.value;
+                localStorage.setItem("whisperwoof-custom-prompt", val);
+                setState((prev) => ({ ...prev, customPrompt: val }));
+              }}
+              rows={2}
+              placeholder="e.g. Always use active voice. Remove hedging language like 'I think' and 'maybe'."
+              className="w-full rounded-md border border-border/50 dark:border-white/10 bg-background px-2.5 py-1.5 text-xs text-foreground placeholder:text-muted-foreground/40 outline-none focus:ring-1 focus:ring-primary/30 resize-none"
+            />
+          </div>
         </SettingsGroup>
       </SettingsSection>
 
@@ -298,7 +320,15 @@ export default function WhisperWoofSettings({ className }: WhisperWoofSettingsPr
             </button>
           </SettingsRow>
           <SettingsRow label="Version" description="WhisperWoof version number.">
-            <span className="text-xs text-muted-foreground font-mono">v0.6.0</span>
+            <span className="text-xs text-muted-foreground font-mono">v0.7.0</span>
+          </SettingsRow>
+          <SettingsRow label="Debug mode" description="Show pipeline timing (STT + polish) after each transcription.">
+            <Toggle
+              checked={localStorage.getItem("whisperwoof-debug") === "true"}
+              onChange={(checked) => {
+                localStorage.setItem("whisperwoof-debug", String(checked));
+              }}
+            />
           </SettingsRow>
         </SettingsGroup>
       </SettingsSection>
