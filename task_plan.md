@@ -115,7 +115,7 @@ v1.3.0 shipped — all 8 phases complete (50 PRs, 497 tests, 62 features)
 ### Phase 9: Structured Capture & Workflows (post-v1.3)
 - [x] Entry templates (5 built-in: standup/meeting/bug/email/update + custom, section-by-section voice fill, Markdown rendering)
 - [x] Smart reply drafting (4 modes: email/slack/comment/general, app-aware mode selection, reply intent detection)
-- [ ] Recurring capture (scheduled prompts — "what did you accomplish today?" at 5pm)
+- [x] Recurring capture (cron-style scheduler, 4 presets, weekday/time config, template+tag linking, dedup)
 - [ ] Entry chaining (link related entries, conversation threads across days)
 - **Status:** in_progress
 - **Depends on:** Phase 8 complete ✓

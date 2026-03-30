@@ -1266,6 +1266,13 @@ declare global {
       whisperwoofFocusHistory: (options?: { days?: number; limit?: number }) => Promise<any[]>;
       whisperwoofFocusPresets: () => Promise<Array<{ id: string; name: string; durationMin: number; description: string }>>;
 
+      // WhisperWoof — Recurring capture
+      whisperwoofGetSchedules: () => Promise<any[]>;
+      whisperwoofAddSchedule: (config: { prompt: string; time: string; days?: number[]; templateId?: string; tagId?: string }) => Promise<{ success: boolean; schedule?: any; error?: string }>;
+      whisperwoofUpdateSchedule: (id: string, updates: Record<string, any>) => Promise<{ success: boolean; error?: string }>;
+      whisperwoofRemoveSchedule: (id: string) => Promise<{ success: boolean; error?: string }>;
+      whisperwoofGetSchedulePresets: () => Promise<Array<{ name: string; prompt: string; time: string; days: number[] }>>;
+
       // WhisperWoof — Smart reply
       whisperwoofDraftReply: (text: string, options?: { mode?: string; bundleId?: string }) => Promise<{ success: boolean; draft?: string; mode?: string; error?: string }>;
       whisperwoofIsReplyIntent: (text: string) => Promise<boolean>;

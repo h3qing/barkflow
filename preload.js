@@ -686,6 +686,13 @@ contextBridge.exposeInMainWorld("electronAPI", {
   // WhisperWoof: Usage analytics
   whisperwoofGetAnalytics: (options) => ipcRenderer.invoke("whisperwoof-get-analytics", options),
 
+  // WhisperWoof: Recurring capture
+  whisperwoofGetSchedules: () => ipcRenderer.invoke("whisperwoof-get-schedules"),
+  whisperwoofAddSchedule: (config) => ipcRenderer.invoke("whisperwoof-add-schedule", config),
+  whisperwoofUpdateSchedule: (id, updates) => ipcRenderer.invoke("whisperwoof-update-schedule", id, updates),
+  whisperwoofRemoveSchedule: (id) => ipcRenderer.invoke("whisperwoof-remove-schedule", id),
+  whisperwoofGetSchedulePresets: () => ipcRenderer.invoke("whisperwoof-get-schedule-presets"),
+
   // WhisperWoof: Smart reply
   whisperwoofDraftReply: (text, options) => ipcRenderer.invoke("whisperwoof-draft-reply", text, options),
   whisperwoofIsReplyIntent: (text) => ipcRenderer.invoke("whisperwoof-is-reply-intent", text),
