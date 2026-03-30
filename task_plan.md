@@ -123,7 +123,7 @@ v1.4.0 shipped — all 9 phases complete (55 PRs, 562 tests, 67 features)
 ### Phase 10: Intelligent Voice Interface (post-v1.4)
 - [x] Screen context awareness (read selected text via Accessibility API, 6 commands: summarize/explain/reply/translate/simplify/bullets)
 - [x] Agentic actions (5 action types: calendar/slack/todoist/notion/email, LLM param extraction, MCP routing)
-- [ ] Conversation memory (reference previous entries by voice: "what did I say about the budget?")
+- [x] Conversation memory (7 query patterns, topic extraction, LLM-powered answers from entry history)
 - [ ] Voice-driven app automation (open apps, switch windows, control system via voice)
 - **Status:** in_progress
 - **Depends on:** Phase 9 complete ✓
