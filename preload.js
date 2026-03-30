@@ -680,6 +680,15 @@ contextBridge.exposeInMainWorld("electronAPI", {
   // WhisperWoof: Backtrack correction
   whisperwoofDetectBacktrack: (text) => ipcRenderer.invoke("whisperwoof-detect-backtrack", text),
 
+  // WhisperWoof: Custom vocabulary
+  whisperwoofGetVocabulary: (options) => ipcRenderer.invoke("whisperwoof-get-vocabulary", options),
+  whisperwoofAddWord: (word, options) => ipcRenderer.invoke("whisperwoof-add-word", word, options),
+  whisperwoofUpdateWord: (id, updates) => ipcRenderer.invoke("whisperwoof-update-word", id, updates),
+  whisperwoofRemoveWord: (id) => ipcRenderer.invoke("whisperwoof-remove-word", id),
+  whisperwoofImportWords: (words, category) => ipcRenderer.invoke("whisperwoof-import-words", words, category),
+  whisperwoofGetVocabularyStats: () => ipcRenderer.invoke("whisperwoof-get-vocabulary-stats"),
+  whisperwoofGetSttHints: () => ipcRenderer.invoke("whisperwoof-get-stt-hints"),
+
   // WhisperWoof: Telegram companion
   whisperwoofTelegramSyncStatus: () => ipcRenderer.invoke("whisperwoof-telegram-sync-status"),
   whisperwoofTelegramImportNow: () => ipcRenderer.invoke("whisperwoof-telegram-import-now"),
