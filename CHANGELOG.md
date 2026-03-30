@@ -3,6 +3,16 @@
 All notable changes to WhisperWoof will be documented in this file.
 WhisperWoof is a fork of OpenWhispr — see below for inherited changes.
 
+## [1.3.0] - 2026-03-30 — AI Intelligence Layer
+
+Phase 8: 4 AI-powered features. 497 tests across 30 files. 50 PRs.
+
+### Phase 8: AI Intelligence
+- **Daily/weekly AI digest** — auto-summarize all entries with LLM (key topics, action items, decisions)
+- **Webhook integration** — Zapier/n8n compatible, HMAC signing, retry with backoff, delivery log
+- **Smart auto-tagging** — 10 keyword categories + LLM fallback, scored suggestions
+- **Semantic search** — TF-IDF cosine similarity, find entries by meaning not just keywords, zero dependencies
+
 ## [1.2.0] - 2026-03-30 — Unique Differentiators
 
 4 features that no competitor has. 431 tests across 26 files.
