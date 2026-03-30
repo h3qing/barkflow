@@ -1854,6 +1854,27 @@ class IPCHandlers {
       }
     });
 
+    // WhisperWoof: Language detection
+    ipcMain.handle("whisperwoof-detect-language", async (_event, text) => {
+      try {
+        const { detectLanguage } = require("../whisperwoof/bridge/language-detect");
+        return detectLanguage(text);
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] detect-language failed: ${error.message}`);
+        return { lang: "en", name: "English", confidence: "default" };
+      }
+    });
+
+    ipcMain.handle("whisperwoof-get-supported-languages", async () => {
+      try {
+        const { getSupportedLanguages } = require("../whisperwoof/bridge/language-detect");
+        return getSupportedLanguages();
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] get-supported-languages failed: ${error.message}`);
+        return [];
+      }
+    });
+
     // WhisperWoof: Settings export/import
     ipcMain.handle("whisperwoof-export-settings", async (_event, options) => {
       try {

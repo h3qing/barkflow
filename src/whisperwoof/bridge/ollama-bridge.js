@@ -17,6 +17,7 @@ const { detectContextPreset } = require("./context-detector");
 const { polishWithProvider } = require("./llm-providers");
 const { buildStylePrompt } = require("./style-learner");
 const { hasBacktrack, applyBacktrackCorrection } = require("./backtrack");
+const { detectLanguage, getLanguagePolishSuffix } = require("./language-detect");
 
 const DEFAULT_BASE_URL = "http://localhost:11434";
 
@@ -56,6 +57,24 @@ async function polishWithOllama(text, options = {}) {
 
   if (styleSection) {
     systemPrompt += styleSection;
+  }
+
+  // Multi-language: detect language and adapt prompt
+  let detectedLang = null;
+  if (options.multiLanguage !== false) {
+    const langResult = detectLanguage(text);
+    if (langResult.lang !== "en" && langResult.confidence !== "default") {
+      detectedLang = langResult;
+      const langSuffix = getLanguagePolishSuffix(langResult.lang);
+      if (langSuffix) {
+        systemPrompt += langSuffix;
+        debugLogger.debug("[WhisperWoof] Multi-language polish", {
+          lang: langResult.lang,
+          name: langResult.name,
+          confidence: langResult.confidence,
+        });
+      }
+    }
   }
 
   if (!text || !text.trim()) {
@@ -98,6 +117,7 @@ async function polishWithOllama(text, options = {}) {
     elapsed: result.elapsed,
     preset: presetId,
     provider: result.provider,
+    ...(detectedLang ? { detectedLanguage: detectedLang } : {}),
     ...(result.error ? { error: result.error } : {}),
     ...(detectedApp ? { detectedApp: detectedApp.name } : {}),
   };
