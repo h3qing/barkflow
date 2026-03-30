@@ -9,90 +9,98 @@ import { formatHotkeyLabel } from "./utils/hotkeys";
 import { useWindowDrag } from "./hooks/useWindowDrag";
 import { useAudioRecording } from "./hooks/useAudioRecording";
 import { useSettingsStore } from "./stores/settingsStore";
+import earLeftSvg from "./assets/ear-left.svg";
+import earRightSvg from "./assets/ear-right.svg";
 
-// WhisperWoof Indicator — v5 wide Mando ears + soundbar (Mando palette)
+// WhisperWoof Indicator — Mando's actual traced ears + soundbar
+// Ears are real SVG images positioned with CSS, animated with transforms
+
 const WhisperWoofIndicator = ({ state = 'idle', size = 48, animated = false, speaking = false }) => {
   const isSpeaking = speaking;
   const isProcessing = state === 'processing';
   const isIdle = !isSpeaking && !isProcessing;
-  const earTilt = isSpeaking ? 0 : (state === 'recording' ? 3 : 6);
-  const earOp = isIdle ? 0.6 : 0.9;
-  const innerOp = isIdle ? 0.25 : 0.4;
+
+  const earStyle = (side) => ({
+    position: 'absolute',
+    width: '36px',
+    bottom: '16px',
+    [side]: '10px',
+    transformOrigin: 'bottom center',
+    transition: 'transform 0.3s ease-out, opacity 0.3s',
+    opacity: isIdle ? 0.7 : 0.95,
+    ...(isSpeaking ? {
+      animation: side === 'left' ? 'earFlopL 0.4s ease-in-out infinite alternate' : 'earFlopR 0.4s ease-in-out infinite alternate',
+    } : {
+      transform: isIdle ? `rotate(${side === 'left' ? '-6' : '6'}deg)` : 'rotate(0deg)',
+    }),
+  });
+
+  // Waveform bars
+  const bars = [3,5,7,9,11,14,12,16,14,16,12,14,11,9,7,9,7,5,7,5,3];
+  const procBars = [2,3,4,5,6,7,6,7,6,7,6,5,4,5,4,3,4,3,2,3,2];
 
   return (
-    <svg width={180} height={50} viewBox="0 0 320 90" fill="none">
-      {/* Left ear — v5 wide shape, 3-layer fur */}
-      <g style={{ transform: `rotate(${-earTilt}deg)`, transformOrigin: '58px 55px', transition: 'transform 0.25s ease-out' }}>
-        <path d="M 40 55 C 34 47, 22 28, 25 15 C 27 8, 34 6, 39 10 C 46 15, 60 38, 68 55 Z" fill="#5C3A1E" opacity={earOp} />
-        <path d="M 42 53 C 37 46, 27 30, 29 18 C 31 12, 36 10, 40 14 C 46 18, 58 40, 65 53 Z" fill="#A06A3C" opacity={earOp * 0.9} />
-        <path d="M 44 51 C 40 44, 32 32, 33 22 C 34 17, 38 15, 41 18 C 44 22, 55 42, 62 51 Z" fill="#C4956A" opacity={innerOp} />
-      </g>
+    <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'flex-end', height: '60px' }}>
+      {/* CSS keyframes injected inline */}
+      <style>{`
+        @keyframes earFlopL { from { transform: rotate(-3deg); } to { transform: rotate(3deg); } }
+        @keyframes earFlopR { from { transform: rotate(3deg); } to { transform: rotate(-3deg); } }
+      `}</style>
 
-      {/* Right ear — mirror */}
-      <g style={{ transform: `rotate(${earTilt}deg)`, transformOrigin: '262px 55px', transition: 'transform 0.25s ease-out' }}>
-        <path d="M 280 55 C 286 47, 298 28, 295 15 C 293 8, 286 6, 281 10 C 274 15, 260 38, 252 55 Z" fill="#5C3A1E" opacity={earOp} />
-        <path d="M 278 53 C 283 46, 293 30, 291 18 C 289 12, 284 10, 280 14 C 274 18, 262 40, 255 53 Z" fill="#A06A3C" opacity={earOp * 0.9} />
-        <path d="M 276 51 C 280 44, 288 32, 287 22 C 286 17, 282 15, 279 18 C 276 22, 265 42, 258 51 Z" fill="#C4956A" opacity={innerOp} />
-      </g>
+      {/* Left ear — actual Mando SVG */}
+      <img src={earLeftSvg} alt="" style={earStyle('left')} />
+
+      {/* Right ear — actual Mando SVG */}
+      <img src={earRightSvg} alt="" style={earStyle('right')} />
 
       {/* Soundbar */}
-      <rect x="16" y="55" width="288" height="26" rx="13" fill="rgba(14,12,10,0.5)" />
+      <svg width={180} height={24} viewBox="0 0 260 24" fill="none" style={{ position: 'relative', zIndex: 1 }}>
+        <rect x="0" y="0" width="260" height="24" rx="12" fill="rgba(14,12,10,0.5)" />
 
-      {/* Mic */}
-      <circle cx="38" cy="68" r="5" fill="none" stroke="#E8D5C4" strokeWidth="1.2" opacity={isSpeaking ? 0.7 : 0.15} />
-      <rect x="37" y="63" width="2" height="6" rx="1" fill="#E8D5C4" opacity={isSpeaking ? 0.7 : 0.15} />
+        {/* Mic */}
+        <circle cx="18" cy="12" r="4.5" fill="none" stroke="#E8D5C4" strokeWidth="1" opacity={isSpeaking ? 0.7 : 0.15} />
+        <rect x="17" y="7.5" width="2" height="5" rx="1" fill="#E8D5C4" opacity={isSpeaking ? 0.7 : 0.15} />
 
-      {/* Status dot */}
-      <circle cx="282" cy="68" r="4"
-        fill={isSpeaking ? "#B84C3C" : isProcessing ? "#A06A3C" : "#4A4038"}
-        opacity={isSpeaking ? 1 : isProcessing ? 0.7 : 0.12}
-      >
-        {isSpeaking && <animate attributeName="opacity" values="1;0.4;1" dur="1s" repeatCount="indefinite" />}
-        {isProcessing && <animate attributeName="opacity" values="0.7;0.3;0.7" dur="2s" repeatCount="indefinite" />}
-      </circle>
+        {/* Status dot */}
+        <circle cx="242" cy="12" r="3.5"
+          fill={isSpeaking ? "#B84C3C" : isProcessing ? "#A06A3C" : "#4A4038"}
+          opacity={isSpeaking ? 1 : isProcessing ? 0.7 : 0.12}
+        >
+          {isSpeaking && <animate attributeName="opacity" values="1;0.4;1" dur="1s" repeatCount="indefinite" />}
+          {isProcessing && <animate attributeName="opacity" values="0.7;0.3;0.7" dur="2s" repeatCount="indefinite" />}
+        </circle>
 
-      {/* Waveform bars */}
-      {[80, 88, 96, 104, 112, 120, 128, 136, 144, 152, 160, 168, 176, 184, 192, 200, 208, 216, 224, 232, 240].map((x, i) => {
-        const fullH = [3, 5, 7, 9, 11, 14, 12, 16, 14, 16, 12, 14, 11, 9, 7, 9, 7, 5, 7, 5, 3][i];
-        const procH = [2, 3, 4, 5, 6, 7, 6, 7, 6, 7, 6, 5, 4, 5, 4, 3, 4, 3, 2, 3, 2][i];
-
-        let h, color, opacity, anim, style;
-        if (isSpeaking) {
-          h = Math.min(22, fullH + 4);
-          color = i % 3 === 1 ? '#C4956A' : '#E8D5C4';
-          opacity = 0.85;
-          anim = 'animate-pulse';
-          style = { animationDelay: `${i * 0.04}s`, animationDuration: '0.5s' };
-        } else if (isProcessing) {
-          h = procH;
-          color = '#A06A3C';
-          opacity = 0.5;
-          anim = 'animate-pulse';
-          style = { animationDelay: `${i * 0.08}s`, animationDuration: '1.2s' };
-        } else {
-          h = 2;
-          color = '#E8D5C4';
-          opacity = 0.12;
-          anim = '';
-          style = {};
-        }
-
-        return (
-          <rect
-            key={i}
-            x={x}
-            y={55 + (26 - h) / 2}
-            width={4}
-            rx={2}
-            height={Math.max(2, h)}
-            fill={color}
-            opacity={opacity}
-            className={anim}
-            style={style}
-          />
-        );
-      })}
-    </svg>
+        {/* Waveform */}
+        {bars.map((fullH, i) => {
+          const x = 50 + i * 8;
+          let h, color, opacity, anim, style;
+          if (isSpeaking) {
+            h = Math.min(20, fullH + 4);
+            color = i % 3 === 1 ? '#C4956A' : '#E8D5C4';
+            opacity = 0.85;
+            anim = 'animate-pulse';
+            style = { animationDelay: `${i * 0.04}s`, animationDuration: '0.5s' };
+          } else if (isProcessing) {
+            h = procBars[i];
+            color = '#A06A3C';
+            opacity = 0.5;
+            anim = 'animate-pulse';
+            style = { animationDelay: `${i * 0.08}s`, animationDuration: '1.2s' };
+          } else {
+            h = 2;
+            color = '#E8D5C4';
+            opacity = 0.12;
+            anim = '';
+            style = {};
+          }
+          return (
+            <rect key={i} x={x} y={(24 - h) / 2} width={3.5} rx={1.75}
+              height={Math.max(2, h)} fill={color} opacity={opacity}
+              className={anim} style={style} />
+          );
+        })}
+      </svg>
+    </div>
   );
 };
 
