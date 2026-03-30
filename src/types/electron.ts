@@ -1266,6 +1266,18 @@ declare global {
       whisperwoofFocusHistory: (options?: { days?: number; limit?: number }) => Promise<any[]>;
       whisperwoofFocusPresets: () => Promise<Array<{ id: string; name: string; durationMin: number; description: string }>>;
 
+      // WhisperWoof — Entry tagging
+      whisperwoofGetTags: () => Promise<Array<{ id: string; name: string; color: string; createdAt: string; entryCount: number }>>;
+      whisperwoofCreateTag: (name: string, color?: string) => Promise<{ success: boolean; tag?: any; error?: string }>;
+      whisperwoofUpdateTag: (id: string, updates: { name?: string; color?: string }) => Promise<{ success: boolean; error?: string }>;
+      whisperwoofDeleteTag: (id: string) => Promise<{ success: boolean; error?: string }>;
+      whisperwoofAddTagToEntry: (entryId: string, tagId: string) => Promise<{ success: boolean; error?: string }>;
+      whisperwoofRemoveTagFromEntry: (entryId: string, tagId: string) => Promise<{ success: boolean; error?: string }>;
+      whisperwoofGetEntryTags: (entryId: string) => Promise<Array<{ id: string; name: string; color: string }>>;
+      whisperwoofGetEntriesByTag: (tagId: string, limit?: number) => Promise<any[]>;
+      whisperwoofBulkTagEntries: (entryIds: string[], tagId: string) => Promise<{ success: boolean; tagged?: number; error?: string }>;
+      whisperwoofGetTagStats: () => Promise<{ totalTags: number; totalTaggings: number; taggedEntries: number; untaggedCount: number; topTags: Array<{ name: string; color: string; count: number }> }>;
+
       // WhisperWoof — Vibe coding
       whisperwoofGetCodingPrompt: (bundleId: string, spokenText: string) => Promise<{ prompt: string | null; mode: 'code' | 'shell' | 'prose' }>;
 
