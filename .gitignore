@@ -316,3 +316,4 @@ Thumbs.db
 .linux-fast-paste.hash
 eval/audio/
 eval/results/
+.gstack/
