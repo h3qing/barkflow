@@ -50,8 +50,8 @@ Pre-release (v1.0 prep)
 ### Phase 2: MCP Plugin System
 - [x] Implement WhisperWoof as MCP client (@modelcontextprotocol/sdk v1.28.0)
 - [x] Build 3 first-party MCP server plugins (Todoist, Notion, Slack)
-- [ ] MCP server discovery + management UI
-- [ ] MCP plugin permission model (declared network domains, data minimization, sandbox)
+- [x] MCP server discovery + management UI (WhisperWoofPlugins.tsx)
+- [x] MCP plugin permission model (network allowlist, data type filtering, minimal defaults)
 - [ ] Projects → dispatch to MCP integrations
 - **Status:** pending
 - **Depends on:** Phase 1b complete
