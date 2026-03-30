@@ -1820,6 +1820,57 @@ class IPCHandlers {
       }
     });
 
+    // WhisperWoof: Voice snippets (trigger → expand)
+    ipcMain.handle("whisperwoof-get-snippets", async () => {
+      try {
+        const { getSnippets } = require("../whisperwoof/bridge/snippets");
+        return getSnippets();
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] get-snippets failed: ${error.message}`);
+        return [];
+      }
+    });
+
+    ipcMain.handle("whisperwoof-add-snippet", async (_event, trigger, body) => {
+      try {
+        const { addSnippet } = require("../whisperwoof/bridge/snippets");
+        return addSnippet(trigger, body);
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] add-snippet failed: ${error.message}`);
+        return { success: false, error: error.message };
+      }
+    });
+
+    ipcMain.handle("whisperwoof-update-snippet", async (_event, id, updates) => {
+      try {
+        const { updateSnippet } = require("../whisperwoof/bridge/snippets");
+        return updateSnippet(id, updates);
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] update-snippet failed: ${error.message}`);
+        return { success: false, error: error.message };
+      }
+    });
+
+    ipcMain.handle("whisperwoof-remove-snippet", async (_event, id) => {
+      try {
+        const { removeSnippet } = require("../whisperwoof/bridge/snippets");
+        return removeSnippet(id);
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] remove-snippet failed: ${error.message}`);
+        return { success: false, error: error.message };
+      }
+    });
+
+    ipcMain.handle("whisperwoof-expand-snippet", async (_event, text) => {
+      try {
+        const { expandSnippet } = require("../whisperwoof/bridge/snippets");
+        return expandSnippet(text);
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] expand-snippet failed: ${error.message}`);
+        return null;
+      }
+    });
+
     // WhisperWoof: Polish presets (personality selection)
     ipcMain.handle("whisperwoof-get-polish-presets", async () => {
       const { getPolishPresets } = require("../whisperwoof/bridge/polish-presets");
