@@ -52,8 +52,8 @@ Pre-release (v1.0 prep)
 - [x] Build 3 first-party MCP server plugins (Todoist, Notion, Slack)
 - [x] MCP server discovery + management UI (WhisperWoofPlugins.tsx)
 - [x] MCP plugin permission model (network allowlist, data type filtering, minimal defaults)
-- [ ] Projects → dispatch to MCP integrations
-- **Status:** pending
+- [x] Projects → dispatch to MCP integrations
+- **Status:** complete
 - **Depends on:** Phase 1b complete
 
 ### Phase 3: Polish & Ship

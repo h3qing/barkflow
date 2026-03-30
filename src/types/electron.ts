@@ -1221,6 +1221,17 @@ declare global {
       whisperwoofCreateProject: (name: string) => Promise<any>;
       whisperwoofDeleteProject: (id: string) => Promise<void>;
       whisperwoofGetProjectEntries: (projectId: string, limit: number) => Promise<any[]>;
+
+      // WhisperWoof — Plugins
+      whisperwoofGetPlugins: () => Promise<any[]>;
+      whisperwoofUpdatePlugin: (id: string, updates: Record<string, unknown>) => Promise<any>;
+      whisperwoofAddPlugin: (config: Record<string, unknown>) => Promise<any>;
+      whisperwoofRemovePlugin: (id: string) => Promise<{ success: boolean }>;
+
+      // WhisperWoof — Project → MCP dispatch
+      whisperwoofUpdateProjectIntegration: (projectId: string, pluginId: string | null) => Promise<any>;
+      whisperwoofGetProjectIntegration: (projectId: string) => Promise<string | null>;
+      whisperwoofDispatchEntry: (entryId: string, pluginId: string, text: string) => Promise<{ success: boolean; message?: string; error?: string }>;
     };
 
     api?: {

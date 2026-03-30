@@ -1,10 +1,17 @@
 import React, { useState, useEffect, useCallback, useRef } from "react";
-import { Plus, Trash2, FolderOpen, Mic, Clipboard } from "lucide-react";
+import { Plus, Trash2, FolderOpen, Mic, Clipboard, Send, Check, AlertCircle, Link2, Unlink } from "lucide-react";
 import { cn } from "../../../components/lib/utils";
 import type { Entry, EntrySource, Project } from "../../core/storage/types";
 
 interface WhisperWoofProjectsProps {
   readonly className?: string;
+}
+
+interface Plugin {
+  readonly id: string;
+  readonly name: string;
+  readonly description: string;
+  readonly enabled: boolean;
 }
 
 // Helpers (pure, side-effect-free)
@@ -54,11 +61,38 @@ function SourceBadge({ source }: { readonly source: EntrySource }) {
   );
 }
 
-function EntryRow({ entry }: { readonly entry: Entry }) {
+type DispatchStatus = "idle" | "sending" | "success" | "error";
+
+function EntryRow({
+  entry,
+  integrationPlugin,
+  onDispatch,
+}: {
+  readonly entry: Entry;
+  readonly integrationPlugin: Plugin | null;
+  readonly onDispatch: (entryId: string, text: string) => Promise<void>;
+}) {
   const text = displayText(entry);
+  const [status, setStatus] = useState<DispatchStatus>("idle");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const handleDispatch = async () => {
+    if (!text || !integrationPlugin) return;
+    setStatus("sending");
+    setErrorMsg("");
+    try {
+      await onDispatch(entry.id, text);
+      setStatus("success");
+      setTimeout(() => setStatus("idle"), 2000);
+    } catch (err: unknown) {
+      setErrorMsg(err instanceof Error ? err.message : "Failed");
+      setStatus("error");
+      setTimeout(() => setStatus("idle"), 3000);
+    }
+  };
 
   return (
-    <div className="w-full text-left px-3 py-2.5 rounded-md hover:bg-foreground/4 dark:hover:bg-white/4 transition-colors duration-150">
+    <div className="w-full text-left px-3 py-2.5 rounded-md hover:bg-foreground/4 dark:hover:bg-white/4 transition-colors duration-150 group">
       <div className="flex items-start gap-2">
         <div className="mt-0.5">
           <SourceIcon source={entry.source} />
@@ -77,6 +111,35 @@ function EntryRow({ entry }: { readonly entry: Entry }) {
             )}
           </div>
         </div>
+        {/* Dispatch button — only show if project is bound to a plugin */}
+        {integrationPlugin && text && (
+          <div className="shrink-0 flex items-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+            {status === "idle" && (
+              <button
+                onClick={handleDispatch}
+                className="p-1.5 rounded-md hover:bg-primary/10 text-muted-foreground hover:text-primary transition-colors"
+                title={`Send to ${integrationPlugin.name}`}
+              >
+                <Send size={13} />
+              </button>
+            )}
+            {status === "sending" && (
+              <span className="p-1.5 text-muted-foreground animate-pulse">
+                <Send size={13} />
+              </span>
+            )}
+            {status === "success" && (
+              <span className="p-1.5 text-green-500">
+                <Check size={13} />
+              </span>
+            )}
+            {status === "error" && (
+              <span className="p-1.5 text-destructive" title={errorMsg}>
+                <AlertCircle size={13} />
+              </span>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
@@ -86,11 +149,12 @@ interface ProjectItemProps {
   readonly project: Project;
   readonly isSelected: boolean;
   readonly entryCount: number | undefined;
+  readonly integrationName: string | null;
   readonly onSelect: () => void;
   readonly onDelete: () => void;
 }
 
-function ProjectItem({ project, isSelected, entryCount, onSelect, onDelete }: ProjectItemProps) {
+function ProjectItem({ project, isSelected, entryCount, integrationName, onSelect, onDelete }: ProjectItemProps) {
   const [hovered, setHovered] = useState(false);
 
   return (
@@ -109,9 +173,17 @@ function ProjectItem({ project, isSelected, entryCount, onSelect, onDelete }: Pr
       <div className="flex items-center justify-between gap-1">
         <div className="flex-1 min-w-0">
           <p className="text-sm text-foreground truncate">{project.name}</p>
-          <p className="text-[11px] text-muted-foreground">
-            {entryCount !== undefined ? `${entryCount} entries` : "\u2026"}
-          </p>
+          <div className="flex items-center gap-1.5">
+            <p className="text-[11px] text-muted-foreground">
+              {entryCount !== undefined ? `${entryCount} entries` : "\u2026"}
+            </p>
+            {integrationName && (
+              <span className="inline-flex items-center gap-0.5 text-[10px] text-primary/70">
+                <Link2 size={9} />
+                {integrationName}
+              </span>
+            )}
+          </div>
         </div>
         {hovered && (
           <button
@@ -170,6 +242,44 @@ function NewProjectInput({
   );
 }
 
+function IntegrationSelector({
+  plugins,
+  currentPluginId,
+  onSelect,
+}: {
+  readonly plugins: readonly Plugin[];
+  readonly currentPluginId: string | null;
+  readonly onSelect: (pluginId: string | null) => void;
+}) {
+  const enabledPlugins = plugins.filter((p) => p.enabled);
+
+  return (
+    <div className="flex items-center gap-2">
+      <select
+        value={currentPluginId ?? ""}
+        onChange={(e) => onSelect(e.target.value || null)}
+        className="h-7 px-2 text-xs rounded-md border border-border/25 dark:border-white/10 bg-background text-foreground outline-none focus:ring-1 focus:ring-primary/30"
+      >
+        <option value="">No integration</option>
+        {enabledPlugins.map((p) => (
+          <option key={p.id} value={p.id}>
+            {p.name}
+          </option>
+        ))}
+      </select>
+      {currentPluginId && (
+        <button
+          onClick={() => onSelect(null)}
+          className="p-1 rounded hover:bg-foreground/5 dark:hover:bg-white/5 text-muted-foreground hover:text-foreground transition-colors"
+          title="Remove integration"
+        >
+          <Unlink size={13} />
+        </button>
+      )}
+    </div>
+  );
+}
+
 // Main component
 
 export default function WhisperWoofProjects({ className }: WhisperWoofProjectsProps) {
@@ -180,6 +290,23 @@ export default function WhisperWoofProjects({ className }: WhisperWoofProjectsPr
   const [isCreating, setIsCreating] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Plugin state
+  const [plugins, setPlugins] = useState<readonly Plugin[]>([]);
+  const [integrations, setIntegrations] = useState<Record<string, string | null>>({});
+
+  // Load plugins once
+  useEffect(() => {
+    const loadPlugins = async () => {
+      try {
+        const data = await window.electronAPI.whisperwoofGetPlugins();
+        setPlugins(data ?? []);
+      } catch {
+        // Plugins are optional — don't block the view
+      }
+    };
+    loadPlugins();
+  }, []);
 
   const fetchProjects = useCallback(async () => {
     try {
@@ -197,6 +324,28 @@ export default function WhisperWoofProjects({ className }: WhisperWoofProjectsPr
   useEffect(() => {
     fetchProjects();
   }, [fetchProjects]);
+
+  // Load integration targets for all projects
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadIntegrations = async () => {
+      const result: Record<string, string | null> = {};
+      for (const project of projects) {
+        try {
+          const target = await window.electronAPI.whisperwoofGetProjectIntegration(project.id);
+          if (cancelled) return;
+          result[project.id] = target;
+        } catch {
+          result[project.id] = null;
+        }
+      }
+      if (!cancelled) setIntegrations(result);
+    };
+
+    if (projects.length > 0) loadIntegrations();
+    return () => { cancelled = true; };
+  }, [projects]);
 
   // Load entries when a project is selected
   useEffect(() => {
@@ -252,6 +401,7 @@ export default function WhisperWoofProjects({ className }: WhisperWoofProjectsPr
         setProjects((prev) => [created, ...prev]);
         setSelectedId(created.id);
         setEntryCounts((prev) => ({ ...prev, [created.id]: 0 }));
+        setIntegrations((prev) => ({ ...prev, [created.id]: null }));
       }
     } catch {
       setError("Failed to create project.");
@@ -269,12 +419,43 @@ export default function WhisperWoofProjects({ className }: WhisperWoofProjectsPr
         const { [id]: _, ...rest } = prev;
         return rest;
       });
+      setIntegrations((prev) => {
+        const { [id]: _, ...rest } = prev;
+        return rest;
+      });
     } catch {
       setError("Failed to delete project.");
     }
   }, []);
 
+  const handleSetIntegration = useCallback(async (projectId: string, pluginId: string | null) => {
+    try {
+      await window.electronAPI.whisperwoofUpdateProjectIntegration(projectId, pluginId);
+      setIntegrations((prev) => ({ ...prev, [projectId]: pluginId }));
+    } catch {
+      setError("Failed to update integration.");
+    }
+  }, []);
+
+  const handleDispatchEntry = useCallback(async (entryId: string, text: string) => {
+    if (!selectedId) return;
+    const pluginId = integrations[selectedId];
+    if (!pluginId) return;
+    const result = await window.electronAPI.whisperwoofDispatchEntry(entryId, pluginId, text);
+    if (!result.success) {
+      throw new Error(result.error ?? "Dispatch failed");
+    }
+  }, [selectedId, integrations]);
+
   const selectedProject = projects.find((p) => p.id === selectedId) ?? null;
+  const selectedPluginId = selectedId ? integrations[selectedId] ?? null : null;
+  const selectedPlugin = plugins.find((p) => p.id === selectedPluginId) ?? null;
+
+  const getPluginName = (projectId: string): string | null => {
+    const pluginId = integrations[projectId];
+    if (!pluginId) return null;
+    return plugins.find((p) => p.id === pluginId)?.name ?? null;
+  };
 
   return (
     <div className={cn("flex h-full max-w-5xl mx-auto w-full", className)}>
@@ -326,6 +507,7 @@ export default function WhisperWoofProjects({ className }: WhisperWoofProjectsPr
               project={project}
               isSelected={project.id === selectedId}
               entryCount={entryCounts[project.id]}
+              integrationName={getPluginName(project.id)}
               onSelect={() => setSelectedId(project.id)}
               onDelete={() => handleDeleteProject(project.id)}
             />
@@ -337,9 +519,23 @@ export default function WhisperWoofProjects({ className }: WhisperWoofProjectsPr
       <div className="flex-1 overflow-y-auto">
         {selectedProject ? (
           <div className="flex flex-col">
-            <div className="px-4 pt-4 pb-2">
+            <div className="px-4 pt-4 pb-2 flex items-center justify-between gap-3">
               <h2 className="text-base font-medium text-foreground">{selectedProject.name}</h2>
+              {/* Integration selector */}
+              <IntegrationSelector
+                plugins={plugins}
+                currentPluginId={selectedPluginId}
+                onSelect={(pluginId) => handleSetIntegration(selectedProject.id, pluginId)}
+              />
             </div>
+            {selectedPlugin && (
+              <div className="px-4 pb-2">
+                <p className="text-[11px] text-primary/60 flex items-center gap-1">
+                  <Link2 size={10} />
+                  Entries can be sent to {selectedPlugin.name}. Hover an entry and click <Send size={10} className="inline" /> to dispatch.
+                </p>
+              </div>
+            )}
             {entries.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-64 text-center px-8">
                 <FolderOpen size={28} className="text-muted-foreground/30 mb-3" />
@@ -350,7 +546,12 @@ export default function WhisperWoofProjects({ className }: WhisperWoofProjectsPr
             ) : (
               <div className="px-1.5">
                 {entries.map((entry) => (
-                  <EntryRow key={entry.id} entry={entry} />
+                  <EntryRow
+                    key={entry.id}
+                    entry={entry}
+                    integrationPlugin={selectedPlugin}
+                    onDispatch={handleDispatchEntry}
+                  />
                 ))}
               </div>
             )}

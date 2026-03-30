@@ -2137,6 +2137,84 @@ class IPCHandlers {
       }
     });
 
+    // WhisperWoof: Project → MCP plugin dispatch
+    ipcMain.handle("whisperwoof-update-project-integration", async (_event, projectId, pluginId) => {
+      try {
+        const { updateProjectIntegration } = require("../whisperwoof/bridge/app-init");
+        return updateProjectIntegration(projectId, pluginId);
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] update-project-integration failed: ${error.message}`);
+        return null;
+      }
+    });
+
+    ipcMain.handle("whisperwoof-get-project-integration", async (_event, projectId) => {
+      try {
+        const { getProjectIntegration } = require("../whisperwoof/bridge/app-init");
+        return getProjectIntegration(projectId);
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] get-project-integration failed: ${error.message}`);
+        return null;
+      }
+    });
+
+    ipcMain.handle("whisperwoof-dispatch-entry", async (_event, entryId, pluginId, text) => {
+      try {
+        if (!pluginId || !text) {
+          return { success: false, error: "Missing pluginId or text" };
+        }
+        const { getPlugins } = require("../whisperwoof/bridge/plugin-bridge");
+        const plugins = getPlugins();
+        const plugin = plugins.find((p) => p.id === pluginId);
+        if (!plugin) {
+          return { success: false, error: `Plugin not found: ${pluginId}` };
+        }
+        if (!plugin.enabled) {
+          return { success: false, error: `Plugin "${plugin.name}" is not enabled` };
+        }
+
+        // Use dynamic import for MCP SDK (ESM module)
+        const { Client } = await import("@modelcontextprotocol/sdk/client/index.js");
+        const { StdioClientTransport } = await import("@modelcontextprotocol/sdk/client/stdio.js");
+
+        const [command, ...args] = plugin.command.split(/\s+/);
+        const transport = new StdioClientTransport({ command, args });
+        const client = new Client({ name: "whisperwoof", version: "0.9.0" }, { capabilities: {} });
+
+        await client.connect(transport);
+
+        // Discover tools and call the best one
+        let toolName = "execute";
+        try {
+          const toolList = await client.listTools();
+          const tools = toolList.tools.map((t) => t.name);
+          if (tools.length > 0 && !tools.includes("execute")) {
+            toolName = tools[0];
+          }
+        } catch {
+          // fallback to "execute"
+        }
+
+        const result = await client.callTool({
+          name: toolName,
+          arguments: { text, entryId },
+        });
+
+        await client.close();
+
+        const textContent = result.content
+          .filter((c) => c.type === "text")
+          .map((c) => c.text ?? "")
+          .join("\n");
+
+        debugLogger.log(`[WhisperWoof] Dispatched entry ${entryId} to plugin ${pluginId}: ${textContent.slice(0, 100)}`);
+        return { success: true, message: textContent || "Dispatched successfully" };
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] dispatch-entry failed: ${error.message}`);
+        return { success: false, error: error.message };
+      }
+    });
+
     ipcMain.handle(
       "process-anthropic-reasoning",
       async (event, text, modelId, _agentName, config) => {
