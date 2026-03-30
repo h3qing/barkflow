@@ -1253,6 +1253,10 @@ declare global {
       whisperwoofExtractIntent: (text: string, options?: { mode?: string }) => Promise<{ text: string; mode: string; ramblingScore: number; extracted: boolean; error?: string }>;
       whisperwoofGetIntentModes: () => Promise<Array<{ id: string; name: string; description: string }>>;
 
+      // WhisperWoof — Streaming transcription
+      whisperwoofStreamingFormat: (text: string, maxChars?: number) => Promise<string>;
+      whisperwoofStreamingDiff: (oldText: string, newText: string) => Promise<{ unchanged: number; changed: number; added: number; newWords: string[] }>;
+
       // WhisperWoof — Vibe coding
       whisperwoofGetCodingPrompt: (bundleId: string, spokenText: string) => Promise<{ prompt: string | null; mode: 'code' | 'shell' | 'prose' }>;
 
