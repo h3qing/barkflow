@@ -686,6 +686,15 @@ contextBridge.exposeInMainWorld("electronAPI", {
   // WhisperWoof: Usage analytics
   whisperwoofGetAnalytics: (options) => ipcRenderer.invoke("whisperwoof-get-analytics", options),
 
+  // WhisperWoof: Privacy lock
+  whisperwoofPrivacyEnable: (options) => ipcRenderer.invoke("whisperwoof-privacy-enable", options),
+  whisperwoofPrivacyDisable: () => ipcRenderer.invoke("whisperwoof-privacy-disable"),
+  whisperwoofPrivacyState: () => ipcRenderer.invoke("whisperwoof-privacy-state"),
+  whisperwoofPrivacyCheckUrl: (url) => ipcRenderer.invoke("whisperwoof-privacy-check-url", url),
+  whisperwoofPrivacyCheckProvider: (providerId) => ipcRenderer.invoke("whisperwoof-privacy-check-provider", providerId),
+  whisperwoofPrivacyOverrides: () => ipcRenderer.invoke("whisperwoof-privacy-overrides"),
+  whisperwoofPrivacySettings: (updates) => ipcRenderer.invoke("whisperwoof-privacy-settings", updates),
+
   // WhisperWoof: Entry tagging
   whisperwoofGetTags: () => ipcRenderer.invoke("whisperwoof-get-tags"),
   whisperwoofCreateTag: (name, color) => ipcRenderer.invoke("whisperwoof-create-tag", name, color),
