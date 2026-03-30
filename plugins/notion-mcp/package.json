@@ -1,0 +1,14 @@
+{
+  "name": "@whisperwoof/notion-mcp",
+  "version": "0.1.0",
+  "description": "MCP server that saves voice notes to Notion pages",
+  "main": "index.js",
+  "type": "module",
+  "bin": {
+    "notion-mcp": "./index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.28.0"
+  },
+  "license": "MIT"
+}

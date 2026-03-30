@@ -1,0 +1,14 @@
+{
+  "name": "@whisperwoof/todoist-mcp",
+  "version": "0.1.0",
+  "description": "MCP server that creates Todoist tasks from WhisperWoof voice commands",
+  "main": "index.js",
+  "type": "module",
+  "bin": {
+    "todoist-mcp": "./index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.28.0"
+  },
+  "license": "MIT"
+}

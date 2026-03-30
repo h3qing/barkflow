@@ -1,0 +1,14 @@
+{
+  "name": "@whisperwoof/slack-mcp",
+  "version": "0.1.0",
+  "description": "MCP server that sends voice messages to Slack channels",
+  "main": "index.js",
+  "type": "module",
+  "bin": {
+    "slack-mcp": "./index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.28.0"
+  },
+  "license": "MIT"
+}
