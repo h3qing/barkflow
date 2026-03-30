@@ -1271,6 +1271,14 @@ declare global {
       whisperwoofGetDigestHistory: (limit?: number) => Promise<any[]>;
       whisperwoofGetTodayEntriesCount: () => Promise<number>;
 
+      // WhisperWoof — Webhooks
+      whisperwoofGetWebhooks: () => Promise<any[]>;
+      whisperwoofAddWebhook: (config: { url: string; name?: string; enabled?: boolean; secret?: string; sources?: string[]; tags?: string[]; projects?: string[] }) => Promise<{ success: boolean; webhook?: any; error?: string }>;
+      whisperwoofUpdateWebhook: (id: string, updates: Record<string, any>) => Promise<{ success: boolean; error?: string }>;
+      whisperwoofRemoveWebhook: (id: string) => Promise<{ success: boolean; error?: string }>;
+      whisperwoofTestWebhook: (id: string) => Promise<{ success: boolean; statusCode?: number; durationMs?: number; error?: string }>;
+      whisperwoofGetDeliveryLog: (limit?: number) => Promise<any[]>;
+
       // WhisperWoof — Keybinding customization
       whisperwoofGetKeybindings: () => Promise<Array<{ actionId: string; key: string; label: string; category: string; isCustom: boolean; defaultKey: string }>>;
       whisperwoofRebindAction: (actionId: string, newKey: string) => Promise<{ success: boolean; error?: string; conflict?: string }>;

@@ -1854,6 +1854,32 @@ class IPCHandlers {
       }
     });
 
+    // WhisperWoof: Webhooks
+    ipcMain.handle("whisperwoof-get-webhooks", async () => {
+      try { const { getWebhooks } = require("../whisperwoof/bridge/webhooks"); return getWebhooks(); }
+      catch (error) { return []; }
+    });
+    ipcMain.handle("whisperwoof-add-webhook", async (_event, config) => {
+      try { const { addWebhook } = require("../whisperwoof/bridge/webhooks"); return addWebhook(config); }
+      catch (error) { return { success: false, error: error.message }; }
+    });
+    ipcMain.handle("whisperwoof-update-webhook", async (_event, id, updates) => {
+      try { const { updateWebhook } = require("../whisperwoof/bridge/webhooks"); return updateWebhook(id, updates); }
+      catch (error) { return { success: false, error: error.message }; }
+    });
+    ipcMain.handle("whisperwoof-remove-webhook", async (_event, id) => {
+      try { const { removeWebhook } = require("../whisperwoof/bridge/webhooks"); return removeWebhook(id); }
+      catch (error) { return { success: false, error: error.message }; }
+    });
+    ipcMain.handle("whisperwoof-test-webhook", async (_event, id) => {
+      try { const { testWebhook } = require("../whisperwoof/bridge/webhooks"); return await testWebhook(id); }
+      catch (error) { return { success: false, error: error.message }; }
+    });
+    ipcMain.handle("whisperwoof-get-delivery-log", async (_event, limit) => {
+      try { const { getDeliveryLog } = require("../whisperwoof/bridge/webhooks"); return getDeliveryLog(limit); }
+      catch (error) { return []; }
+    });
+
     // WhisperWoof: Daily digest
     ipcMain.handle("whisperwoof-create-digest", async (_event, options) => {
       try {
