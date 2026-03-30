@@ -672,6 +672,11 @@ contextBridge.exposeInMainWorld("electronAPI", {
   whisperwoofGetProviders: () => ipcRenderer.invoke("whisperwoof-get-providers"),
   whisperwoofSaveEntry: (entry) => ipcRenderer.invoke("whisperwoof-save-entry", entry),
 
+  // WhisperWoof: Adaptive style learning
+  whisperwoofGetStyleStats: () => ipcRenderer.invoke("whisperwoof-get-style-stats"),
+  whisperwoofClearStyleExamples: () => ipcRenderer.invoke("whisperwoof-clear-style-examples"),
+  whisperwoofGetStyleExamples: () => ipcRenderer.invoke("whisperwoof-get-style-examples"),
+
   // WhisperWoof: Markdown notes (Fn+N)
   whisperwoofSaveMarkdown: (text) => ipcRenderer.invoke("whisperwoof-save-markdown", text),
   whisperwoofGetNotesDir: () => ipcRenderer.invoke("whisperwoof-get-notes-dir"),

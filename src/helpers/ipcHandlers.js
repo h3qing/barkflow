@@ -247,6 +247,14 @@ class IPCHandlers {
     } catch (error) {
       debugLogger.debug("[AutoLearn] Error processing corrections", { error: error.message });
     }
+
+    // WhisperWoof: Record style example for adaptive polish learning
+    try {
+      const { recordStyleExample } = require("../whisperwoof/bridge/style-learner");
+      recordStyleExample(originalText, newFieldValue);
+    } catch (styleError) {
+      debugLogger.debug("[WhisperWoof] Style learning failed", { error: styleError.message });
+    }
   }
 
   _syncStartupEnv(setVars, clearVars = []) {
@@ -1777,6 +1785,37 @@ class IPCHandlers {
         return getProviders();
       } catch (error) {
         debugLogger.log(`[WhisperWoof] get-providers failed: ${error.message}`);
+        return [];
+      }
+    });
+
+    // WhisperWoof: Adaptive style learning
+    ipcMain.handle("whisperwoof-get-style-stats", async () => {
+      try {
+        const { getStyleStats } = require("../whisperwoof/bridge/style-learner");
+        return getStyleStats();
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] get-style-stats failed: ${error.message}`);
+        return { exampleCount: 0, maxExamples: 50, oldestExample: null, newestExample: null };
+      }
+    });
+
+    ipcMain.handle("whisperwoof-clear-style-examples", async () => {
+      try {
+        const { clearStyleExamples } = require("../whisperwoof/bridge/style-learner");
+        return clearStyleExamples();
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] clear-style-examples failed: ${error.message}`);
+        return { success: false, error: error.message };
+      }
+    });
+
+    ipcMain.handle("whisperwoof-get-style-examples", async () => {
+      try {
+        const { getStyleExamples } = require("../whisperwoof/bridge/style-learner");
+        return getStyleExamples();
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] get-style-examples failed: ${error.message}`);
         return [];
       }
     });

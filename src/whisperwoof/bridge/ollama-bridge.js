@@ -15,6 +15,7 @@ const debugLogger = require("../../helpers/debugLogger");
 const { getPresetPrompt, DEFAULT_PRESET_ID } = require("./polish-presets");
 const { detectContextPreset } = require("./context-detector");
 const { polishWithProvider } = require("./llm-providers");
+const { buildStylePrompt } = require("./style-learner");
 
 const DEFAULT_BASE_URL = "http://localhost:11434";
 
@@ -44,9 +45,17 @@ async function polishWithOllama(text, options = {}) {
 
   presetId = presetId || DEFAULT_PRESET_ID;
   const basePrompt = getPresetPrompt(presetId);
-  const systemPrompt = customPrompt
+
+  // Adaptive learning: inject few-shot style examples if available
+  const styleSection = options.adaptiveLearning !== false ? buildStylePrompt(text) : "";
+
+  let systemPrompt = customPrompt
     ? `${basePrompt}\n\nAdditional instructions from user:\n${customPrompt}`
     : basePrompt;
+
+  if (styleSection) {
+    systemPrompt += styleSection;
+  }
 
   if (!text || !text.trim()) {
     return { success: true, text: text || "", polished: false };

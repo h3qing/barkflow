@@ -1222,6 +1222,11 @@ declare global {
       whisperwoofDeleteProject: (id: string) => Promise<void>;
       whisperwoofGetProjectEntries: (projectId: string, limit: number) => Promise<any[]>;
 
+      // WhisperWoof — Adaptive style learning
+      whisperwoofGetStyleStats: () => Promise<{ exampleCount: number; maxExamples: number; oldestExample: string | null; newestExample: string | null }>;
+      whisperwoofClearStyleExamples: () => Promise<{ success: boolean }>;
+      whisperwoofGetStyleExamples: () => Promise<Array<{ polished: string; edited: string; timestamp: string; editRatio: number }>>;
+
       // WhisperWoof — LLM providers (BYOM)
       whisperwoofGetProviders: () => Promise<Array<{ id: string; name: string; description: string; requiresApiKey: boolean; defaultModel: string; models: string[] }>>;
 
