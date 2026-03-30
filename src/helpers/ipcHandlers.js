@@ -1854,6 +1854,28 @@ class IPCHandlers {
       }
     });
 
+    // WhisperWoof: Entry templates
+    ipcMain.handle("whisperwoof-get-templates", async () => {
+      try { const { getAllTemplates } = require("../whisperwoof/bridge/entry-templates"); return getAllTemplates(); }
+      catch (error) { return []; }
+    });
+    ipcMain.handle("whisperwoof-create-template", async (_event, config) => {
+      try { const { createTemplate } = require("../whisperwoof/bridge/entry-templates"); return createTemplate(config); }
+      catch (error) { return { success: false, error: error.message }; }
+    });
+    ipcMain.handle("whisperwoof-delete-template", async (_event, id) => {
+      try { const { deleteTemplate } = require("../whisperwoof/bridge/entry-templates"); return deleteTemplate(id); }
+      catch (error) { return { success: false, error: error.message }; }
+    });
+    ipcMain.handle("whisperwoof-render-template", async (_event, templateId, values) => {
+      try { const { renderTemplate } = require("../whisperwoof/bridge/entry-templates"); return renderTemplate(templateId, values); }
+      catch (error) { return { success: false, error: error.message }; }
+    });
+    ipcMain.handle("whisperwoof-get-next-section", async (_event, templateId, filledSections) => {
+      try { const { getNextSection } = require("../whisperwoof/bridge/entry-templates"); return getNextSection(templateId, filledSections); }
+      catch (error) { return null; }
+    });
+
     // WhisperWoof: Semantic search
     ipcMain.handle("whisperwoof-semantic-search", async (_event, query, options) => {
       try {

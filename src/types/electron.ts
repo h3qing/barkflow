@@ -1266,6 +1266,13 @@ declare global {
       whisperwoofFocusHistory: (options?: { days?: number; limit?: number }) => Promise<any[]>;
       whisperwoofFocusPresets: () => Promise<Array<{ id: string; name: string; durationMin: number; description: string }>>;
 
+      // WhisperWoof — Entry templates
+      whisperwoofGetTemplates: () => Promise<any[]>;
+      whisperwoofCreateTemplate: (config: any) => Promise<{ success: boolean; template?: any; error?: string }>;
+      whisperwoofDeleteTemplate: (id: string) => Promise<{ success: boolean; error?: string }>;
+      whisperwoofRenderTemplate: (templateId: string, values: Record<string, string>) => Promise<{ success: boolean; output?: string; error?: string }>;
+      whisperwoofGetNextSection: (templateId: string, filledSections: Record<string, string>) => Promise<{ id: string; label: string; prompt: string; required: boolean } | null>;
+
       // WhisperWoof — Semantic search
       whisperwoofSemanticSearch: (query: string, options?: { limit?: number; minScore?: number; days?: number }) => Promise<Array<{ id: string; text: string; score: number; source: string; createdAt: string }>>;
       whisperwoofFindSimilar: (entryId: string, options?: { limit?: number }) => Promise<Array<{ id: string; text: string; score: number; source: string; createdAt: string }>>;

@@ -112,6 +112,14 @@ v1.3.0 shipped — all 8 phases complete (50 PRs, 497 tests, 62 features)
 - **Status:** complete
 - **Depends on:** Phase 7 complete ✓
 
+### Phase 9: Structured Capture & Workflows (post-v1.3)
+- [x] Entry templates (5 built-in: standup/meeting/bug/email/update + custom, section-by-section voice fill, Markdown rendering)
+- [ ] Smart reply drafting (speak rough idea → full email/Slack reply in your tone)
+- [ ] Recurring capture (scheduled prompts — "what did you accomplish today?" at 5pm)
+- [ ] Entry chaining (link related entries, conversation threads across days)
+- **Status:** in_progress
+- **Depends on:** Phase 8 complete ✓
+
 ## Key Questions
 1. Ollama latency: Can Llama 3.2 3B polish <1s on M1? (Benchmark in Phase 1a)
 2. Fn key reliability: Does Globe key work on target macOS version? (Validate in Phase 0)
