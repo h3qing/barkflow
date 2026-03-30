@@ -1266,6 +1266,10 @@ declare global {
       whisperwoofFocusHistory: (options?: { days?: number; limit?: number }) => Promise<any[]>;
       whisperwoofFocusPresets: () => Promise<Array<{ id: string; name: string; durationMin: number; description: string }>>;
 
+      // WhisperWoof — Semantic search
+      whisperwoofSemanticSearch: (query: string, options?: { limit?: number; minScore?: number; days?: number }) => Promise<Array<{ id: string; text: string; score: number; source: string; createdAt: string }>>;
+      whisperwoofFindSimilar: (entryId: string, options?: { limit?: number }) => Promise<Array<{ id: string; text: string; score: number; source: string; createdAt: string }>>;
+
       // WhisperWoof — Auto-tagging
       whisperwoofAutoTag: (text: string, existingTagNames?: string[], options?: { useLlm?: boolean }) => Promise<{ tags: string[]; source: string; suggestions?: any[]; error?: string }>;
       whisperwoofSuggestTagsKeywords: (text: string, existingTagNames?: string[]) => Promise<Array<{ tag: string; score: number; matchedKeywords: string[]; source: string }>>;

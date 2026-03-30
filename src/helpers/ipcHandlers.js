@@ -1854,6 +1854,21 @@ class IPCHandlers {
       }
     });
 
+    // WhisperWoof: Semantic search
+    ipcMain.handle("whisperwoof-semantic-search", async (_event, query, options) => {
+      try {
+        const { semanticSearch } = require("../whisperwoof/bridge/semantic-search");
+        return semanticSearch(query, options || {});
+      } catch (error) { return []; }
+    });
+
+    ipcMain.handle("whisperwoof-find-similar", async (_event, entryId, options) => {
+      try {
+        const { findSimilar } = require("../whisperwoof/bridge/semantic-search");
+        return findSimilar(entryId, options || {});
+      } catch (error) { return []; }
+    });
+
     // WhisperWoof: Auto-tagging
     ipcMain.handle("whisperwoof-auto-tag", async (_event, text, existingTagNames, options) => {
       try {
