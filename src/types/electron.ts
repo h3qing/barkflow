@@ -1231,6 +1231,19 @@ declare global {
       whisperwoofSaveExportFile: (filePath: string, bundle: any) => Promise<{ success: boolean; path?: string; sizeBytes?: number; error?: string }>;
       whisperwoofLoadImportFile: (filePath: string) => Promise<{ success: boolean; bundle?: any; error?: string }>;
 
+      // WhisperWoof — Usage analytics
+      whisperwoofGetAnalytics: (options?: { days?: number }) => Promise<{
+        summary: { totalEntries: number; todayEntries: number; thisWeekEntries: number; thisMonthEntries: number };
+        entriesPerDay: Array<{ day: string; count: number }>;
+        sourceBreakdown: Array<{ source: string; count: number }>;
+        polishStats: { totalPolished: number; totalRaw: number; avgCharsSaved: number; polishRate: number };
+        topCommands: Array<{ command: string; count: number }>;
+        topSnippets: Array<{ trigger: string; count: number }>;
+        busiestHours: Array<{ hour: number; count: number }>;
+        averageDuration: { avgMs: number; totalMs: number; count: number };
+        streaks: { current: number; longest: number };
+      } | null>;
+
       // WhisperWoof — Custom vocabulary
       whisperwoofGetVocabulary: (options?: { category?: string; search?: string; sortBy?: string }) => Promise<Array<{ id: string; word: string; category: string; alternatives: string[]; createdAt: string; source: string; usageCount: number }>>;
       whisperwoofAddWord: (word: string, options?: { category?: string; alternatives?: string[]; source?: string }) => Promise<{ success: boolean; entry?: any; error?: string }>;

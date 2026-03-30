@@ -683,6 +683,9 @@ contextBridge.exposeInMainWorld("electronAPI", {
   // WhisperWoof: Voice Activity Detection
   whisperwoofGetVadConfig: () => ipcRenderer.invoke("whisperwoof-get-vad-config"),
 
+  // WhisperWoof: Usage analytics
+  whisperwoofGetAnalytics: (options) => ipcRenderer.invoke("whisperwoof-get-analytics", options),
+
   // WhisperWoof: Settings export/import
   whisperwoofExportSettings: (options) => ipcRenderer.invoke("whisperwoof-export-settings", options),
   whisperwoofImportSettings: (bundle, options) => ipcRenderer.invoke("whisperwoof-import-settings", bundle, options),

@@ -1843,6 +1843,17 @@ class IPCHandlers {
       }
     });
 
+    // WhisperWoof: Usage analytics
+    ipcMain.handle("whisperwoof-get-analytics", async (_event, options) => {
+      try {
+        const { getDashboard } = require("../whisperwoof/bridge/analytics");
+        return getDashboard(options || {});
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] get-analytics failed: ${error.message}`);
+        return null;
+      }
+    });
+
     // WhisperWoof: Settings export/import
     ipcMain.handle("whisperwoof-export-settings", async (_event, options) => {
       try {

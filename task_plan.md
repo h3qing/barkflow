@@ -84,8 +84,8 @@ Pre-release (v1.0 prep)
 - [x] Custom vocabulary (categories, alternatives, STT hints, bulk import/export, usage tracking)
 - [x] Voice Activity Detection (RMS energy analysis, auto-stop on silence, audio trimming, speech ratio)
 - [x] Export/import settings (bundle all config into single JSON, merge/replace import, API key stripping)
-- [ ] Usage analytics dashboard (entries/day, polish improvement ratio, top commands)
-- **Status:** in_progress
+- [x] Usage analytics dashboard (entries/day, source breakdown, polish stats, top commands/snippets, streaks, busiest hours)
+- **Status:** complete
 - **Depends on:** Phase 4 complete ✓
 
 ## Key Questions
