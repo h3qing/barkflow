@@ -1,0 +1,74 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-and-release:
+    name: Build & Release macOS
+    runs-on: macos-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Compile native binaries
+        run: npm run compile:native
+
+      - name: Download whisper-cpp
+        run: npm run download:whisper-cpp
+
+      - name: Download llama-server
+        run: npm run download:llama-server
+
+      - name: Build renderer
+        run: cd src && npx vite build
+
+      - name: Build macOS arm64 (unsigned)
+        run: npx electron-builder --mac --arm64 --config.mac.identity=null
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: false
+
+      - name: Get version from tag
+        id: version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "WhisperWoof v${{ steps.version.outputs.VERSION }}"
+          body: |
+            ## WhisperWoof v${{ steps.version.outputs.VERSION }}
+
+            **Download:** Click the `.dmg` file below to install on macOS (Apple Silicon).
+
+            ### Installation
+            1. Download the `.dmg` file
+            2. Open it and drag WhisperWoof to Applications
+            3. Open WhisperWoof from Applications
+            4. macOS may warn "unidentified developer" — right-click → Open to bypass
+
+            ### Optional: Ollama for text polish
+            ```bash
+            brew install ollama && ollama pull llama3.2:1b && ollama serve
+            ```
+
+            See [CHANGELOG.md](https://github.com/h3qing/whisperwoof/blob/main/CHANGELOG.md) for details.
+          files: |
+            dist/*.dmg
+            dist/*.zip
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
