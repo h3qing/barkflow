@@ -686,6 +686,15 @@ contextBridge.exposeInMainWorld("electronAPI", {
   // WhisperWoof: Usage analytics
   whisperwoofGetAnalytics: (options) => ipcRenderer.invoke("whisperwoof-get-analytics", options),
 
+  // WhisperWoof: Focus mode
+  whisperwoofFocusStart: (options) => ipcRenderer.invoke("whisperwoof-focus-start", options),
+  whisperwoofFocusEnd: (summary) => ipcRenderer.invoke("whisperwoof-focus-end", summary),
+  whisperwoofFocusActive: () => ipcRenderer.invoke("whisperwoof-focus-active"),
+  whisperwoofFocusRecordEntry: (entryId, wordCount) => ipcRenderer.invoke("whisperwoof-focus-record-entry", entryId, wordCount),
+  whisperwoofFocusStats: () => ipcRenderer.invoke("whisperwoof-focus-stats"),
+  whisperwoofFocusHistory: (options) => ipcRenderer.invoke("whisperwoof-focus-history", options),
+  whisperwoofFocusPresets: () => ipcRenderer.invoke("whisperwoof-focus-presets"),
+
   // WhisperWoof: Streaming transcription
   whisperwoofStreamingFormat: (text, maxChars) => ipcRenderer.invoke("whisperwoof-streaming-format", text, maxChars),
   whisperwoofStreamingDiff: (oldText, newText) => ipcRenderer.invoke("whisperwoof-streaming-diff", oldText, newText),

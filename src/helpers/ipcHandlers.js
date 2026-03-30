@@ -1854,6 +1854,72 @@ class IPCHandlers {
       }
     });
 
+    // WhisperWoof: Focus mode
+    ipcMain.handle("whisperwoof-focus-start", async (_event, options) => {
+      try {
+        const { startSession } = require("../whisperwoof/bridge/focus-mode");
+        return startSession(options || {});
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] focus-start failed: ${error.message}`);
+        return { success: false, error: error.message };
+      }
+    });
+
+    ipcMain.handle("whisperwoof-focus-end", async (_event, summary) => {
+      try {
+        const { endSession } = require("../whisperwoof/bridge/focus-mode");
+        return endSession(summary);
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] focus-end failed: ${error.message}`);
+        return { success: false, error: error.message };
+      }
+    });
+
+    ipcMain.handle("whisperwoof-focus-active", async () => {
+      try {
+        const { getActiveSession } = require("../whisperwoof/bridge/focus-mode");
+        return getActiveSession();
+      } catch (error) {
+        return null;
+      }
+    });
+
+    ipcMain.handle("whisperwoof-focus-record-entry", async (_event, entryId, wordCount) => {
+      try {
+        const { recordEntry } = require("../whisperwoof/bridge/focus-mode");
+        return recordEntry(entryId, wordCount);
+      } catch (error) {
+        return false;
+      }
+    });
+
+    ipcMain.handle("whisperwoof-focus-stats", async () => {
+      try {
+        const { getFocusStats } = require("../whisperwoof/bridge/focus-mode");
+        return getFocusStats();
+      } catch (error) {
+        return { totalSessions: 0, totalMinutes: 0, totalWords: 0, totalEntries: 0, avgDuration: 0, completionRate: 0, currentStreak: 0 };
+      }
+    });
+
+    ipcMain.handle("whisperwoof-focus-history", async (_event, options) => {
+      try {
+        const { getSessionHistory } = require("../whisperwoof/bridge/focus-mode");
+        return getSessionHistory(options || {});
+      } catch (error) {
+        return [];
+      }
+    });
+
+    ipcMain.handle("whisperwoof-focus-presets", async () => {
+      try {
+        const { getSprintPresets } = require("../whisperwoof/bridge/focus-mode");
+        return getSprintPresets();
+      } catch (error) {
+        return [];
+      }
+    });
+
     // WhisperWoof: Streaming transcription manager
     ipcMain.handle("whisperwoof-streaming-format", async (_event, text, maxChars) => {
       try {
