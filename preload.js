@@ -686,6 +686,11 @@ contextBridge.exposeInMainWorld("electronAPI", {
   // WhisperWoof: Usage analytics
   whisperwoofGetAnalytics: (options) => ipcRenderer.invoke("whisperwoof-get-analytics", options),
 
+  // WhisperWoof: Agentic actions
+  whisperwoofDetectAction: (text) => ipcRenderer.invoke("whisperwoof-detect-action", text),
+  whisperwoofPrepareAction: (text, options) => ipcRenderer.invoke("whisperwoof-prepare-action", text, options),
+  whisperwoofGetAvailableActions: () => ipcRenderer.invoke("whisperwoof-get-available-actions"),
+
   // WhisperWoof: Screen context
   whisperwoofGetSelectedText: () => ipcRenderer.invoke("whisperwoof-get-selected-text"),
   whisperwoofDetectScreenCommand: (text) => ipcRenderer.invoke("whisperwoof-detect-screen-command", text),

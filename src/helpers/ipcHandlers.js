@@ -1854,6 +1854,20 @@ class IPCHandlers {
       }
     });
 
+    // WhisperWoof: Agentic actions
+    ipcMain.handle("whisperwoof-detect-action", async (_event, text) => {
+      try { const { detectActionIntent } = require("../whisperwoof/bridge/agentic-actions"); return detectActionIntent(text); }
+      catch (error) { return null; }
+    });
+    ipcMain.handle("whisperwoof-prepare-action", async (_event, text, options) => {
+      try { const { prepareAction } = require("../whisperwoof/bridge/agentic-actions"); return await prepareAction(text, options || {}); }
+      catch (error) { return { success: false, error: error.message }; }
+    });
+    ipcMain.handle("whisperwoof-get-available-actions", async () => {
+      try { const { getAvailableActions } = require("../whisperwoof/bridge/agentic-actions"); return getAvailableActions(); }
+      catch (error) { return []; }
+    });
+
     // WhisperWoof: Screen context
     ipcMain.handle("whisperwoof-get-selected-text", async () => {
       try { const { getSelectedText } = require("../whisperwoof/bridge/screen-context"); return await getSelectedText(); }
