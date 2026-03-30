@@ -1854,6 +1854,56 @@ class IPCHandlers {
       }
     });
 
+    // WhisperWoof: Keybinding customization
+    ipcMain.handle("whisperwoof-get-keybindings", async () => {
+      try {
+        const { getKeybindingsList } = require("../whisperwoof/bridge/keybindings");
+        return getKeybindingsList();
+      } catch (error) { return []; }
+    });
+
+    ipcMain.handle("whisperwoof-rebind-action", async (_event, actionId, newKey) => {
+      try {
+        const { rebindAction } = require("../whisperwoof/bridge/keybindings");
+        return rebindAction(actionId, newKey);
+      } catch (error) { return { success: false, error: error.message }; }
+    });
+
+    ipcMain.handle("whisperwoof-reset-keybinding", async (_event, actionId) => {
+      try {
+        const { resetAction } = require("../whisperwoof/bridge/keybindings");
+        return resetAction(actionId);
+      } catch (error) { return { success: false, error: error.message }; }
+    });
+
+    ipcMain.handle("whisperwoof-reset-all-keybindings", async () => {
+      try {
+        const { resetAll } = require("../whisperwoof/bridge/keybindings");
+        return resetAll();
+      } catch (error) { return { success: false, error: error.message }; }
+    });
+
+    ipcMain.handle("whisperwoof-export-keybindings", async () => {
+      try {
+        const { exportKeybindings } = require("../whisperwoof/bridge/keybindings");
+        return exportKeybindings();
+      } catch (error) { return null; }
+    });
+
+    ipcMain.handle("whisperwoof-import-keybindings", async (_event, data) => {
+      try {
+        const { importKeybindings } = require("../whisperwoof/bridge/keybindings");
+        return importKeybindings(data);
+      } catch (error) { return { success: false, error: error.message }; }
+    });
+
+    ipcMain.handle("whisperwoof-get-keybinding-categories", async () => {
+      try {
+        const { getCategories } = require("../whisperwoof/bridge/keybindings");
+        return getCategories();
+      } catch (error) { return []; }
+    });
+
     // WhisperWoof: Privacy lock
     ipcMain.handle("whisperwoof-privacy-enable", async (_event, options) => {
       try {

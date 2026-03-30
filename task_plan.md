@@ -100,8 +100,8 @@ v1.1.0 shipped — all 6 phases complete (39 PRs, 360 tests)
 - [x] Focus mode / voice sprints (timed sessions, entry tracking, completion stats, 5 presets)
 - [x] Entry tagging / labels (SQLite many-to-many, CRUD, filter by tag, bulk operations, color, stats)
 - [x] Privacy lock mode (block all cloud URLs, Ollama-only, disable STT/Telegram/analytics, override system)
-- [ ] Keyboard shortcut customization (rebind all hotkeys, export/import keybindings)
-- **Status:** in_progress
+- [x] Keyboard shortcut customization (rebind 12 actions, conflict detection, export/import, 5 categories, reset)
+- **Status:** complete
 - **Depends on:** Phase 6 complete ✓
 
 ## Key Questions
