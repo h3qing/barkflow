@@ -1820,6 +1820,28 @@ class IPCHandlers {
       }
     });
 
+    // WhisperWoof: Telegram companion sync
+    ipcMain.handle("whisperwoof-telegram-sync-status", async () => {
+      try {
+        const { getTelegramSyncStatus } = require("../whisperwoof/bridge/telegram-sync");
+        return getTelegramSyncStatus();
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] telegram-sync-status failed: ${error.message}`);
+        return { running: false, inboxExists: false, pending: 0, total: 0 };
+      }
+    });
+
+    ipcMain.handle("whisperwoof-telegram-import-now", async () => {
+      try {
+        const { importPendingEntries } = require("../whisperwoof/bridge/telegram-sync");
+        const count = importPendingEntries();
+        return { success: true, imported: count };
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] telegram-import-now failed: ${error.message}`);
+        return { success: false, error: error.message };
+      }
+    });
+
     // WhisperWoof: Voice snippets (trigger → expand)
     ipcMain.handle("whisperwoof-get-snippets", async () => {
       try {
