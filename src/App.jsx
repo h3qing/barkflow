@@ -40,7 +40,7 @@ const WhisperWoofIndicator = ({ state = 'idle', size = 48, animated = false, spe
   const procBars = [2,3,4,5,6,7,6,7,6,7,6,5,4,5,4,3,4,3,2,3,2];
 
   return (
-    <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'flex-end', height: '60px' }}>
+    <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'flex-end', height: '70px' }}>
       {/* CSS keyframes injected inline */}
       <style>{`
         @keyframes earFlopL { from { transform: rotate(-3deg); } to { transform: rotate(3deg); } }
