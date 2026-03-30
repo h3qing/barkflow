@@ -64,8 +64,8 @@ Pre-release (v1.0 prep)
 - [x] Smart model advisor (RAM-based recommendations)
 - [x] Polish presets (5 personalities with eval framework)
 - [x] DESIGN.md created with Mando palette
-- [ ] First public release
-- **Status:** in_progress
+- [x] First public release (v1.0.0)
+- **Status:** complete
 - **Depends on:** Phase 2 complete ✓
 
 ## Key Questions
