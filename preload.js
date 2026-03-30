@@ -686,6 +686,10 @@ contextBridge.exposeInMainWorld("electronAPI", {
   // WhisperWoof: Usage analytics
   whisperwoofGetAnalytics: (options) => ipcRenderer.invoke("whisperwoof-get-analytics", options),
 
+  // WhisperWoof: Language detection
+  whisperwoofDetectLanguage: (text) => ipcRenderer.invoke("whisperwoof-detect-language", text),
+  whisperwoofGetSupportedLanguages: () => ipcRenderer.invoke("whisperwoof-get-supported-languages"),
+
   // WhisperWoof: Settings export/import
   whisperwoofExportSettings: (options) => ipcRenderer.invoke("whisperwoof-export-settings", options),
   whisperwoofImportSettings: (bundle, options) => ipcRenderer.invoke("whisperwoof-import-settings", bundle, options),

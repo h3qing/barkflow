@@ -88,6 +88,14 @@ Pre-release (v1.0 prep)
 - **Status:** complete
 - **Depends on:** Phase 4 complete ✓
 
+### Phase 6: Internationalization & Advanced (post-v1.0)
+- [x] Multi-language auto-detection (script + word-frequency heuristic, 22 languages, auto-adapt polish prompt)
+- [ ] Voice-to-code / vibe coding mode (developer-specific dictation for IDE contexts)
+- [ ] Intent-based capture ("capture what I meant" mode — beyond polish, restructures rambling into clear intent)
+- [ ] Real-time streaming partial results (show transcription as user speaks, not just after stop)
+- **Status:** in_progress
+- **Depends on:** Phase 5 complete ✓
+
 ## Key Questions
 1. Ollama latency: Can Llama 3.2 3B polish <1s on M1? (Benchmark in Phase 1a)
 2. Fn key reliability: Does Globe key work on target macOS version? (Validate in Phase 0)
