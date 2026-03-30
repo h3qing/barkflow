@@ -1832,6 +1832,77 @@ class IPCHandlers {
       }
     });
 
+    // WhisperWoof: Custom vocabulary
+    ipcMain.handle("whisperwoof-get-vocabulary", async (_event, options) => {
+      try {
+        const { getVocabulary } = require("../whisperwoof/bridge/vocabulary");
+        return getVocabulary(options || {});
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] get-vocabulary failed: ${error.message}`);
+        return [];
+      }
+    });
+
+    ipcMain.handle("whisperwoof-add-word", async (_event, word, options) => {
+      try {
+        const { addWord } = require("../whisperwoof/bridge/vocabulary");
+        return addWord(word, options || {});
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] add-word failed: ${error.message}`);
+        return { success: false, error: error.message };
+      }
+    });
+
+    ipcMain.handle("whisperwoof-update-word", async (_event, id, updates) => {
+      try {
+        const { updateWord } = require("../whisperwoof/bridge/vocabulary");
+        return updateWord(id, updates);
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] update-word failed: ${error.message}`);
+        return { success: false, error: error.message };
+      }
+    });
+
+    ipcMain.handle("whisperwoof-remove-word", async (_event, id) => {
+      try {
+        const { removeWord } = require("../whisperwoof/bridge/vocabulary");
+        return removeWord(id);
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] remove-word failed: ${error.message}`);
+        return { success: false, error: error.message };
+      }
+    });
+
+    ipcMain.handle("whisperwoof-import-words", async (_event, words, category) => {
+      try {
+        const { importWords } = require("../whisperwoof/bridge/vocabulary");
+        return importWords(words, category);
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] import-words failed: ${error.message}`);
+        return { success: false, error: error.message };
+      }
+    });
+
+    ipcMain.handle("whisperwoof-get-vocabulary-stats", async () => {
+      try {
+        const { getVocabularyStats } = require("../whisperwoof/bridge/vocabulary");
+        return getVocabularyStats();
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] get-vocabulary-stats failed: ${error.message}`);
+        return { total: 0, max: 1000, categories: {}, topUsed: [] };
+      }
+    });
+
+    ipcMain.handle("whisperwoof-get-stt-hints", async () => {
+      try {
+        const { getSttHints } = require("../whisperwoof/bridge/vocabulary");
+        return getSttHints();
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] get-stt-hints failed: ${error.message}`);
+        return [];
+      }
+    });
+
     // WhisperWoof: Telegram companion sync
     ipcMain.handle("whisperwoof-telegram-sync-status", async () => {
       try {

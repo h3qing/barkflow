@@ -81,7 +81,7 @@ Pre-release (v1.0 prep)
 
 ### Phase 5: Power User Features (post-v1.0)
 - [x] Backtrack correction (detect "no wait", "I mean", "scratch that" → resolve self-corrections)
-- [ ] Custom vocabulary / user dictionary UI (manage learned words, add domain terms)
+- [x] Custom vocabulary (categories, alternatives, STT hints, bulk import/export, usage tracking)
 - [ ] Voice Activity Detection (filter silence before STT, reduce processing)
 - [ ] Export/import settings (snippets, style examples, app-preset map — portable config)
 - [ ] Usage analytics dashboard (entries/day, polish improvement ratio, top commands)

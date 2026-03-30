@@ -1222,6 +1222,15 @@ declare global {
       whisperwoofDeleteProject: (id: string) => Promise<void>;
       whisperwoofGetProjectEntries: (projectId: string, limit: number) => Promise<any[]>;
 
+      // WhisperWoof — Custom vocabulary
+      whisperwoofGetVocabulary: (options?: { category?: string; search?: string; sortBy?: string }) => Promise<Array<{ id: string; word: string; category: string; alternatives: string[]; createdAt: string; source: string; usageCount: number }>>;
+      whisperwoofAddWord: (word: string, options?: { category?: string; alternatives?: string[]; source?: string }) => Promise<{ success: boolean; entry?: any; error?: string }>;
+      whisperwoofUpdateWord: (id: string, updates: { word?: string; category?: string; alternatives?: string[] }) => Promise<{ success: boolean; error?: string }>;
+      whisperwoofRemoveWord: (id: string) => Promise<{ success: boolean; error?: string }>;
+      whisperwoofImportWords: (words: Array<string | { word: string; category?: string; alternatives?: string[] }>, category?: string) => Promise<{ success: boolean; added?: number; total?: number; error?: string }>;
+      whisperwoofGetVocabularyStats: () => Promise<{ total: number; max: number; categories: Record<string, number>; topUsed: Array<{ word: string; usageCount: number }> }>;
+      whisperwoofGetSttHints: () => Promise<string[]>;
+
       // WhisperWoof — Backtrack correction
       whisperwoofDetectBacktrack: (text: string) => Promise<{ hasBacktrack: boolean; signals: string[] }>;
 
