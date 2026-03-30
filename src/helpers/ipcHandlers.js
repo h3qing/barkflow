@@ -2095,6 +2095,38 @@ class IPCHandlers {
       }
     });
 
+    // WhisperWoof: Voice editing commands
+    ipcMain.handle("whisperwoof-voice-command", async (_event, spokenText, selectedText, options) => {
+      try {
+        const { executeVoiceCommand } = require("../whisperwoof/bridge/voice-commands");
+        return await executeVoiceCommand(spokenText, selectedText, options || {});
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] voice-command failed: ${error.message}`);
+        return { success: false, error: error.message, isCommand: false };
+      }
+    });
+
+    ipcMain.handle("whisperwoof-detect-voice-command", async (_event, spokenText) => {
+      try {
+        const { detectCommand } = require("../whisperwoof/bridge/voice-commands");
+        const command = detectCommand(spokenText);
+        return { isCommand: !!command, command: command?.id ?? null };
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] detect-voice-command failed: ${error.message}`);
+        return { isCommand: false, command: null };
+      }
+    });
+
+    ipcMain.handle("whisperwoof-get-voice-commands", async () => {
+      try {
+        const { getAvailableCommands } = require("../whisperwoof/bridge/voice-commands");
+        return getAvailableCommands();
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] get-voice-commands failed: ${error.message}`);
+        return [];
+      }
+    });
+
     // WhisperWoof: Context-aware polish (detect active app)
     ipcMain.handle("whisperwoof-detect-context", async () => {
       try {

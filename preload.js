@@ -704,6 +704,11 @@ contextBridge.exposeInMainWorld("electronAPI", {
   whisperwoofMeetingEnd: () => ipcRenderer.invoke("whisperwoof-meeting-end"),
   whisperwoofMeetingStatus: () => ipcRenderer.invoke("whisperwoof-meeting-status"),
 
+  // WhisperWoof: Voice editing commands
+  whisperwoofVoiceCommand: (spokenText, selectedText, options) => ipcRenderer.invoke("whisperwoof-voice-command", spokenText, selectedText, options),
+  whisperwoofDetectVoiceCommand: (spokenText) => ipcRenderer.invoke("whisperwoof-detect-voice-command", spokenText),
+  whisperwoofGetVoiceCommands: () => ipcRenderer.invoke("whisperwoof-get-voice-commands"),
+
   // WhisperWoof: Context-aware polish
   whisperwoofDetectContext: () => ipcRenderer.invoke("whisperwoof-detect-context"),
   whisperwoofGetAppPresetMap: () => ipcRenderer.invoke("whisperwoof-get-app-preset-map"),
