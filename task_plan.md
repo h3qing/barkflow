@@ -92,8 +92,8 @@ Pre-release (v1.0 prep)
 - [x] Multi-language auto-detection (script + word-frequency heuristic, 22 languages, auto-adapt polish prompt)
 - [x] Voice-to-code / vibe coding mode (code intent detection, IDE/terminal auto-switch, code + shell prompts)
 - [x] Intent-based capture (rambling detection with 6 signal categories, 5 output modes: auto/action/decision/question/summary)
-- [ ] Real-time streaming partial results (show transcription as user speaks, not just after stop)
-- **Status:** in_progress
+- [x] Real-time streaming partial results (session lifecycle, word diffing, display formatting, WPM tracking)
+- **Status:** complete
 - **Depends on:** Phase 5 complete ✓
 
 ## Key Questions

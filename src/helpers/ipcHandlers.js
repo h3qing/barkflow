@@ -1854,6 +1854,25 @@ class IPCHandlers {
       }
     });
 
+    // WhisperWoof: Streaming transcription manager
+    ipcMain.handle("whisperwoof-streaming-format", async (_event, text, maxChars) => {
+      try {
+        const { formatForDisplay } = require("../whisperwoof/bridge/streaming-manager");
+        return formatForDisplay(text, maxChars);
+      } catch (error) {
+        return text || "";
+      }
+    });
+
+    ipcMain.handle("whisperwoof-streaming-diff", async (_event, oldText, newText) => {
+      try {
+        const { diffPartials } = require("../whisperwoof/bridge/streaming-manager");
+        return diffPartials(oldText, newText);
+      } catch (error) {
+        return { unchanged: 0, changed: 0, added: 0, newWords: [] };
+      }
+    });
+
     // WhisperWoof: Intent capture
     ipcMain.handle("whisperwoof-detect-rambling", async (_event, text) => {
       try {
