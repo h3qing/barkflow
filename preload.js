@@ -665,10 +665,11 @@ contextBridge.exposeInMainWorld("electronAPI", {
   updateNotificationReady: () => ipcRenderer.invoke("update-notification-ready"),
   updateNotificationRespond: (action) => ipcRenderer.invoke("update-notification-respond", action),
 
-  // WhisperWoof: Ollama text polish
+  // WhisperWoof: Text polish (BYOM — multiple LLM providers)
   whisperwoofOllamaPolish: (text, options) => ipcRenderer.invoke("whisperwoof-ollama-polish", text, options),
   whisperwoofOllamaCheck: () => ipcRenderer.invoke("whisperwoof-ollama-check"),
   whisperwoofGetPolishPresets: () => ipcRenderer.invoke("whisperwoof-get-polish-presets"),
+  whisperwoofGetProviders: () => ipcRenderer.invoke("whisperwoof-get-providers"),
   whisperwoofSaveEntry: (entry) => ipcRenderer.invoke("whisperwoof-save-entry", entry),
 
   // WhisperWoof: Markdown notes (Fn+N)
