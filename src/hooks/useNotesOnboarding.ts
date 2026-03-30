@@ -18,9 +18,9 @@ export function useNotesOnboarding(): UseNotesOnboardingReturn {
   const effectiveModel = useSettingsStore((s) => s.reasoningModel);
   const isCloudReasoning = useSettingsStore(selectIsCloudReasoningMode);
 
-  const [isComplete, setIsComplete] = useState(
-    () => localStorage.getItem("notesOnboardingComplete") === "true"
-  );
+  // WhisperWoof: skip notes onboarding (model picker is confusing,
+  // we use Ollama for polish instead of llama.cpp)
+  const [isComplete, setIsComplete] = useState(true);
 
   const isLLMConfigured = isCloudReasoning || (useReasoningModel && !!effectiveModel);
 
