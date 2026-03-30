@@ -1266,6 +1266,11 @@ declare global {
       whisperwoofFocusHistory: (options?: { days?: number; limit?: number }) => Promise<any[]>;
       whisperwoofFocusPresets: () => Promise<Array<{ id: string; name: string; durationMin: number; description: string }>>;
 
+      // WhisperWoof — Agentic actions
+      whisperwoofDetectAction: (text: string) => Promise<{ id: string; plugin: string; tool: string; label: string } | null>;
+      whisperwoofPrepareAction: (text: string, options?: Record<string, any>) => Promise<{ success: boolean; isAction: boolean; action?: any; error?: string }>;
+      whisperwoofGetAvailableActions: () => Promise<Array<{ id: string; plugin: string; label: string }>>;
+
       // WhisperWoof — Screen context
       whisperwoofGetSelectedText: () => Promise<string | null>;
       whisperwoofDetectScreenCommand: (text: string) => Promise<{ id: string; prompt: string; label: string } | null>;
