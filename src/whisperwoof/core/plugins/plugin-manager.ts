@@ -77,7 +77,7 @@ export class PluginManager {
 
       // Create MCP client
       const client = new Client(
-        { name: 'whisperwoof', version: '1.4.0' },
+        { name: 'whisperwoof', version: '1.5.0' },
         { capabilities: {} }
       );
 

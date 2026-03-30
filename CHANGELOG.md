@@ -3,6 +3,16 @@
 All notable changes to WhisperWoof will be documented in this file.
 WhisperWoof is a fork of OpenWhispr — see below for inherited changes.
 
+## [1.5.0] - 2026-03-30 — Intelligent Voice Interface
+
+Phase 10: 4 features. 624 tests across 38 files. 60 PRs. 71 features total.
+
+### Phase 10: Intelligent Voice Interface
+- **Screen context** — read selected text via Accessibility API, 6 commands (summarize/explain/reply/translate/simplify/bullets)
+- **Agentic actions** — voice-triggered calendar/slack/todoist/notion/email via MCP plugins with LLM param extraction
+- **Conversation memory** — query your voice history by speaking ("what did I say about the budget?")
+- **App automation** — 11 voice commands to control macOS (open/switch/close/volume/dark mode/etc.)
+
 ## [1.4.0] - 2026-03-30 — Structured Capture & Workflows
 
 Phase 9: 4 features. 562 tests across 34 files. 55 PRs. 67 features total.
