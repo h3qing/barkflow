@@ -1854,6 +1854,20 @@ class IPCHandlers {
       }
     });
 
+    // WhisperWoof: App automation
+    ipcMain.handle("whisperwoof-detect-automation", async (_event, text) => {
+      try { const { detectAutomationCommand } = require("../whisperwoof/bridge/app-automation"); return detectAutomationCommand(text); }
+      catch (error) { return null; }
+    });
+    ipcMain.handle("whisperwoof-execute-automation", async (_event, commandId, appName) => {
+      try { const { executeAutomation } = require("../whisperwoof/bridge/app-automation"); return await executeAutomation(commandId, appName); }
+      catch (error) { return { success: false, error: error.message }; }
+    });
+    ipcMain.handle("whisperwoof-get-automation-commands", async () => {
+      try { const { getAutomationCommands } = require("../whisperwoof/bridge/app-automation"); return getAutomationCommands(); }
+      catch (error) { return []; }
+    });
+
     // WhisperWoof: Conversation memory
     ipcMain.handle("whisperwoof-is-memory-query", async (_event, text) => {
       try { const { isMemoryQuery } = require("../whisperwoof/bridge/conversation-memory"); return isMemoryQuery(text); }

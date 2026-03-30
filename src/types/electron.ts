@@ -1266,6 +1266,11 @@ declare global {
       whisperwoofFocusHistory: (options?: { days?: number; limit?: number }) => Promise<any[]>;
       whisperwoofFocusPresets: () => Promise<Array<{ id: string; name: string; durationMin: number; description: string }>>;
 
+      // WhisperWoof — App automation
+      whisperwoofDetectAutomation: (text: string) => Promise<{ id: string; label: string; appName: string | null } | null>;
+      whisperwoofExecuteAutomation: (commandId: string, appName?: string) => Promise<{ success: boolean; output?: string; error?: string }>;
+      whisperwoofGetAutomationCommands: () => Promise<Array<{ id: string; label: string }>>;
+
       // WhisperWoof — Conversation memory
       whisperwoofIsMemoryQuery: (text: string) => Promise<boolean>;
       whisperwoofExtractQueryTopic: (text: string) => Promise<string | null>;

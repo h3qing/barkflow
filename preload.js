@@ -686,6 +686,11 @@ contextBridge.exposeInMainWorld("electronAPI", {
   // WhisperWoof: Usage analytics
   whisperwoofGetAnalytics: (options) => ipcRenderer.invoke("whisperwoof-get-analytics", options),
 
+  // WhisperWoof: App automation
+  whisperwoofDetectAutomation: (text) => ipcRenderer.invoke("whisperwoof-detect-automation", text),
+  whisperwoofExecuteAutomation: (commandId, appName) => ipcRenderer.invoke("whisperwoof-execute-automation", commandId, appName),
+  whisperwoofGetAutomationCommands: () => ipcRenderer.invoke("whisperwoof-get-automation-commands"),
+
   // WhisperWoof: Conversation memory
   whisperwoofIsMemoryQuery: (text) => ipcRenderer.invoke("whisperwoof-is-memory-query", text),
   whisperwoofExtractQueryTopic: (text) => ipcRenderer.invoke("whisperwoof-extract-query-topic", text),
