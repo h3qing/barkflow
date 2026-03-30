@@ -1,143 +1,30 @@
 /**
- * PluginManager
+ * PluginManager — MCP Client Implementation
  *
- * Manages MCP server plugin lifecycles: register, connect (spawn process),
- * execute (JSON-RPC over stdio), and disconnect (graceful shutdown).
+ * Uses the official @modelcontextprotocol/sdk to connect to MCP servers.
+ * Each plugin is an MCP server process. WhisperWoof is the MCP client.
  *
- * Current implementation uses a simplified JSON-RPC 2.0 protocol over stdio.
- * Phase 2 will swap in the real @modelcontextprotocol/sdk:
- *   import { Client } from "@modelcontextprotocol/sdk/client/index.js";
- *   import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+ * Connection: StdioClientTransport spawns the server command and communicates
+ * via JSON-RPC 2.0 over stdin/stdout (the MCP wire protocol).
  */
 
-import { spawn, type ChildProcess } from 'node:child_process';
 import type { PluginConfig, PluginResult, PluginStatus } from './types';
 
-const PROCESS_KILL_TIMEOUT_MS = 5_000;
+// MCP SDK types — dynamic import to avoid breaking if SDK not installed
+type McpClient = {
+  connect: (transport: unknown) => Promise<void>;
+  close: () => Promise<void>;
+  callTool: (params: { name: string; arguments?: Record<string, unknown> }) => Promise<{ content: Array<{ type: string; text?: string }> }>;
+  listTools: () => Promise<{ tools: Array<{ name: string; description?: string }> }>;
+};
 
 interface PluginEntry {
   readonly config: PluginConfig;
-  process: ChildProcess | null;
+  client: McpClient | null;
+  transport: unknown | null;
   connected: boolean;
+  tools: string[];
   error?: string;
-}
-
-/** JSON-RPC 2.0 request envelope. */
-interface JsonRpcRequest {
-  readonly jsonrpc: '2.0';
-  readonly id: number;
-  readonly method: string;
-  readonly params: Record<string, unknown>;
-}
-
-/** JSON-RPC 2.0 response envelope (success or error). */
-interface JsonRpcResponse {
-  readonly jsonrpc: '2.0';
-  readonly id: number;
-  readonly result?: Record<string, unknown>;
-  readonly error?: { readonly code: number; readonly message: string };
-}
-
-let nextRequestId = 1;
-
-function buildRequest(
-  method: string,
-  params: Record<string, unknown>,
-): JsonRpcRequest {
-  const id = nextRequestId;
-  nextRequestId += 1;
-  return { jsonrpc: '2.0', id, method, params };
-}
-
-/**
- * Send a JSON-RPC request to a child process and wait for the matching response.
- * Rejects if the process exits, errors, or a timeout is exceeded.
- */
-function sendRequest(
-  child: ChildProcess,
-  request: JsonRpcRequest,
-  timeoutMs = 30_000,
-): Promise<JsonRpcResponse> {
-  return new Promise<JsonRpcResponse>((resolve, reject) => {
-    const timer = setTimeout(() => {
-      cleanup();
-      reject(new Error(`Plugin request timed out after ${timeoutMs}ms`));
-    }, timeoutMs);
-
-    function cleanup() {
-      clearTimeout(timer);
-      child.stdout?.removeListener('data', onData);
-      child.removeListener('error', onError);
-      child.removeListener('close', onClose);
-    }
-
-    let buffer = '';
-
-    function onData(chunk: Buffer) {
-      buffer += chunk.toString('utf-8');
-
-      // Attempt to parse each complete line as a JSON-RPC response
-      const lines = buffer.split('\n');
-      buffer = lines.pop() ?? '';
-
-      for (const line of lines) {
-        const trimmed = line.trim();
-        if (!trimmed) continue;
-        try {
-          const parsed: JsonRpcResponse = JSON.parse(trimmed);
-          if (parsed.id === request.id) {
-            cleanup();
-            resolve(parsed);
-            return;
-          }
-        } catch {
-          // Not valid JSON — ignore (server logs, etc.)
-        }
-      }
-    }
-
-    function onError(err: Error) {
-      cleanup();
-      reject(new Error(`Plugin process error: ${err.message}`));
-    }
-
-    function onClose(code: number | null) {
-      cleanup();
-      reject(new Error(`Plugin process exited with code ${code ?? 'unknown'}`));
-    }
-
-    child.stdout?.on('data', onData);
-    child.on('error', onError);
-    child.on('close', onClose);
-
-    const payload = JSON.stringify(request) + '\n';
-    child.stdin?.write(payload);
-  });
-}
-
-/**
- * Gracefully terminate a child process: close stdin, SIGTERM, then SIGKILL.
- * Mirrors the @modelcontextprotocol/sdk shutdown sequence.
- */
-function terminateProcess(child: ChildProcess): Promise<void> {
-  return new Promise<void>((resolve) => {
-    if (!child.pid || child.killed) {
-      resolve();
-      return;
-    }
-
-    const forceKill = setTimeout(() => {
-      child.kill('SIGKILL');
-    }, PROCESS_KILL_TIMEOUT_MS);
-
-    child.once('close', () => {
-      clearTimeout(forceKill);
-      resolve();
-    });
-
-    child.stdin?.end();
-    child.kill('SIGTERM');
-  });
 }
 
 export class PluginManager {
@@ -145,7 +32,6 @@ export class PluginManager {
 
   /**
    * Register a plugin config. Does not connect yet.
-   * Throws if the id is already registered or required fields are missing.
    */
   registerPlugin(config: PluginConfig): void {
     this.validateConfig(config);
@@ -156,74 +42,106 @@ export class PluginManager {
 
     this.plugins.set(config.id, {
       config: { ...config },
-      process: null,
+      client: null,
+      transport: null,
       connected: false,
+      tools: [],
     });
   }
 
   /**
-   * Connect to a plugin's MCP server by spawning its command as a child process.
-   * Throws if the plugin is not registered or already connected.
+   * Connect to a plugin's MCP server using the real MCP SDK.
+   * Spawns the command as a child process with StdioClientTransport.
    */
   async connectPlugin(pluginId: string): Promise<void> {
     const entry = this.getEntryOrThrow(pluginId);
 
-    if (entry.connected && entry.process) {
+    if (entry.connected && entry.client) {
       throw new Error(`Plugin "${pluginId}" is already connected`);
     }
 
     const { config } = entry;
 
-    const child = spawn(config.command, [...(config.args ?? [])], {
-      stdio: ['pipe', 'pipe', 'pipe'],
-      env: { ...process.env, ...(config.env ?? {}) },
-    });
+    try {
+      // Dynamic import of MCP SDK (avoids compile-time dependency issues)
+      const { Client } = await import('@modelcontextprotocol/sdk/client/index.js');
+      const { StdioClientTransport } = await import('@modelcontextprotocol/sdk/client/stdio.js');
 
-    // Wait for the process to either start or fail immediately
-    await new Promise<void>((resolve, reject) => {
-      const onSpawnError = (err: Error) => {
-        cleanup();
-        reject(new Error(`Failed to start plugin "${pluginId}": ${err.message}`));
-      };
-      const onSpawn = () => {
-        cleanup();
-        resolve();
-      };
-      function cleanup() {
-        child.removeListener('error', onSpawnError);
-        child.removeListener('spawn', onSpawn);
+      // Create transport — spawns the MCP server process
+      const [command, ...args] = config.command.split(/\s+/);
+      const transport = new StdioClientTransport({
+        command,
+        args: [...args, ...(config.args ?? [])],
+        env: { ...process.env, ...(config.env ?? {}) } as Record<string, string>,
+      });
+
+      // Create MCP client
+      const client = new Client(
+        { name: 'whisperwoof', version: '0.9.0' },
+        { capabilities: {} }
+      );
+
+      // Connect
+      await client.connect(transport);
+
+      // List available tools
+      let tools: string[] = [];
+      try {
+        const toolList = await client.listTools();
+        tools = toolList.tools.map((t: { name: string }) => t.name);
+      } catch {
+        // Some servers may not support listTools
       }
-      child.once('error', onSpawnError);
-      child.once('spawn', onSpawn);
-    });
 
-    // Update entry — new object keeps config immutable
-    this.plugins.set(pluginId, {
-      config: entry.config,
-      process: child,
-      connected: true,
-    });
+      this.plugins.set(pluginId, {
+        config: entry.config,
+        client: client as unknown as McpClient,
+        transport,
+        connected: true,
+        tools,
+      });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Connection failed';
+      this.plugins.set(pluginId, {
+        config: entry.config,
+        client: null,
+        transport: null,
+        connected: false,
+        tools: [],
+        error: message,
+      });
+      throw new Error(`Failed to connect plugin "${pluginId}": ${message}`);
+    }
   }
 
-  /** Disconnect a plugin by terminating its child process. No-op if not connected. */
+  /**
+   * Disconnect a plugin by closing the MCP client connection.
+   */
   async disconnectPlugin(pluginId: string): Promise<void> {
     const entry = this.plugins.get(pluginId);
     if (!entry) return;
 
-    if (entry.process) {
-      await terminateProcess(entry.process);
+    if (entry.client) {
+      try {
+        await entry.client.close();
+      } catch {
+        // Ignore close errors
+      }
     }
 
     this.plugins.set(pluginId, {
       config: entry.config,
-      process: null,
+      client: null,
+      transport: null,
       connected: false,
+      tools: [],
     });
   }
 
   /**
-   * Send text to a plugin for execution via JSON-RPC over stdio.
-   * Returns a PluginResult with success/failure and optional message or URL.
+   * Execute a tool on a connected plugin via MCP's callTool method.
+   * If the plugin has a tool named "execute", uses that.
+   * Otherwise uses the first available tool.
    */
   async executePlugin(
     pluginId: string,
@@ -236,30 +154,47 @@ export class PluginManager {
       return { success: false, error: `Plugin not registered: "${pluginId}"` };
     }
 
-    if (!entry.connected || !entry.process) {
+    if (!entry.connected || !entry.client) {
       return { success: false, error: `Plugin "${pluginId}" is not connected` };
     }
 
     try {
-      const request = buildRequest('execute', { text, ...(metadata ?? {}) });
-      const response = await sendRequest(entry.process, request);
+      // Find the best tool to call
+      const toolName = entry.tools.includes('execute')
+        ? 'execute'
+        : entry.tools[0] ?? 'execute';
 
-      if (response.error) {
-        return { success: false, error: response.error.message };
-      }
+      const result = await entry.client.callTool({
+        name: toolName,
+        arguments: { text, ...(metadata ?? {}) },
+      });
+
+      // Extract text from MCP tool result
+      const textContent = result.content
+        .filter((c: { type: string }) => c.type === 'text')
+        .map((c: { text?: string }) => c.text ?? '')
+        .join('\n');
 
       return {
         success: true,
-        message: (response.result?.message as string) ?? undefined,
-        url: (response.result?.url as string) ?? undefined,
+        message: textContent || 'Action completed',
       };
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Unknown execution error';
+      const message = err instanceof Error ? err.message : 'Execution failed';
       return { success: false, error: message };
     }
   }
 
-  /** Get the connection status of every registered plugin. */
+  /**
+   * Get available tools for a connected plugin.
+   */
+  getPluginTools(pluginId: string): readonly string[] {
+    return this.plugins.get(pluginId)?.tools ?? [];
+  }
+
+  /**
+   * Get connection status of every registered plugin.
+   */
   getStatuses(): readonly PluginStatus[] {
     return Array.from(this.plugins.values()).map((entry) => ({
       id: entry.config.id,
@@ -269,13 +204,15 @@ export class PluginManager {
     }));
   }
 
-  /** Disconnect all plugins. Safe to call multiple times. */
+  /**
+   * Disconnect all plugins.
+   */
   async disconnectAll(): Promise<void> {
     const ids = Array.from(this.plugins.keys());
     await Promise.all(ids.map((id) => this.disconnectPlugin(id)));
   }
 
-  // --- Private helpers ---
+  // --- Private ---
 
   private getEntryOrThrow(pluginId: string): PluginEntry {
     const entry = this.plugins.get(pluginId);
@@ -286,14 +223,8 @@ export class PluginManager {
   }
 
   private validateConfig(config: PluginConfig): void {
-    if (!config.id) {
-      throw new Error('Plugin config must have an id');
-    }
-    if (!config.name) {
-      throw new Error('Plugin config must have a name');
-    }
-    if (!config.command) {
-      throw new Error('Plugin config must have a command');
-    }
+    if (!config.id) throw new Error('Plugin config must have an id');
+    if (!config.name) throw new Error('Plugin config must have a name');
+    if (!config.command) throw new Error('Plugin config must have a command');
   }
 }
