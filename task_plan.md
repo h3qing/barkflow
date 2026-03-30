@@ -74,8 +74,8 @@ Pre-release (v1.0 prep)
 - [x] BYOM for LLM polish (Ollama, OpenAI, Anthropic, Groq — provider abstraction)
 - [x] Adaptive learning (few-shot style examples from user edits, injected into polish prompt)
 - [x] Voice snippets (trigger phrases → expand to saved text blocks, exact/prefix/fuzzy matching)
-- [ ] Mobile companion (iOS app or Telegram bot for voice capture on the go)
-- **Status:** in_progress
+- [x] Mobile companion (Telegram bot — voice capture on mobile, inbox sync to desktop)
+- **Status:** complete
 - **Depends on:** Phase 3 complete ✓
 - **Competitors:** Wispr Flow, SuperWhisper, Aqua Voice, DictaFlow, VoiceInk, Willow Voice
 

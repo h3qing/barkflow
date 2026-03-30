@@ -259,6 +259,14 @@ async function initializeWhisperWoof() {
 
   startClipboardMonitor();
 
+  // Start Telegram companion sync (polls inbox file for mobile-captured entries)
+  try {
+    const { startTelegramSync } = require("./telegram-sync");
+    startTelegramSync(saveWhisperWoofEntry);
+  } catch (err) {
+    debugLogger.debug("[WhisperWoof] Telegram sync init skipped", { error: err.message });
+  }
+
   initialized = true;
   debugLogger.log("[WhisperWoof] Initialized (Phase 1a — StorageProvider ready, clipboard monitoring active)");
 }
@@ -269,6 +277,14 @@ async function shutdownWhisperWoof() {
   debugLogger.log("[WhisperWoof] Shutting down...");
 
   stopClipboardMonitor();
+
+  // Stop Telegram sync
+  try {
+    const { stopTelegramSync } = require("./telegram-sync");
+    stopTelegramSync();
+  } catch {
+    // Ignore — may not have started
+  }
 
   // Close the WhisperWoof database connection
   if (whisperwoofDb) {
