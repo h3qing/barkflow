@@ -1854,6 +1854,24 @@ class IPCHandlers {
       }
     });
 
+    // WhisperWoof: Conversation memory
+    ipcMain.handle("whisperwoof-is-memory-query", async (_event, text) => {
+      try { const { isMemoryQuery } = require("../whisperwoof/bridge/conversation-memory"); return isMemoryQuery(text); }
+      catch (error) { return false; }
+    });
+    ipcMain.handle("whisperwoof-extract-query-topic", async (_event, text) => {
+      try { const { extractQueryTopic } = require("../whisperwoof/bridge/conversation-memory"); return extractQueryTopic(text); }
+      catch (error) { return null; }
+    });
+    ipcMain.handle("whisperwoof-answer-memory-query", async (_event, query, entries, options) => {
+      try { const { answerMemoryQuery } = require("../whisperwoof/bridge/conversation-memory"); return await answerMemoryQuery(query, entries, options || {}); }
+      catch (error) { return { success: false, error: error.message }; }
+    });
+    ipcMain.handle("whisperwoof-get-memory-examples", async () => {
+      try { const { getMemoryQueryExamples } = require("../whisperwoof/bridge/conversation-memory"); return getMemoryQueryExamples(); }
+      catch (error) { return []; }
+    });
+
     // WhisperWoof: Agentic actions
     ipcMain.handle("whisperwoof-detect-action", async (_event, text) => {
       try { const { detectActionIntent } = require("../whisperwoof/bridge/agentic-actions"); return detectActionIntent(text); }
