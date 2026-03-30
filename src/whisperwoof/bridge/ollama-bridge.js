@@ -16,6 +16,7 @@ const { getPresetPrompt, DEFAULT_PRESET_ID } = require("./polish-presets");
 const { detectContextPreset } = require("./context-detector");
 const { polishWithProvider } = require("./llm-providers");
 const { buildStylePrompt } = require("./style-learner");
+const { hasBacktrack, applyBacktrackCorrection } = require("./backtrack");
 
 const DEFAULT_BASE_URL = "http://localhost:11434";
 
@@ -61,8 +62,27 @@ async function polishWithOllama(text, options = {}) {
     return { success: true, text: text || "", polished: false };
   }
 
+  // Backtrack correction: resolve self-corrections before polishing
+  let textToPolish = text;
+  let backtrackApplied = false;
+
+  if (options.backtrack !== false && hasBacktrack(text)) {
+    const backtrackResult = await applyBacktrackCorrection(text, {
+      baseUrl: options.baseUrl || DEFAULT_BASE_URL,
+      model: options.model,
+      timeoutMs: options.timeoutMs,
+    });
+    if (backtrackResult.corrected) {
+      textToPolish = backtrackResult.text;
+      backtrackApplied = true;
+      debugLogger.info("[WhisperWoof] Backtrack pre-pass completed", {
+        signals: backtrackResult.signals,
+      });
+    }
+  }
+
   // Dispatch to the configured provider (defaults to Ollama)
-  const result = await polishWithProvider(text, systemPrompt, {
+  const result = await polishWithProvider(textToPolish, systemPrompt, {
     provider: options.provider || "ollama",
     model: options.model,
     apiKey: options.apiKey,
@@ -74,6 +94,7 @@ async function polishWithOllama(text, options = {}) {
     success: true,
     text: result.text,
     polished: result.polished,
+    backtrackApplied,
     elapsed: result.elapsed,
     preset: presetId,
     provider: result.provider,
