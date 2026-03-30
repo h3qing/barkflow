@@ -686,6 +686,15 @@ contextBridge.exposeInMainWorld("electronAPI", {
   // WhisperWoof: Usage analytics
   whisperwoofGetAnalytics: (options) => ipcRenderer.invoke("whisperwoof-get-analytics", options),
 
+  // WhisperWoof: Keybinding customization
+  whisperwoofGetKeybindings: () => ipcRenderer.invoke("whisperwoof-get-keybindings"),
+  whisperwoofRebindAction: (actionId, newKey) => ipcRenderer.invoke("whisperwoof-rebind-action", actionId, newKey),
+  whisperwoofResetKeybinding: (actionId) => ipcRenderer.invoke("whisperwoof-reset-keybinding", actionId),
+  whisperwoofResetAllKeybindings: () => ipcRenderer.invoke("whisperwoof-reset-all-keybindings"),
+  whisperwoofExportKeybindings: () => ipcRenderer.invoke("whisperwoof-export-keybindings"),
+  whisperwoofImportKeybindings: (data) => ipcRenderer.invoke("whisperwoof-import-keybindings", data),
+  whisperwoofGetKeybindingCategories: () => ipcRenderer.invoke("whisperwoof-get-keybinding-categories"),
+
   // WhisperWoof: Privacy lock
   whisperwoofPrivacyEnable: (options) => ipcRenderer.invoke("whisperwoof-privacy-enable", options),
   whisperwoofPrivacyDisable: () => ipcRenderer.invoke("whisperwoof-privacy-disable"),

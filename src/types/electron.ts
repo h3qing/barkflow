@@ -1266,6 +1266,15 @@ declare global {
       whisperwoofFocusHistory: (options?: { days?: number; limit?: number }) => Promise<any[]>;
       whisperwoofFocusPresets: () => Promise<Array<{ id: string; name: string; durationMin: number; description: string }>>;
 
+      // WhisperWoof — Keybinding customization
+      whisperwoofGetKeybindings: () => Promise<Array<{ actionId: string; key: string; label: string; category: string; isCustom: boolean; defaultKey: string }>>;
+      whisperwoofRebindAction: (actionId: string, newKey: string) => Promise<{ success: boolean; error?: string; conflict?: string }>;
+      whisperwoofResetKeybinding: (actionId: string) => Promise<{ success: boolean; key?: string; error?: string }>;
+      whisperwoofResetAllKeybindings: () => Promise<{ success: boolean }>;
+      whisperwoofExportKeybindings: () => Promise<any>;
+      whisperwoofImportKeybindings: (data: any) => Promise<{ success: boolean; imported?: number; errors?: string[]; error?: string }>;
+      whisperwoofGetKeybindingCategories: () => Promise<Array<{ id: string; name: string; description: string }>>;
+
       // WhisperWoof — Privacy lock
       whisperwoofPrivacyEnable: (options?: { lockedBy?: string }) => Promise<{ success: boolean; alreadyLocked?: boolean; error?: string }>;
       whisperwoofPrivacyDisable: () => Promise<{ success: boolean; alreadyUnlocked?: boolean; durationMin?: number; error?: string }>;
