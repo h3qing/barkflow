@@ -1266,6 +1266,15 @@ declare global {
       whisperwoofFocusHistory: (options?: { days?: number; limit?: number }) => Promise<any[]>;
       whisperwoofFocusPresets: () => Promise<Array<{ id: string; name: string; durationMin: number; description: string }>>;
 
+      // WhisperWoof — Privacy lock
+      whisperwoofPrivacyEnable: (options?: { lockedBy?: string }) => Promise<{ success: boolean; alreadyLocked?: boolean; error?: string }>;
+      whisperwoofPrivacyDisable: () => Promise<{ success: boolean; alreadyUnlocked?: boolean; durationMin?: number; error?: string }>;
+      whisperwoofPrivacyState: () => Promise<{ locked: boolean; lockedAt: string | null; lockedBy: string | null; autoLockOnBattery: boolean; autoLockOnVpn: boolean; durationMin: number }>;
+      whisperwoofPrivacyCheckUrl: (url: string) => Promise<boolean>;
+      whisperwoofPrivacyCheckProvider: (providerId: string) => Promise<boolean>;
+      whisperwoofPrivacyOverrides: () => Promise<{ provider: string; useLocalWhisper: boolean; cloudSttDisabled: boolean; telegramSyncPaused: boolean; analyticsDisabled: boolean; pluginNetworkBlocked: boolean } | null>;
+      whisperwoofPrivacySettings: (updates: { autoLockOnBattery?: boolean; autoLockOnVpn?: boolean; networkBlockList?: string[] }) => Promise<{ success: boolean; error?: string }>;
+
       // WhisperWoof — Entry tagging
       whisperwoofGetTags: () => Promise<Array<{ id: string; name: string; color: string; createdAt: string; entryCount: number }>>;
       whisperwoofCreateTag: (name: string, color?: string) => Promise<{ success: boolean; tag?: any; error?: string }>;

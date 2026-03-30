@@ -1854,6 +1854,56 @@ class IPCHandlers {
       }
     });
 
+    // WhisperWoof: Privacy lock
+    ipcMain.handle("whisperwoof-privacy-enable", async (_event, options) => {
+      try {
+        const { enablePrivacyLock } = require("../whisperwoof/bridge/privacy-lock");
+        return enablePrivacyLock(options || {});
+      } catch (error) { return { success: false, error: error.message }; }
+    });
+
+    ipcMain.handle("whisperwoof-privacy-disable", async () => {
+      try {
+        const { disablePrivacyLock } = require("../whisperwoof/bridge/privacy-lock");
+        return disablePrivacyLock();
+      } catch (error) { return { success: false, error: error.message }; }
+    });
+
+    ipcMain.handle("whisperwoof-privacy-state", async () => {
+      try {
+        const { getPrivacyState } = require("../whisperwoof/bridge/privacy-lock");
+        return getPrivacyState();
+      } catch (error) { return { locked: false, lockedAt: null, lockedBy: null, durationMin: 0 }; }
+    });
+
+    ipcMain.handle("whisperwoof-privacy-check-url", async (_event, url) => {
+      try {
+        const { isUrlAllowed } = require("../whisperwoof/bridge/privacy-lock");
+        return isUrlAllowed(url);
+      } catch (error) { return true; }
+    });
+
+    ipcMain.handle("whisperwoof-privacy-check-provider", async (_event, providerId) => {
+      try {
+        const { isProviderAllowed } = require("../whisperwoof/bridge/privacy-lock");
+        return isProviderAllowed(providerId);
+      } catch (error) { return true; }
+    });
+
+    ipcMain.handle("whisperwoof-privacy-overrides", async () => {
+      try {
+        const { getPrivacyOverrides } = require("../whisperwoof/bridge/privacy-lock");
+        return getPrivacyOverrides();
+      } catch (error) { return null; }
+    });
+
+    ipcMain.handle("whisperwoof-privacy-settings", async (_event, updates) => {
+      try {
+        const { updatePrivacySettings } = require("../whisperwoof/bridge/privacy-lock");
+        return updatePrivacySettings(updates);
+      } catch (error) { return { success: false, error: error.message }; }
+    });
+
     // WhisperWoof: Entry tagging
     ipcMain.handle("whisperwoof-get-tags", async () => {
       try {
