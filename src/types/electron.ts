@@ -1257,6 +1257,15 @@ declare global {
       whisperwoofStreamingFormat: (text: string, maxChars?: number) => Promise<string>;
       whisperwoofStreamingDiff: (oldText: string, newText: string) => Promise<{ unchanged: number; changed: number; added: number; newWords: string[] }>;
 
+      // WhisperWoof — Focus mode
+      whisperwoofFocusStart: (options?: { durationMin?: number; goal?: string; presetId?: string }) => Promise<{ success: boolean; session?: any; error?: string }>;
+      whisperwoofFocusEnd: (summary?: string) => Promise<{ success: boolean; session?: any; error?: string }>;
+      whisperwoofFocusActive: () => Promise<{ id: string; startedAt: string; durationMin: number; goal: string | null; entryIds: string[]; wordCount: number; elapsedMin: number; remainingMin: number; isExpired: boolean } | null>;
+      whisperwoofFocusRecordEntry: (entryId: string, wordCount: number) => Promise<boolean>;
+      whisperwoofFocusStats: () => Promise<{ totalSessions: number; totalMinutes: number; totalWords: number; totalEntries: number; avgDuration: number; completionRate: number; currentStreak: number }>;
+      whisperwoofFocusHistory: (options?: { days?: number; limit?: number }) => Promise<any[]>;
+      whisperwoofFocusPresets: () => Promise<Array<{ id: string; name: string; durationMin: number; description: string }>>;
+
       // WhisperWoof — Vibe coding
       whisperwoofGetCodingPrompt: (bundleId: string, spokenText: string) => Promise<{ prompt: string | null; mode: 'code' | 'shell' | 'prose' }>;
 

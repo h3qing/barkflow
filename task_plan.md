@@ -96,6 +96,14 @@ v1.1.0 shipped — all 6 phases complete (39 PRs, 360 tests)
 - **Status:** complete
 - **Depends on:** Phase 5 complete ✓
 
+### Phase 7: Unique Differentiators (post-v1.1)
+- [x] Focus mode / voice sprints (timed sessions, entry tracking, completion stats, 5 presets)
+- [ ] Entry tagging / labels (user-defined tags for entries, filter by tag, bulk tag)
+- [ ] Privacy lock mode (disable all network, Ollama-only, no telemetry, visual indicator)
+- [ ] Keyboard shortcut customization (rebind all hotkeys, export/import keybindings)
+- **Status:** in_progress
+- **Depends on:** Phase 6 complete ✓
+
 ## Key Questions
 1. Ollama latency: Can Llama 3.2 3B polish <1s on M1? (Benchmark in Phase 1a)
 2. Fn key reliability: Does Globe key work on target macOS version? (Validate in Phase 0)
