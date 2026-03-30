@@ -3,6 +3,31 @@
 All notable changes to WhisperWoof will be documented in this file.
 WhisperWoof is a fork of OpenWhispr — see below for inherited changes.
 
+## [1.1.0] - 2026-03-30 — Competitive Parity + Power User + Advanced
+
+15 features across 3 phases. 360 tests. Full competitive parity with Wispr Flow, SuperWhisper, Aqua Voice, DictaFlow, VoiceInk, and Willow Voice.
+
+### Phase 4: Competitive Parity
+- **Context-aware per-app polish** — auto-detects frontmost app (40+ apps), selects optimal polish preset (Slack → casual, VS Code → structured, Mail → professional)
+- **Voice editing commands** — 10 commands (rewrite, translate, summarize, fix, shorten, expand, simplify, make [adjective], format as list, format as email)
+- **BYOM (Bring Your Own Model)** — 4 LLM providers: Ollama (local), OpenAI, Anthropic, Groq
+- **Adaptive learning** — few-shot style examples from user edits, injected into polish prompt
+- **Voice snippets** — trigger phrases expand to saved text (exact/prefix/fuzzy matching)
+- **Telegram companion** — mobile voice capture via Telegram bot, synced to desktop inbox
+
+### Phase 5: Power User
+- **Backtrack correction** — resolves mid-sentence self-corrections ("no wait", "I mean", "scratch that")
+- **Custom vocabulary** — categories, pronunciation alternatives, STT hints, bulk import/export
+- **Voice Activity Detection** — RMS energy analysis, auto-stop on silence, audio trimming
+- **Settings export/import** — portable config bundle with API key stripping
+- **Usage analytics** — entries/day, source breakdown, polish stats, top commands, streaks, busiest hours
+
+### Phase 6: Advanced
+- **Multi-language auto-detection** — 22 languages via script + word-frequency heuristics
+- **Vibe coding** — voice-to-code for IDEs (12 apps) and shell for terminals (5 apps)
+- **Intent capture** — extracts clear intent from rambling speech (6 signal categories, 5 output modes)
+- **Streaming partial results** — immutable session lifecycle, word-level diffing, WPM tracking
+
 ## [1.0.0] - 2026-03-30 — First Public Release
 
 ### Added

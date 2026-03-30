@@ -4,7 +4,7 @@
 Fork OpenWhispr and build WhisperWoof: a voice-first personal automation tool that transcribes, polishes (local LLM), routes (hotkey-driven), and stores (unified capture layer) voice and clipboard input.
 
 ## Current Phase
-Pre-release (v1.0 prep)
+v1.1.0 shipped — all 6 phases complete (39 PRs, 360 tests)
 
 ## Phases
 
