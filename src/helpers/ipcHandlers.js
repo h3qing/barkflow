@@ -1854,6 +1854,28 @@ class IPCHandlers {
       }
     });
 
+    // WhisperWoof: Recurring capture
+    ipcMain.handle("whisperwoof-get-schedules", async () => {
+      try { const { getSchedules } = require("../whisperwoof/bridge/recurring-capture"); return getSchedules(); }
+      catch (error) { return []; }
+    });
+    ipcMain.handle("whisperwoof-add-schedule", async (_event, config) => {
+      try { const { addSchedule } = require("../whisperwoof/bridge/recurring-capture"); return addSchedule(config); }
+      catch (error) { return { success: false, error: error.message }; }
+    });
+    ipcMain.handle("whisperwoof-update-schedule", async (_event, id, updates) => {
+      try { const { updateSchedule } = require("../whisperwoof/bridge/recurring-capture"); return updateSchedule(id, updates); }
+      catch (error) { return { success: false, error: error.message }; }
+    });
+    ipcMain.handle("whisperwoof-remove-schedule", async (_event, id) => {
+      try { const { removeSchedule } = require("../whisperwoof/bridge/recurring-capture"); return removeSchedule(id); }
+      catch (error) { return { success: false, error: error.message }; }
+    });
+    ipcMain.handle("whisperwoof-get-schedule-presets", async () => {
+      try { const { getPresets } = require("../whisperwoof/bridge/recurring-capture"); return getPresets(); }
+      catch (error) { return []; }
+    });
+
     // WhisperWoof: Smart reply
     ipcMain.handle("whisperwoof-draft-reply", async (_event, text, options) => {
       try { const { draftReply } = require("../whisperwoof/bridge/smart-reply"); return await draftReply(text, options || {}); }
