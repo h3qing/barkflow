@@ -1832,6 +1832,17 @@ class IPCHandlers {
       }
     });
 
+    // WhisperWoof: Voice Activity Detection
+    ipcMain.handle("whisperwoof-get-vad-config", async () => {
+      try {
+        const { getVadConfig } = require("../whisperwoof/bridge/vad");
+        return getVadConfig();
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] get-vad-config failed: ${error.message}`);
+        return {};
+      }
+    });
+
     // WhisperWoof: Custom vocabulary
     ipcMain.handle("whisperwoof-get-vocabulary", async (_event, options) => {
       try {

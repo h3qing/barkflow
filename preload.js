@@ -680,6 +680,9 @@ contextBridge.exposeInMainWorld("electronAPI", {
   // WhisperWoof: Backtrack correction
   whisperwoofDetectBacktrack: (text) => ipcRenderer.invoke("whisperwoof-detect-backtrack", text),
 
+  // WhisperWoof: Voice Activity Detection
+  whisperwoofGetVadConfig: () => ipcRenderer.invoke("whisperwoof-get-vad-config"),
+
   // WhisperWoof: Custom vocabulary
   whisperwoofGetVocabulary: (options) => ipcRenderer.invoke("whisperwoof-get-vocabulary", options),
   whisperwoofAddWord: (word, options) => ipcRenderer.invoke("whisperwoof-add-word", word, options),

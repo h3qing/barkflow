@@ -1222,6 +1222,9 @@ declare global {
       whisperwoofDeleteProject: (id: string) => Promise<void>;
       whisperwoofGetProjectEntries: (projectId: string, limit: number) => Promise<any[]>;
 
+      // WhisperWoof — Voice Activity Detection
+      whisperwoofGetVadConfig: () => Promise<{ silenceThreshold: number; autoStopSilenceMs: number; minRecordingMs: number; frameSizeSamples: number; trimPaddingMs: number }>;
+
       // WhisperWoof — Custom vocabulary
       whisperwoofGetVocabulary: (options?: { category?: string; search?: string; sortBy?: string }) => Promise<Array<{ id: string; word: string; category: string; alternatives: string[]; createdAt: string; source: string; usageCount: number }>>;
       whisperwoofAddWord: (word: string, options?: { category?: string; alternatives?: string[]; source?: string }) => Promise<{ success: boolean; entry?: any; error?: string }>;
