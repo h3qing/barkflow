@@ -3,6 +3,21 @@
 All notable changes to WhisperWoof will be documented in this file.
 WhisperWoof is a fork of OpenWhispr — see below for inherited changes.
 
+## [1.0.0] - 2026-03-30 — First Public Release
+
+### Added
+- MCP plugin system with @modelcontextprotocol/sdk v1.28.0
+- 3 first-party MCP plugins: Todoist, Notion, Slack
+- Plugin permission model (network allowlist, data type filtering)
+- Project → MCP plugin dispatch (bind projects, send entries to integrations)
+- Plugin management UI (enable/disable, hotkey binding)
+- 109 tests across 7 test files (up from 98)
+
+### Changed
+- Version bump to 1.0.0
+- Phase 2 (MCP Plugin System) complete
+- Phase 3 (Polish & Ship) complete
+
 ## [0.9.0] - 2026-03-30 — Pre-release
 
 ### Added
