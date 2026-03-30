@@ -1266,6 +1266,11 @@ declare global {
       whisperwoofFocusHistory: (options?: { days?: number; limit?: number }) => Promise<any[]>;
       whisperwoofFocusPresets: () => Promise<Array<{ id: string; name: string; durationMin: number; description: string }>>;
 
+      // WhisperWoof — Smart reply
+      whisperwoofDraftReply: (text: string, options?: { mode?: string; bundleId?: string }) => Promise<{ success: boolean; draft?: string; mode?: string; error?: string }>;
+      whisperwoofIsReplyIntent: (text: string) => Promise<boolean>;
+      whisperwoofGetReplyModes: () => Promise<Array<{ id: string; name: string }>>;
+
       // WhisperWoof — Entry templates
       whisperwoofGetTemplates: () => Promise<any[]>;
       whisperwoofCreateTemplate: (config: any) => Promise<{ success: boolean; template?: any; error?: string }>;

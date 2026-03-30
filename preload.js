@@ -686,6 +686,11 @@ contextBridge.exposeInMainWorld("electronAPI", {
   // WhisperWoof: Usage analytics
   whisperwoofGetAnalytics: (options) => ipcRenderer.invoke("whisperwoof-get-analytics", options),
 
+  // WhisperWoof: Smart reply
+  whisperwoofDraftReply: (text, options) => ipcRenderer.invoke("whisperwoof-draft-reply", text, options),
+  whisperwoofIsReplyIntent: (text) => ipcRenderer.invoke("whisperwoof-is-reply-intent", text),
+  whisperwoofGetReplyModes: () => ipcRenderer.invoke("whisperwoof-get-reply-modes"),
+
   // WhisperWoof: Entry templates
   whisperwoofGetTemplates: () => ipcRenderer.invoke("whisperwoof-get-templates"),
   whisperwoofCreateTemplate: (config) => ipcRenderer.invoke("whisperwoof-create-template", config),

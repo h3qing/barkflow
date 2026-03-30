@@ -1854,6 +1854,20 @@ class IPCHandlers {
       }
     });
 
+    // WhisperWoof: Smart reply
+    ipcMain.handle("whisperwoof-draft-reply", async (_event, text, options) => {
+      try { const { draftReply } = require("../whisperwoof/bridge/smart-reply"); return await draftReply(text, options || {}); }
+      catch (error) { return { success: false, error: error.message }; }
+    });
+    ipcMain.handle("whisperwoof-is-reply-intent", async (_event, text) => {
+      try { const { isReplyIntent } = require("../whisperwoof/bridge/smart-reply"); return isReplyIntent(text); }
+      catch (error) { return false; }
+    });
+    ipcMain.handle("whisperwoof-get-reply-modes", async () => {
+      try { const { getReplyModes } = require("../whisperwoof/bridge/smart-reply"); return getReplyModes(); }
+      catch (error) { return []; }
+    });
+
     // WhisperWoof: Entry templates
     ipcMain.handle("whisperwoof-get-templates", async () => {
       try { const { getAllTemplates } = require("../whisperwoof/bridge/entry-templates"); return getAllTemplates(); }
