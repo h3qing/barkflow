@@ -1854,6 +1854,37 @@ class IPCHandlers {
       }
     });
 
+    // WhisperWoof: Intent capture
+    ipcMain.handle("whisperwoof-detect-rambling", async (_event, text) => {
+      try {
+        const { detectRambling } = require("../whisperwoof/bridge/intent-capture");
+        return detectRambling(text);
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] detect-rambling failed: ${error.message}`);
+        return { score: 0, signals: {}, isRambling: false };
+      }
+    });
+
+    ipcMain.handle("whisperwoof-extract-intent", async (_event, text, options) => {
+      try {
+        const { extractIntent } = require("../whisperwoof/bridge/intent-capture");
+        return await extractIntent(text, options || {});
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] extract-intent failed: ${error.message}`);
+        return { text, mode: "auto", ramblingScore: 0, extracted: false, error: error.message };
+      }
+    });
+
+    ipcMain.handle("whisperwoof-get-intent-modes", async () => {
+      try {
+        const { getOutputModes } = require("../whisperwoof/bridge/intent-capture");
+        return getOutputModes();
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] get-intent-modes failed: ${error.message}`);
+        return [];
+      }
+    });
+
     // WhisperWoof: Vibe coding
     ipcMain.handle("whisperwoof-get-coding-prompt", async (_event, bundleId, spokenText) => {
       try {
