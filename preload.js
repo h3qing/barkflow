@@ -686,6 +686,11 @@ contextBridge.exposeInMainWorld("electronAPI", {
   // WhisperWoof: Usage analytics
   whisperwoofGetAnalytics: (options) => ipcRenderer.invoke("whisperwoof-get-analytics", options),
 
+  // WhisperWoof: Daily digest
+  whisperwoofCreateDigest: (options) => ipcRenderer.invoke("whisperwoof-create-digest", options),
+  whisperwoofGetDigestHistory: (limit) => ipcRenderer.invoke("whisperwoof-get-digest-history", limit),
+  whisperwoofGetTodayEntriesCount: () => ipcRenderer.invoke("whisperwoof-get-today-entries-count"),
+
   // WhisperWoof: Keybinding customization
   whisperwoofGetKeybindings: () => ipcRenderer.invoke("whisperwoof-get-keybindings"),
   whisperwoofRebindAction: (actionId, newKey) => ipcRenderer.invoke("whisperwoof-rebind-action", actionId, newKey),

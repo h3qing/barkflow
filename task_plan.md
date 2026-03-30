@@ -104,6 +104,14 @@ v1.1.0 shipped — all 6 phases complete (39 PRs, 360 tests)
 - **Status:** complete
 - **Depends on:** Phase 6 complete ✓
 
+### Phase 8: AI Intelligence Layer (post-v1.2)
+- [x] Daily/weekly AI digest (entry aggregation, source breakdown, LLM-generated summary with action items/decisions/topics)
+- [ ] Webhook integration (send entries to external services via HTTP webhooks, Zapier/n8n compatible)
+- [ ] Smart auto-tagging (LLM analyzes entry content, suggests/applies tags automatically)
+- [ ] Entry search by semantic similarity (vector embeddings for "find entries about X")
+- **Status:** in_progress
+- **Depends on:** Phase 7 complete ✓
+
 ## Key Questions
 1. Ollama latency: Can Llama 3.2 3B polish <1s on M1? (Benchmark in Phase 1a)
 2. Fn key reliability: Does Globe key work on target macOS version? (Validate in Phase 0)

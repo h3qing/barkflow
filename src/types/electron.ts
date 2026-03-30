@@ -1266,6 +1266,11 @@ declare global {
       whisperwoofFocusHistory: (options?: { days?: number; limit?: number }) => Promise<any[]>;
       whisperwoofFocusPresets: () => Promise<Array<{ id: string; name: string; durationMin: number; description: string }>>;
 
+      // WhisperWoof — Daily digest
+      whisperwoofCreateDigest: (options?: { days?: number }) => Promise<{ success: boolean; digest?: any; error?: string }>;
+      whisperwoofGetDigestHistory: (limit?: number) => Promise<any[]>;
+      whisperwoofGetTodayEntriesCount: () => Promise<number>;
+
       // WhisperWoof — Keybinding customization
       whisperwoofGetKeybindings: () => Promise<Array<{ actionId: string; key: string; label: string; category: string; isCustom: boolean; defaultKey: string }>>;
       whisperwoofRebindAction: (actionId: string, newKey: string) => Promise<{ success: boolean; error?: string; conflict?: string }>;
