@@ -1854,6 +1854,31 @@ class IPCHandlers {
       }
     });
 
+    // WhisperWoof: Daily digest
+    ipcMain.handle("whisperwoof-create-digest", async (_event, options) => {
+      try {
+        const { createDailyDigest } = require("../whisperwoof/bridge/daily-digest");
+        return await createDailyDigest(options || {});
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] create-digest failed: ${error.message}`);
+        return { success: false, error: error.message };
+      }
+    });
+
+    ipcMain.handle("whisperwoof-get-digest-history", async (_event, limit) => {
+      try {
+        const { getDigestHistory } = require("../whisperwoof/bridge/daily-digest");
+        return getDigestHistory(limit);
+      } catch (error) { return []; }
+    });
+
+    ipcMain.handle("whisperwoof-get-today-entries-count", async () => {
+      try {
+        const { getTodayEntries } = require("../whisperwoof/bridge/daily-digest");
+        return getTodayEntries().length;
+      } catch (error) { return 0; }
+    });
+
     // WhisperWoof: Keybinding customization
     ipcMain.handle("whisperwoof-get-keybindings", async () => {
       try {
