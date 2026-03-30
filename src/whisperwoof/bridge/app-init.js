@@ -292,6 +292,14 @@ async function initializeWhisperWoof() {
     debugLogger.debug("[WhisperWoof] Daily digest init skipped", { error: err.message });
   }
 
+  // Initialize semantic search with database reference
+  try {
+    const { setDatabase: setSearchDb } = require("./semantic-search");
+    setSearchDb(whisperwoofDb);
+  } catch (err) {
+    debugLogger.debug("[WhisperWoof] Semantic search init skipped", { error: err.message });
+  }
+
   initialized = true;
   debugLogger.log("[WhisperWoof] Initialized (Phase 1a — StorageProvider ready, clipboard monitoring active)");
 }
