@@ -1854,6 +1854,21 @@ class IPCHandlers {
       }
     });
 
+    // WhisperWoof: Auto-tagging
+    ipcMain.handle("whisperwoof-auto-tag", async (_event, text, existingTagNames, options) => {
+      try {
+        const { autoTag } = require("../whisperwoof/bridge/auto-tagger");
+        return await autoTag(text, existingTagNames || [], options || {});
+      } catch (error) { return { tags: [], source: "error", error: error.message }; }
+    });
+
+    ipcMain.handle("whisperwoof-suggest-tags-keywords", async (_event, text, existingTagNames) => {
+      try {
+        const { suggestTagsByKeywords } = require("../whisperwoof/bridge/auto-tagger");
+        return suggestTagsByKeywords(text, existingTagNames || []);
+      } catch (error) { return []; }
+    });
+
     // WhisperWoof: Webhooks
     ipcMain.handle("whisperwoof-get-webhooks", async () => {
       try { const { getWebhooks } = require("../whisperwoof/bridge/webhooks"); return getWebhooks(); }
