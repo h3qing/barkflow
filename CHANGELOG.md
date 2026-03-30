@@ -3,6 +3,16 @@
 All notable changes to WhisperWoof will be documented in this file.
 WhisperWoof is a fork of OpenWhispr — see below for inherited changes.
 
+## [1.2.0] - 2026-03-30 — Unique Differentiators
+
+4 features that no competitor has. 431 tests across 26 files.
+
+### Phase 7: Unique Differentiators
+- **Focus mode** — voice-powered productivity sprints (5 presets, entry tracking, completion stats, streaks)
+- **Entry tagging** — user-defined labels with many-to-many SQLite relations, bulk ops, color, stats
+- **Privacy lock** — zero-network mode that blocks all cloud URLs, forces Ollama-only, disables analytics
+- **Keybinding customization** — rebind 12 actions across 5 categories, conflict detection, export/import
+
 ## [1.1.0] - 2026-03-30 — Competitive Parity + Power User + Advanced
 
 15 features across 3 phases. 360 tests. Full competitive parity with Wispr Flow, SuperWhisper, Aqua Voice, DictaFlow, VoiceInk, and Willow Voice.
