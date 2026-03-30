@@ -677,6 +677,9 @@ contextBridge.exposeInMainWorld("electronAPI", {
   whisperwoofClearStyleExamples: () => ipcRenderer.invoke("whisperwoof-clear-style-examples"),
   whisperwoofGetStyleExamples: () => ipcRenderer.invoke("whisperwoof-get-style-examples"),
 
+  // WhisperWoof: Backtrack correction
+  whisperwoofDetectBacktrack: (text) => ipcRenderer.invoke("whisperwoof-detect-backtrack", text),
+
   // WhisperWoof: Telegram companion
   whisperwoofTelegramSyncStatus: () => ipcRenderer.invoke("whisperwoof-telegram-sync-status"),
   whisperwoofTelegramImportNow: () => ipcRenderer.invoke("whisperwoof-telegram-import-now"),

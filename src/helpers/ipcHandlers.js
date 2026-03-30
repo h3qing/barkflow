@@ -1820,6 +1820,18 @@ class IPCHandlers {
       }
     });
 
+    // WhisperWoof: Backtrack correction
+    ipcMain.handle("whisperwoof-detect-backtrack", async (_event, text) => {
+      try {
+        const { detectBacktrack } = require("../whisperwoof/bridge/backtrack");
+        const signals = detectBacktrack(text);
+        return { hasBacktrack: signals.length > 0, signals: signals.map((s) => s.signal) };
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] detect-backtrack failed: ${error.message}`);
+        return { hasBacktrack: false, signals: [] };
+      }
+    });
+
     // WhisperWoof: Telegram companion sync
     ipcMain.handle("whisperwoof-telegram-sync-status", async () => {
       try {

@@ -1222,6 +1222,9 @@ declare global {
       whisperwoofDeleteProject: (id: string) => Promise<void>;
       whisperwoofGetProjectEntries: (projectId: string, limit: number) => Promise<any[]>;
 
+      // WhisperWoof — Backtrack correction
+      whisperwoofDetectBacktrack: (text: string) => Promise<{ hasBacktrack: boolean; signals: string[] }>;
+
       // WhisperWoof — Telegram companion
       whisperwoofTelegramSyncStatus: () => Promise<{ running: boolean; inboxPath: string; inboxExists: boolean; pending: number; total: number }>;
       whisperwoofTelegramImportNow: () => Promise<{ success: boolean; imported?: number; error?: string }>;

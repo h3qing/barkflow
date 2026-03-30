@@ -79,6 +79,15 @@ Pre-release (v1.0 prep)
 - **Depends on:** Phase 3 complete ✓
 - **Competitors:** Wispr Flow, SuperWhisper, Aqua Voice, DictaFlow, VoiceInk, Willow Voice
 
+### Phase 5: Power User Features (post-v1.0)
+- [x] Backtrack correction (detect "no wait", "I mean", "scratch that" → resolve self-corrections)
+- [ ] Custom vocabulary / user dictionary UI (manage learned words, add domain terms)
+- [ ] Voice Activity Detection (filter silence before STT, reduce processing)
+- [ ] Export/import settings (snippets, style examples, app-preset map — portable config)
+- [ ] Usage analytics dashboard (entries/day, polish improvement ratio, top commands)
+- **Status:** in_progress
+- **Depends on:** Phase 4 complete ✓
+
 ## Key Questions
 1. Ollama latency: Can Llama 3.2 3B polish <1s on M1? (Benchmark in Phase 1a)
 2. Fn key reliability: Does Globe key work on target macOS version? (Validate in Phase 0)
