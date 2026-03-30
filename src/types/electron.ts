@@ -1266,6 +1266,10 @@ declare global {
       whisperwoofFocusHistory: (options?: { days?: number; limit?: number }) => Promise<any[]>;
       whisperwoofFocusPresets: () => Promise<Array<{ id: string; name: string; durationMin: number; description: string }>>;
 
+      // WhisperWoof — Auto-tagging
+      whisperwoofAutoTag: (text: string, existingTagNames?: string[], options?: { useLlm?: boolean }) => Promise<{ tags: string[]; source: string; suggestions?: any[]; error?: string }>;
+      whisperwoofSuggestTagsKeywords: (text: string, existingTagNames?: string[]) => Promise<Array<{ tag: string; score: number; matchedKeywords: string[]; source: string }>>;
+
       // WhisperWoof — Daily digest
       whisperwoofCreateDigest: (options?: { days?: number }) => Promise<{ success: boolean; digest?: any; error?: string }>;
       whisperwoofGetDigestHistory: (limit?: number) => Promise<any[]>;

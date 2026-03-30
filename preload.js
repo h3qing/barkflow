@@ -686,6 +686,10 @@ contextBridge.exposeInMainWorld("electronAPI", {
   // WhisperWoof: Usage analytics
   whisperwoofGetAnalytics: (options) => ipcRenderer.invoke("whisperwoof-get-analytics", options),
 
+  // WhisperWoof: Auto-tagging
+  whisperwoofAutoTag: (text, existingTagNames, options) => ipcRenderer.invoke("whisperwoof-auto-tag", text, existingTagNames, options),
+  whisperwoofSuggestTagsKeywords: (text, existingTagNames) => ipcRenderer.invoke("whisperwoof-suggest-tags-keywords", text, existingTagNames),
+
   // WhisperWoof: Webhooks
   whisperwoofGetWebhooks: () => ipcRenderer.invoke("whisperwoof-get-webhooks"),
   whisperwoofAddWebhook: (config) => ipcRenderer.invoke("whisperwoof-add-webhook", config),
