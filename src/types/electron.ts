@@ -1222,6 +1222,11 @@ declare global {
       whisperwoofDeleteProject: (id: string) => Promise<void>;
       whisperwoofGetProjectEntries: (projectId: string, limit: number) => Promise<any[]>;
 
+      // WhisperWoof — Context-aware polish
+      whisperwoofDetectContext: () => Promise<{ app: { bundleId: string; name: string } | null; preset: string | null }>;
+      whisperwoofGetAppPresetMap: () => Promise<Record<string, string>>;
+      whisperwoofSetAppPreset: (bundleId: string, presetId: string | null) => Promise<{ success: boolean }>;
+
       // WhisperWoof — Plugins
       whisperwoofGetPlugins: () => Promise<any[]>;
       whisperwoofUpdatePlugin: (id: string, updates: Record<string, unknown>) => Promise<any>;

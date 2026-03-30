@@ -2095,6 +2095,38 @@ class IPCHandlers {
       }
     });
 
+    // WhisperWoof: Context-aware polish (detect active app)
+    ipcMain.handle("whisperwoof-detect-context", async () => {
+      try {
+        const { detectContextPreset } = require("../whisperwoof/bridge/context-detector");
+        return await detectContextPreset();
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] detect-context failed: ${error.message}`);
+        return { app: null, preset: null };
+      }
+    });
+
+    ipcMain.handle("whisperwoof-get-app-preset-map", async () => {
+      try {
+        const { getAppPresetMap } = require("../whisperwoof/bridge/context-detector");
+        return getAppPresetMap();
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] get-app-preset-map failed: ${error.message}`);
+        return {};
+      }
+    });
+
+    ipcMain.handle("whisperwoof-set-app-preset", async (_event, bundleId, presetId) => {
+      try {
+        const { setAppPreset } = require("../whisperwoof/bridge/context-detector");
+        setAppPreset(bundleId, presetId);
+        return { success: true };
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] set-app-preset failed: ${error.message}`);
+        return { success: false, error: error.message };
+      }
+    });
+
     // WhisperWoof: Plugin management (MCP server plugins)
     ipcMain.handle("whisperwoof-get-plugins", async () => {
       try {

@@ -704,6 +704,11 @@ contextBridge.exposeInMainWorld("electronAPI", {
   whisperwoofMeetingEnd: () => ipcRenderer.invoke("whisperwoof-meeting-end"),
   whisperwoofMeetingStatus: () => ipcRenderer.invoke("whisperwoof-meeting-status"),
 
+  // WhisperWoof: Context-aware polish
+  whisperwoofDetectContext: () => ipcRenderer.invoke("whisperwoof-detect-context"),
+  whisperwoofGetAppPresetMap: () => ipcRenderer.invoke("whisperwoof-get-app-preset-map"),
+  whisperwoofSetAppPreset: (bundleId, presetId) => ipcRenderer.invoke("whisperwoof-set-app-preset", bundleId, presetId),
+
   // WhisperWoof: Plugin management (MCP server plugins)
   whisperwoofGetPlugins: () => ipcRenderer.invoke("whisperwoof-get-plugins"),
   whisperwoofUpdatePlugin: (id, updates) => ipcRenderer.invoke("whisperwoof-update-plugin", id, updates),

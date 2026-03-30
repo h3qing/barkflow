@@ -8,6 +8,7 @@
 const debugLogger = require("../../helpers/debugLogger");
 
 const { getPresetPrompt, DEFAULT_PRESET_ID } = require("./polish-presets");
+const { detectContextPreset } = require("./context-detector");
 
 const DEFAULT_BASE_URL = "http://localhost:11434";
 const DEFAULT_MODEL = "llama3.2:1b";
@@ -17,8 +18,30 @@ async function polishWithOllama(text, options = {}) {
   const baseUrl = options.baseUrl || DEFAULT_BASE_URL;
   const model = options.model || DEFAULT_MODEL;
   const timeoutMs = options.timeoutMs || DEFAULT_TIMEOUT_MS;
-  const presetId = options.preset || DEFAULT_PRESET_ID;
   const customPrompt = options.customPrompt || "";
+
+  // Context-aware preset: if user hasn't explicitly set a preset and
+  // contextAware is enabled, auto-detect based on frontmost app.
+  let presetId = options.preset || null;
+  let detectedApp = null;
+
+  if (!presetId && options.contextAware !== false) {
+    try {
+      const context = await detectContextPreset();
+      if (context.preset) {
+        presetId = context.preset;
+        detectedApp = context.app;
+        debugLogger.debug("[WhisperWoof] Context-aware preset selected", {
+          app: detectedApp?.name,
+          preset: presetId,
+        });
+      }
+    } catch {
+      // Detection failed — fall back to default
+    }
+  }
+
+  presetId = presetId || DEFAULT_PRESET_ID;
   const basePrompt = getPresetPrompt(presetId);
   // Append custom instructions if user has set them
   const systemPrompt = customPrompt
@@ -77,7 +100,14 @@ async function polishWithOllama(text, options = {}) {
       outputLen: polishedText.length,
     });
 
-    return { success: true, text: polishedText, polished: true, elapsed };
+    return {
+      success: true,
+      text: polishedText,
+      polished: true,
+      elapsed,
+      preset: presetId,
+      ...(detectedApp ? { detectedApp: detectedApp.name } : {}),
+    };
   } catch (err) {
     const elapsed = Date.now() - startTime;
     const message = err.name === "AbortError" ? "Timeout" : err.message;

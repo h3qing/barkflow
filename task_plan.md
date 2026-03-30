@@ -68,6 +68,16 @@ Pre-release (v1.0 prep)
 - **Status:** complete
 - **Depends on:** Phase 2 complete ✓
 
+### Phase 4: Competitive Feature Parity (post-v1.0)
+- [x] Context-aware per-app polish (auto-detect frontmost app → select preset)
+- [ ] Voice editing commands (highlight text, speak to rewrite/translate/summarize)
+- [ ] BYOM for LLM polish (support GPT/Claude/Groq alongside Ollama)
+- [ ] Adaptive learning (personalize polish to user's writing style over time)
+- [ ] Mobile companion (iOS app or Telegram bot for voice capture on the go)
+- **Status:** in_progress
+- **Depends on:** Phase 3 complete ✓
+- **Competitors:** Wispr Flow, SuperWhisper, Aqua Voice, DictaFlow, VoiceInk, Willow Voice
+
 ## Key Questions
 1. Ollama latency: Can Llama 3.2 3B polish <1s on M1? (Benchmark in Phase 1a)
 2. Fn key reliability: Does Globe key work on target macOS version? (Validate in Phase 0)
