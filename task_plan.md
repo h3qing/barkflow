@@ -70,7 +70,7 @@ Pre-release (v1.0 prep)
 
 ### Phase 4: Competitive Feature Parity (post-v1.0)
 - [x] Context-aware per-app polish (auto-detect frontmost app → select preset)
-- [ ] Voice editing commands (highlight text, speak to rewrite/translate/summarize)
+- [x] Voice editing commands (10 commands: rewrite, translate, summarize, fix, shorten, expand, format, simplify)
 - [ ] BYOM for LLM polish (support GPT/Claude/Groq alongside Ollama)
 - [ ] Adaptive learning (personalize polish to user's writing style over time)
 - [ ] Mobile companion (iOS app or Telegram bot for voice capture on the go)
