@@ -25,6 +25,7 @@ import {
   Pencil,
   Check,
   X,
+  Search,
 } from "lucide-react";
 import { cn } from "../../../components/lib/utils";
 import type { Snippet, SnippetBoard, SnippetSource } from "../../core/storage/types";
@@ -242,11 +243,12 @@ interface BoardColumnProps {
   readonly onEditSnippet: (id: string, updates: Partial<Snippet>) => void;
   readonly onDeleteBoard: (id: string) => void;
   readonly onRenameBoard: (id: string, name: string) => void;
+  readonly isSearching?: boolean;
 }
 
 function BoardColumn({
   board, snippets, onAddSnippet, onCopySnippet,
-  onDeleteSnippet, onEditSnippet, onDeleteBoard, onRenameBoard,
+  onDeleteSnippet, onEditSnippet, onDeleteBoard, onRenameBoard, isSearching,
 }: BoardColumnProps) {
   const [isRenaming, setIsRenaming] = useState(false);
   const [renameName, setRenameName] = useState(board.name);
@@ -307,20 +309,28 @@ function BoardColumn({
           />
         ))}
 
+        {isSearching && snippets.length === 0 && (
+          <p className="text-[11px] text-muted-foreground/40 text-center py-4 italic">
+            No matching snippets
+          </p>
+        )}
+
         {/* Add snippet button */}
-        <button
-          onClick={() => onAddSnippet(board.id)}
-          className={cn(
-            "flex items-center gap-2 w-full px-3 py-2.5 rounded-lg",
-            "border border-dashed border-border/20 dark:border-white/6",
-            "text-muted-foreground/40 hover:text-muted-foreground/60",
-            "hover:border-border/40 dark:hover:border-white/10",
-            "transition-all duration-150 text-xs"
-          )}
-        >
-          <Plus size={12} />
-          Add snippet
-        </button>
+        {!isSearching && (
+          <button
+            onClick={() => onAddSnippet(board.id)}
+            className={cn(
+              "flex items-center gap-2 w-full px-3 py-2.5 rounded-lg",
+              "border border-dashed border-border/20 dark:border-white/6",
+              "text-muted-foreground/40 hover:text-muted-foreground/60",
+              "hover:border-border/40 dark:hover:border-white/10",
+              "transition-all duration-150 text-xs"
+            )}
+          >
+            <Plus size={12} />
+            Add snippet
+          </button>
+        )}
       </div>
     </div>
   );
@@ -338,6 +348,7 @@ export default function SmartClipboard({ className }: SmartClipboardProps) {
   const [error, setError] = useState<string | null>(null);
   const [isAddingBoard, setIsAddingBoard] = useState(false);
   const [newBoardName, setNewBoardName] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
 
   const fetchData = useCallback(async () => {
     try {
@@ -509,8 +520,14 @@ export default function SmartClipboard({ className }: SmartClipboardProps) {
     }
   };
 
+  const matchesSearch = (snippet: Snippet): boolean => {
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    return snippet.title.toLowerCase().includes(q) || snippet.content.toLowerCase().includes(q);
+  };
+
   const snippetsByBoard = (boardId: string) =>
-    snippets.filter((s) => s.boardId === boardId).sort((a, b) => a.position - b.position);
+    snippets.filter((s) => s.boardId === boardId && matchesSearch(s)).sort((a, b) => a.position - b.position);
 
   if (error) {
     return (
@@ -539,6 +556,24 @@ export default function SmartClipboard({ className }: SmartClipboardProps) {
           </p>
         </div>
         <div className="flex items-center gap-2">
+          <div className="relative">
+            <Search size={12} className="absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground/40" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search snippets..."
+              className="w-44 text-xs bg-transparent border border-border/20 dark:border-white/8 rounded-md pl-7 pr-2 py-1.5 outline-none focus:border-primary/40 placeholder:text-muted-foreground/30 transition-colors"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground/40 hover:text-foreground transition-colors"
+              >
+                <X size={10} />
+              </button>
+            )}
+          </div>
           {isAddingBoard ? (
             <div className="flex items-center gap-1.5">
               <input
@@ -583,6 +618,7 @@ export default function SmartClipboard({ className }: SmartClipboardProps) {
               onEditSnippet={handleEditSnippet}
               onDeleteBoard={handleDeleteBoard}
               onRenameBoard={handleRenameBoard}
+              isSearching={searchQuery.trim().length > 0}
             />
           ))}
 
