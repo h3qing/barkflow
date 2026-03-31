@@ -15,6 +15,7 @@ import {
   FolderOpen,
   Sparkles,
   Puzzle,
+  Copy,
 } from "lucide-react";
 import logoIcon from "../assets/mando-head.svg";
 import { useTranslation } from "react-i18next";
@@ -24,7 +25,7 @@ import { getCachedPlatform } from "../utils/platform";
 
 const platform = getCachedPlatform();
 
-export type ControlPanelView = "home" | "personal-notes" | "dictionary" | "upload" | "integrations" | "whisperwoof-history" | "whisperwoof-projects" | "whisperwoof-plugins" | "whisperwoof-settings";
+export type ControlPanelView = "home" | "personal-notes" | "dictionary" | "upload" | "integrations" | "whisperwoof-history" | "whisperwoof-projects" | "whisperwoof-plugins" | "whisperwoof-settings" | "smart-clipboard";
 
 interface ControlPanelSidebarProps {
   activeView: ControlPanelView;
@@ -229,6 +230,19 @@ export default function ControlPanelSidebar({
         >
           <Clock size={15} className="shrink-0 text-foreground/60" />
           <span className="text-xs text-foreground/80">History</span>
+        </button>
+
+        <button
+          onClick={() => onViewChange("smart-clipboard")}
+          aria-label="Smart Clipboard"
+          className={`group flex items-center gap-2.5 w-full h-8 px-2.5 rounded-md text-left outline-none ${
+            activeView === "smart-clipboard"
+              ? "bg-foreground/8 dark:bg-white/8"
+              : "hover:bg-foreground/4 dark:hover:bg-white/4"
+          } focus-visible:ring-1 focus-visible:ring-primary/30 transition-colors duration-150`}
+        >
+          <Copy size={15} className="shrink-0 text-foreground/60" />
+          <span className="text-xs text-foreground/80">Clipboard</span>
         </button>
 
         <button
