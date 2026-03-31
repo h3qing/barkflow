@@ -3,6 +3,25 @@
 All notable changes to WhisperWoof will be documented in this file.
 WhisperWoof is a fork of OpenWhispr — see below for inherited changes.
 
+## [1.6.0] - 2026-03-31 — Smart Clipboard + Visual Refresh
+
+### Smart Clipboard
+- **Kanban snippet boards** — organize reusable text into named, colored boards (drag-and-drop ready)
+- **Snippet cards** — title, content, source tracking (human/AI/voice), hotkey assignment (⌘⇧1-9)
+- **Frequency tracking** — automatic use count + last-used timestamp on every copy
+- **Full CRUD** — create/edit/delete boards and snippets, inline editing, cascade delete
+- **IPC bridge** — 9 bridge functions, 9 IPC handlers, 9 preload methods connecting UI ↔ SQLite
+- **18 storage tests** covering board CRUD, snippet CRUD, cascade, cross-board moves, immutability
+
+### Visual Refresh
+- **Website redesign** — Mando mascot SVGs, glassmorphism nav, bento grid features, paw print animations
+- **App icon** — Mando's head illustration (replaces old blue OpenWhispr icon)
+- **App branding** — sidebar, welcome, verification screens use Mando SVG
+- **README** — hero image, badges, feature tables, visual how-it-works, roadmap
+- **GitHub metadata** — description, 12 topic tags, homepage, discussions enabled, social preview
+- **Accessibility** — WCAG AA contrast, ARIA labels, skip-link, focus styles, prefers-reduced-motion
+- **Security** — rel=noopener, innerHTML→template clone, visibility-based interval cleanup
+
 ## [1.5.0] - 2026-03-30 — Intelligent Voice Interface
 
 Phase 10: 4 features. 624 tests across 38 files. 60 PRs. 71 features total.
