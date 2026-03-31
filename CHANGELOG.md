@@ -3,7 +3,7 @@
 All notable changes to WhisperWoof will be documented in this file.
 WhisperWoof is a fork of OpenWhispr — see below for inherited changes.
 
-## [1.6.0] - 2026-03-31 — Smart Clipboard + Visual Refresh
+## [1.7.0] - 2026-03-31 — Smart Clipboard + Visual Refresh
 
 ### Smart Clipboard
 - **Kanban snippet boards** — organize reusable text into named, colored boards (drag-and-drop ready)
