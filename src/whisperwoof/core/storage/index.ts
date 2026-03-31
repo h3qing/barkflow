@@ -5,4 +5,7 @@ export type {
   Project,
   SearchFilters,
   ImportResult,
+  Snippet,
+  SnippetSource,
+  SnippetBoard,
 } from './types';
