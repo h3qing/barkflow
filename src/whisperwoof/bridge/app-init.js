@@ -638,6 +638,8 @@ module.exports = {
   getProjectEntries,
   updateProjectIntegration,
   getProjectIntegration,
+  // Database access (for snippet hotkeys)
+  getWhisperWoofDb: () => whisperwoofDb,
   // Smart Clipboard
   getSmartClipboardBoards,
   saveSmartClipboardBoard,
