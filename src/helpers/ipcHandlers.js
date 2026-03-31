@@ -5642,6 +5642,9 @@ class IPCHandlers {
 
     ipcMain.handle("whisperwoof-save-board", async (_event, board) => {
       try {
+        if (!board || typeof board.name !== "string" || !board.name.trim()) return null;
+        if (typeof board.position !== "number" || board.position < 0) return null;
+        if (typeof board.color !== "string" || !/^#[0-9A-Fa-f]{6}$/.test(board.color)) return null;
         const { saveSmartClipboardBoard } = require("../whisperwoof/bridge/app-init");
         return saveSmartClipboardBoard(board);
       } catch (error) {
@@ -5683,6 +5686,11 @@ class IPCHandlers {
 
     ipcMain.handle("whisperwoof-save-snippet", async (_event, snippet) => {
       try {
+        if (!snippet || typeof snippet.content !== "string") return null;
+        if (typeof snippet.title !== "string" || !snippet.title.trim()) return null;
+        if (typeof snippet.boardId !== "string") return null;
+        const validSources = new Set(["human", "ai", "voice"]);
+        if (!validSources.has(snippet.source)) return null;
         const { saveSmartClipboardSnippet } = require("../whisperwoof/bridge/app-init");
         return saveSmartClipboardSnippet(snippet);
       } catch (error) {
@@ -5691,12 +5699,12 @@ class IPCHandlers {
       }
     });
 
-    ipcMain.handle("whisperwoof-update-snippet", async (_event, id, updates) => {
+    ipcMain.handle("whisperwoof-sc-update-snippet", async (_event, id, updates) => {
       try {
         const { updateSmartClipboardSnippet } = require("../whisperwoof/bridge/app-init");
         return updateSmartClipboardSnippet(id, updates);
       } catch (error) {
-        debugLogger.log(`[WhisperWoof] update-snippet failed: ${error.message}`);
+        debugLogger.log(`[WhisperWoof] sc-update-snippet failed: ${error.message}`);
         return null;
       }
     });

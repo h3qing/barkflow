@@ -41,7 +41,7 @@ interface SmartClipboardAPI {
     content: string; title: string; boardId: string;
     position: number; source: SnippetSource; hotkey: string | null;
   }) => Promise<Snippet>;
-  whisperwoofUpdateSnippet?: (id: string, updates: Partial<Snippet>) => Promise<Snippet>;
+  whisperwoofScUpdateSnippet?: (id: string, updates: Partial<Snippet>) => Promise<Snippet>;
   whisperwoofDeleteSnippet?: (id: string) => Promise<void>;
   whisperwoofRecordSnippetUse?: (id: string) => Promise<Snippet>;
 }
@@ -496,8 +496,8 @@ export default function SmartClipboard({ className }: SmartClipboardProps) {
   const handleEditSnippet = async (id: string, updates: Partial<Snippet>) => {
     try {
       const api = getAPI();
-      if (api.whisperwoofUpdateSnippet) {
-        const updated = await api.whisperwoofUpdateSnippet(id, updates);
+      if (api.whisperwoofScUpdateSnippet) {
+        const updated = await api.whisperwoofScUpdateSnippet(id, updates);
         setSnippets((prev) => prev.map((s) => (s.id === id ? updated : s)));
       } else {
         setSnippets((prev) =>
