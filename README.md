@@ -1,129 +1,198 @@
-# WhisperWoof
+<p align="center">
+  <img src="website/mando-sit.svg" alt="Mando — the WhisperWoof mascot" width="180">
+</p>
 
-**Voice-first personal automation for power users.**
+<h1 align="center">WhisperWoof</h1>
 
-Speak a command. WhisperWoof transcribes it, polishes it with a local LLM, and routes it to the right place — all without leaving your keyboard.
+<p align="center">
+  <strong>Voice-first personal automation for power users.</strong><br>
+  Speak a command. It transcribes, polishes, and routes — all locally on your Mac.
+</p>
 
-> Named after Mando, a dog who listens faithfully, fetches what you need, and gets things done.
-> "Bark" is your voice into the mic. "Flow" is the workflow pipeline that carries your command to completion.
+<p align="center">
+  <a href="https://github.com/h3qing/whisperwoof/releases/latest"><img src="https://img.shields.io/github/v/release/h3qing/whisperwoof?style=flat-square&color=C87B3A&label=download" alt="Latest Release"></a>
+  <a href="https://github.com/h3qing/whisperwoof/stargazers"><img src="https://img.shields.io/github/stars/h3qing/whisperwoof?style=flat-square&color=C87B3A" alt="Stars"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/h3qing/whisperwoof?style=flat-square" alt="MIT License"></a>
+  <a href="https://github.com/h3qing/whisperwoof/actions"><img src="https://img.shields.io/github/actions/workflow/status/h3qing/whisperwoof/ci.yml?style=flat-square&label=CI" alt="CI"></a>
+</p>
+
+<p align="center">
+  <a href="#quick-start">Quick Start</a> &middot;
+  <a href="#features">Features</a> &middot;
+  <a href="#how-it-works">How It Works</a> &middot;
+  <a href="https://github.com/h3qing/whisperwoof/releases/latest">Download</a>
+</p>
 
 ---
 
-## What is WhisperWoof?
+<br>
 
-WhisperWoof is an open-source, voice-first personal automation tool built on top of [OpenWhispr](https://github.com/OpenWhispr/openwhispr). OpenWhispr handles the voice layer. WhisperWoof adds the workflow layer: hotkey-triggered, async workflows with a plugin system that lets your voice drive real actions.
+## The Problem
 
-### The Problem
+Voice transcription tools turn speech into text — then stop. You still copy-paste into apps, switch windows, route output manually.
 
-Voice transcription tools are good at turning speech into text, but they stop there. You still have to manually route the output — copy-paste into a todo app, open a browser, switch windows.
+The open-source world has two mature, disconnected layers:
+- **Voice/STT:** OpenWhispr, Whispering, VoiceInk
+- **Workflow automation:** n8n, Activepieces, Huginn
 
-The open-source landscape has two mature layers that exist independently:
+Nobody built the bridge. **WhisperWoof is that bridge.**
 
-- **Voice/Transcription:** OpenWhispr, Whispering, VoiceInk — speech-to-text with local Whisper/Parakeet models
-- **Workflow Automation:** n8n, Activepieces, Huginn — workflow engines with hundreds of connectors
+<br>
 
-Nobody has built the bridge between them. **WhisperWoof is that bridge.**
+## How It Works
 
-### How It Works
+<table>
+<tr>
+<td width="200" align="center">
+<img src="website/mando-head.svg" width="100" alt="Mando listening"><br>
+<strong>1. Hold Fn</strong><br>
+<sub>Mando's ears perk up.<br>You're recording.</sub>
+</td>
+<td width="60" align="center">&#10132;</td>
+<td width="200" align="center">
+<strong>2. Speak</strong><br>
+<sub>Say whatever you want.<br>Filler words welcome.</sub>
+</td>
+<td width="60" align="center">&#10132;</td>
+<td width="200" align="center">
+<strong>3. Release</strong><br>
+<sub>Clean, polished text<br>appears at your cursor.</sub>
+</td>
+</tr>
+</table>
 
 ```
-Hold hotkey → Speak → Release
-
-    Voice ──▶ Local STT (Whisper/Parakeet)
-                 │
-                 ▼
-            Local LLM Polish (Ollama)
-            Removes filler, fixes grammar, formats cleanly
-                 │
-                 ▼
-            Hotkey-driven routing
-                 │
-                 ├──▶ Fn         → Paste polished text at cursor
-                 ├──▶ Fn + T     → Add to todo list
-                 ├──▶ Fn + N     → Save as Markdown note
-                 ├──▶ Fn + C     → Add to calendar
-                 └──▶ All entries saved to searchable history
+Voice ──▶ Local STT (Whisper/Parakeet)
+              │
+              ▼
+         Local LLM Polish (Ollama)
+         Removes filler, fixes grammar
+              │
+              ▼
+         Hotkey-driven routing
+              │
+              ├──▶ Fn         → Paste polished text at cursor
+              ├──▶ Fn + T     → Add to todo list
+              ├──▶ Fn + N     → Save as Markdown note
+              ├──▶ Fn + C     → Add to calendar
+              └──▶ All entries saved to searchable history
 ```
 
-Every hotkey combo maps to a destination. You control where your voice goes — explicitly, not by AI guessing.
+<br>
 
 ## Features
 
-### Phase 1 — MVP (in development)
+<table>
+<tr>
+<td width="50%" valign="top">
 
-- **Local AI text polish** — Like Wispr Flow's clean output, but running through a local LLM (Ollama) instead of cloud APIs. Your voice never leaves your machine.
-- **Hotkey-driven routing** — Different key combos send your voice to different destinations. Fn to paste, Fn+T to todo, Fn+N for notes. Fully configurable.
-- **Unified capture layer** — Voice history + clipboard history in one searchable system. Everything you ever said or copied, retrievable.
-- **Audio playback** — Tap any history entry to replay the original recording. "What did I actually say?"
-- **Voice-to-Markdown** — Think out loud, get a polished Markdown note saved to your preferred directory (Obsidian, ~/Notes, anywhere).
-- **Floating speaking indicator** — Visual feedback when recording. Choose between Classic (waveform) and Bark (animated dog ear) styles.
-- **Storage management** — See your disk usage, clear audio cache, configure retention.
-- **Onboarding wizard** — Guided setup for STT model, Ollama, and storage preferences.
+### Core Pipeline
+- **Local voice-to-text** — Whisper STT on your machine. No cloud, no latency, no data leaving your laptop.
+- **AI text polish** — Ollama removes filler, fixes grammar, adds punctuation. 5 presets or write your own.
+- **Hotkey-driven routing** — Different combos send voice to different destinations. Explicit, not magic.
 
-### Phase 2 — MCP Plugin System (planned)
+### Capture & History
+- **Unified clipboard + voice history** — Everything you say or copy, searchable. Images too.
+- **Audio playback** — Tap any entry to replay the original recording.
+- **Full-text search** — SQLite FTS5 across all your voice and clipboard entries.
 
-- **Plugins are MCP servers** — WhisperWoof is an [MCP](https://modelcontextprotocol.io/) client. Any existing MCP server works as a WhisperWoof plugin.
-- **First-party plugins** — Todoist, Notion, Google Calendar, Slack.
-- **Build your own** — Write an MCP server, connect it to WhisperWoof, trigger it with your voice.
+</td>
+<td width="50%" valign="top">
 
-## Design Principles
+### Intelligence
+- **Context-aware** — Detects active app. VS Code gets code style, Slack gets casual, Mail gets professional.
+- **Voice commands** — "Rewrite this." "Translate to Spanish." "Summarize." 10 editing commands.
+- **Cmd+K command bar** — Spotlight-style overlay. Type /todo, /note, /project.
 
-1. **Hotkey = intent.** The key combination you press determines where your voice goes. Explicit over magic.
-2. **Local-first.** Everything runs on your machine. No cloud dependency. No data leaving your device.
-3. **Fork, don't reinvent.** Built on OpenWhispr's proven STT engine and Electron shell.
-4. **Power users first.** Built for people who care about control, customization, and owning their tools.
+### Privacy & Design
+- **Privacy lock** — One toggle blocks ALL cloud access. Ollama-only, zero network.
+- **MCP plugins** — Route voice to Todoist, Notion, Slack. Any MCP server works as a plugin.
+- **Mando's ears** — The floating indicator has dog ears that perk up when you speak.
 
-## Tech Stack
+</td>
+</tr>
+</table>
 
-- **Runtime:** Electron + React 19 + TypeScript + Tailwind CSS v4 (inherited from OpenWhispr)
-- **STT:** OpenAI Whisper / NVIDIA Parakeet (local, via OpenWhispr)
-- **LLM Polish:** Ollama (local, optional — WhisperWoof works without it)
-- **Storage:** SQLite with FTS5 full-text search (abstracted behind a provider interface for future backends)
-- **Plugins:** Model Context Protocol (MCP)
+<br>
 
-## Requirements
-
-- **macOS** (Mac-first; cross-platform support via Electron is possible but not the initial focus)
-- **Ollama** (optional, recommended) — for AI text polishing. [Install Ollama](https://ollama.com/)
-- A microphone
-
-## Getting Started
-
-> WhisperWoof is in early development. Setup instructions will be added as the project matures.
+## Quick Start
 
 ```bash
-# Clone the repo
-git clone https://github.com/[your-username]/whisperwoof.git
+# Clone and run
+git clone https://github.com/h3qing/whisperwoof.git
 cd whisperwoof
-
-# Install dependencies
 npm install
-
-# Start the app
 npm start
 ```
 
-## Credits & Acknowledgments
+**Or download the app directly:** [Latest .dmg release (Apple Silicon)](https://github.com/h3qing/whisperwoof/releases/latest)
 
-WhisperWoof is a fork of **[OpenWhispr](https://github.com/OpenWhispr/openwhispr)** — an open-source voice-to-text dictation app with local and cloud STT models. OpenWhispr provides WhisperWoof's speech-to-text engine, global hotkey system, and Electron application shell. We are grateful to the OpenWhispr team and community for building such a solid foundation.
+**Optional** — install Ollama for AI text polishing:
+```bash
+brew install ollama && ollama pull llama3.2:1b && ollama serve
+```
 
-WhisperWoof also builds on the shoulders of:
+### Requirements
 
-- **[OpenAI Whisper](https://github.com/openai/whisper)** — Open-source speech recognition model
-- **[NVIDIA Parakeet](https://huggingface.co/nvidia/parakeet-tdt-0.6b-v2)** — High-accuracy ASR model
-- **[Ollama](https://ollama.com/)** — Local LLM runtime for AI text polishing
-- **[Model Context Protocol](https://modelcontextprotocol.io/)** — Open standard for AI tool integration
+- **macOS** (Apple Silicon recommended)
+- **Microphone** (built-in or external)
+- **Ollama** (optional) — for local AI text polish. [Install Ollama](https://ollama.com/)
 
-## License
+<br>
 
-MIT License — see [LICENSE](LICENSE) for details.
+## Design Principles
 
-This project is a fork of [OpenWhispr](https://github.com/OpenWhispr/openwhispr), which is also MIT licensed.
+| Principle | What it means |
+|---|---|
+| **Hotkey = intent** | The key combo you press determines where voice goes. Explicit over magic. |
+| **Local-first** | Everything runs on your machine. No cloud. No data leaving your device. |
+| **Fork, don't reinvent** | Built on OpenWhispr's proven STT engine and Electron shell. |
+| **Power users first** | Control, customization, and ownership of your tools. |
+
+<br>
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Runtime | Electron 39 + React 19 + TypeScript + Tailwind CSS v4 |
+| STT | OpenAI Whisper / NVIDIA Parakeet (local) |
+| LLM Polish | Ollama (local, optional — works without it) |
+| Storage | SQLite + Kysely ORM + FTS5 full-text search |
+| Plugins | Model Context Protocol (MCP) |
+
+<br>
+
+## Roadmap
+
+- [x] **Phase 0** — Fork + security hardening + test infrastructure
+- [ ] **Phase 1a** — Core pipeline: StorageProvider, Ollama polish, hotkey routing
+- [ ] **Phase 1b** — Features: clipboard history, voice history UI, floating indicator, projects
+- [ ] **Phase 2** — MCP plugin system (Todoist, Notion, Slack, Calendar)
+- [ ] **Phase 3** — Polish, onboarding wizard, public release
+
+<br>
+
+## Credits
+
+WhisperWoof is a fork of **[OpenWhispr](https://github.com/OpenWhispr/openwhispr)** — we're grateful to the OpenWhispr team for building such a solid foundation.
+
+Also built on: [OpenAI Whisper](https://github.com/openai/whisper) · [NVIDIA Parakeet](https://huggingface.co/nvidia/parakeet-tdt-0.6b-v2) · [Ollama](https://ollama.com/) · [Model Context Protocol](https://modelcontextprotocol.io/)
+
+<br>
 
 ## Contributing
 
-WhisperWoof is in its early stages. Contributions, feedback, and ideas are welcome! Please open an issue to discuss before submitting a PR.
+WhisperWoof is in early development. Contributions, feedback, and ideas are welcome — please open an issue to discuss before submitting a PR.
+
+## License
+
+MIT — see [LICENSE](LICENSE) for details.
 
 ---
 
-*Built with care by Heqing. Inspired by Mando, who always listens.*
+<p align="center">
+  <img src="website/mando-head-side.svg" width="80" alt="Mando"><br>
+  <sub>Named after Mando, who always listens.</sub><br>
+  <sub>Built with care by <a href="https://github.com/h3qing">Heqing</a>.</sub>
+</p>

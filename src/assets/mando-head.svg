@@ -1,23 +1,5 @@
-<svg width="1024" height="1024" viewBox="0 0 1024 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1024" y2="1024">
-      <stop offset="0%" stop-color="#D4862E"/>
-      <stop offset="50%" stop-color="#B86A1E"/>
-      <stop offset="100%" stop-color="#8C4E14"/>
-    </linearGradient>
-    <clipPath id="iconClip">
-      <rect width="1024" height="1024" rx="228"/>
-    </clipPath>
-  </defs>
-
-  <!-- Rounded square background — white/clear -->
-  <rect width="1024" height="1024" rx="228" fill="#FFFFFF"/>
-
-  <!-- Mando artwork, scaled and centered -->
-  <!-- Original viewBox: 686x598. Scale ~1.28 to fill ~878px wide. Center in 1024x1024. -->
-  <!-- x-offset: (1024 - 686*1.28)/2 = (1024-878)/2 = 73 -->
-  <!-- y-offset: (1024 - 598*1.28)/2 = (1024-765)/2 = 129 -->
-  <g transform="translate(73, 129) scale(1.28)" clip-path="url(#iconClip)">
+<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 width="100%" viewBox="0 0 686 598" enable-background="new 0 0 686 598" xml:space="preserve">
 <path fill="#0C3255" opacity="1.000000" stroke="none" 
 	d="
 M488.505829,168.640656 
@@ -1089,7 +1071,6 @@ M346.605774,362.127686
 	C340.255371,370.185120 333.975281,372.331970 327.684967,374.389801 
 	C326.811035,374.675720 325.465057,373.518677 324.337585,373.029633 
 	C325.094330,371.679565 325.541504,369.553040 326.658875,369.107574 
-	C333.090851,366.543304 339.681519,364.376984 346.605774,362.127686
+	C333.090851,366.543304 339.681519,364.376984 346.605774,362.127686 
 z"/>
-  </g>
 </svg>

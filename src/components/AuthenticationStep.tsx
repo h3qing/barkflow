@@ -1,6 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import { Button } from "./ui/button";
-import logoIcon from "../assets/icon.png";
+import logoIcon from "../assets/mando-head.svg";
 
 interface AuthenticationStepProps {
   onContinueWithoutAccount: () => void;

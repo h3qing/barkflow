@@ -16,7 +16,7 @@ import {
   Sparkles,
   Puzzle,
 } from "lucide-react";
-import logoIcon from "../assets/icon.png";
+import logoIcon from "../assets/mando-head.svg";
 import { useTranslation } from "react-i18next";
 import { cn } from "./lib/utils";
 // import SupportDropdown from "./ui/SupportDropdown"; // WhisperWoof: unused — Support dropdown removed

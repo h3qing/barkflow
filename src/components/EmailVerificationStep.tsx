@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { OPENWHISPR_API_URL } from "../config/constants";
 import { Button } from "./ui/button";
 import { Mail, Loader2, Check, RefreshCw } from "lucide-react";
-import logoIcon from "../assets/icon.png";
+import logoIcon from "../assets/mando-head.svg";
 
 interface EmailVerificationStepProps {
   email: string;
