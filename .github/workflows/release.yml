@@ -27,10 +27,14 @@ jobs:
         run: npm run compile:native
 
       - name: Download whisper-cpp
-        run: npm run download:whisper-cpp
+        run: npm run download:whisper-cpp || echo "::warning::whisper-cpp download failed — users will download at runtime"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Download llama-server
-        run: npm run download:llama-server
+        run: npm run download:llama-server || echo "::warning::llama-server download failed — users will download at runtime"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build renderer
         run: cd src && npx vite build
