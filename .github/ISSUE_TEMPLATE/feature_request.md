@@ -1,20 +1,27 @@
 ---
-name: Feature request
-about: Suggest an idea for this project
-title: ''
-labels: ''
+name: Feature Request
+about: Suggest a feature for WhisperWoof
+title: '[Feature] '
+labels: enhancement
 assignees: ''
-
 ---
 
-**Is your feature request related to a problem? Please describe.**
-A clear and concise description of what the problem is. Ex. I'm always frustrated when [...]
+**What problem does this solve?**
+Describe the use case or pain point.
 
-**Describe the solution you'd like**
-A clear and concise description of what you want to happen.
+**Proposed solution**
+How should it work? Be as specific as you can.
 
-**Describe alternatives you've considered**
-A clear and concise description of any alternative solutions or features you've considered.
+**Alternatives considered**
+Any workarounds or alternative approaches you've thought about.
+
+**Which phase does this fit?**
+- [ ] Core pipeline (STT, polish, routing)
+- [ ] History & clipboard
+- [ ] MCP plugins
+- [ ] Voice commands
+- [ ] UI / indicator
+- [ ] New category
 
 **Additional context**
-Add any other context or screenshots about the feature request here.
+Screenshots, mockups, or links to similar features in other tools.
