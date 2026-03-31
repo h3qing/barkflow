@@ -888,4 +888,15 @@ contextBridge.exposeInMainWorld("electronAPI", {
   whisperwoofUpdateProjectIntegration: (projectId, pluginId) => ipcRenderer.invoke("whisperwoof-update-project-integration", projectId, pluginId),
   whisperwoofGetProjectIntegration: (projectId) => ipcRenderer.invoke("whisperwoof-get-project-integration", projectId),
   whisperwoofDispatchEntry: (entryId, pluginId, text) => ipcRenderer.invoke("whisperwoof-dispatch-entry", entryId, pluginId, text),
+
+  // Smart Clipboard
+  whisperwoofGetBoards: () => ipcRenderer.invoke("whisperwoof-get-boards"),
+  whisperwoofSaveBoard: (board) => ipcRenderer.invoke("whisperwoof-save-board", board),
+  whisperwoofUpdateBoard: (id, updates) => ipcRenderer.invoke("whisperwoof-update-board", id, updates),
+  whisperwoofDeleteBoard: (id) => ipcRenderer.invoke("whisperwoof-delete-board", id),
+  whisperwoofGetAllSnippets: () => ipcRenderer.invoke("whisperwoof-get-all-snippets"),
+  whisperwoofSaveSnippet: (snippet) => ipcRenderer.invoke("whisperwoof-save-snippet", snippet),
+  whisperwoofUpdateSnippet: (id, updates) => ipcRenderer.invoke("whisperwoof-update-snippet", id, updates),
+  whisperwoofDeleteSnippet: (id) => ipcRenderer.invoke("whisperwoof-delete-snippet", id),
+  whisperwoofRecordSnippetUse: (id) => ipcRenderer.invoke("whisperwoof-record-snippet-use", id),
 });

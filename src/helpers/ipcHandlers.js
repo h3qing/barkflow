@@ -5627,6 +5627,100 @@ class IPCHandlers {
       }
       return { success: true };
     });
+
+    // --- Smart Clipboard IPC handlers ---
+
+    ipcMain.handle("whisperwoof-get-boards", async () => {
+      try {
+        const { getSmartClipboardBoards } = require("../whisperwoof/bridge/app-init");
+        return getSmartClipboardBoards();
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] get-boards failed: ${error.message}`);
+        return [];
+      }
+    });
+
+    ipcMain.handle("whisperwoof-save-board", async (_event, board) => {
+      try {
+        const { saveSmartClipboardBoard } = require("../whisperwoof/bridge/app-init");
+        return saveSmartClipboardBoard(board);
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] save-board failed: ${error.message}`);
+        return null;
+      }
+    });
+
+    ipcMain.handle("whisperwoof-update-board", async (_event, id, updates) => {
+      try {
+        const { updateSmartClipboardBoard } = require("../whisperwoof/bridge/app-init");
+        return updateSmartClipboardBoard(id, updates);
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] update-board failed: ${error.message}`);
+        return null;
+      }
+    });
+
+    ipcMain.handle("whisperwoof-delete-board", async (_event, id) => {
+      try {
+        const { deleteSmartClipboardBoard } = require("../whisperwoof/bridge/app-init");
+        deleteSmartClipboardBoard(id);
+        return { success: true };
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] delete-board failed: ${error.message}`);
+        return { success: false };
+      }
+    });
+
+    ipcMain.handle("whisperwoof-get-all-snippets", async () => {
+      try {
+        const { getAllSmartClipboardSnippets } = require("../whisperwoof/bridge/app-init");
+        return getAllSmartClipboardSnippets();
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] get-all-snippets failed: ${error.message}`);
+        return [];
+      }
+    });
+
+    ipcMain.handle("whisperwoof-save-snippet", async (_event, snippet) => {
+      try {
+        const { saveSmartClipboardSnippet } = require("../whisperwoof/bridge/app-init");
+        return saveSmartClipboardSnippet(snippet);
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] save-snippet failed: ${error.message}`);
+        return null;
+      }
+    });
+
+    ipcMain.handle("whisperwoof-update-snippet", async (_event, id, updates) => {
+      try {
+        const { updateSmartClipboardSnippet } = require("../whisperwoof/bridge/app-init");
+        return updateSmartClipboardSnippet(id, updates);
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] update-snippet failed: ${error.message}`);
+        return null;
+      }
+    });
+
+    ipcMain.handle("whisperwoof-delete-snippet", async (_event, id) => {
+      try {
+        const { deleteSmartClipboardSnippet } = require("../whisperwoof/bridge/app-init");
+        deleteSmartClipboardSnippet(id);
+        return { success: true };
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] delete-snippet failed: ${error.message}`);
+        return { success: false };
+      }
+    });
+
+    ipcMain.handle("whisperwoof-record-snippet-use", async (_event, id) => {
+      try {
+        const { recordSmartClipboardSnippetUse } = require("../whisperwoof/bridge/app-init");
+        return recordSmartClipboardSnippetUse(id);
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] record-snippet-use failed: ${error.message}`);
+        return null;
+      }
+    });
   }
 
   broadcastToWindows(channel, payload) {
