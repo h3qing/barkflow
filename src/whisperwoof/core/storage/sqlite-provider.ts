@@ -19,6 +19,9 @@ import type {
   Project,
   SearchFilters,
   ImportResult,
+  Snippet,
+  SnippetSource,
+  SnippetBoard,
 } from './types';
 
 // Type for better-sqlite3 Database instance (avoid importing at module level
@@ -68,6 +71,32 @@ function rowToProject(row: Record<string, unknown>): Project {
   });
 }
 
+function rowToSnippet(row: Record<string, unknown>): Snippet {
+  return Object.freeze({
+    id: String(row['id']),
+    content: String(row['content']),
+    title: String(row['title']),
+    boardId: String(row['board_id']),
+    position: row['position'] as number,
+    source: String(row['source']) as SnippetSource,
+    useCount: (row['use_count'] as number) ?? 0,
+    lastUsedAt: row['last_used_at'] as string | null,
+    hotkey: row['hotkey'] as string | null,
+    createdAt: String(row['created_at']),
+    updatedAt: String(row['updated_at']),
+  });
+}
+
+function rowToBoard(row: Record<string, unknown>): SnippetBoard {
+  return Object.freeze({
+    id: String(row['id']),
+    name: String(row['name']),
+    position: row['position'] as number,
+    color: String(row['color']),
+    createdAt: String(row['created_at']),
+  });
+}
+
 export class SqliteProvider implements StorageProvider {
   private db: SqliteDatabase | null = null;
 
@@ -111,6 +140,37 @@ export class SqliteProvider implements StorageProvider {
         detail     TEXT
       )
     `);
+
+    // Smart Clipboard tables
+    this.db.exec(`
+      CREATE TABLE IF NOT EXISTS bf_snippet_boards (
+        id          TEXT PRIMARY KEY,
+        name        TEXT NOT NULL,
+        position    INTEGER NOT NULL DEFAULT 0,
+        color       TEXT NOT NULL DEFAULT '#C87B3A',
+        created_at  TEXT NOT NULL
+      )
+    `);
+
+    this.db.exec(`
+      CREATE TABLE IF NOT EXISTS bf_snippets (
+        id            TEXT PRIMARY KEY,
+        content       TEXT NOT NULL,
+        title         TEXT NOT NULL,
+        board_id      TEXT NOT NULL REFERENCES bf_snippet_boards(id) ON DELETE CASCADE,
+        position      INTEGER NOT NULL DEFAULT 0,
+        source        TEXT NOT NULL CHECK (source IN ('human', 'ai', 'voice')),
+        use_count     INTEGER NOT NULL DEFAULT 0,
+        last_used_at  TEXT,
+        hotkey        TEXT,
+        created_at    TEXT NOT NULL,
+        updated_at    TEXT NOT NULL
+      )
+    `);
+
+    this.db.exec(`CREATE INDEX IF NOT EXISTS idx_bf_snippets_board ON bf_snippets(board_id)`);
+    this.db.exec(`CREATE INDEX IF NOT EXISTS idx_bf_snippets_hotkey ON bf_snippets(hotkey)`);
+    this.db.exec(`CREATE INDEX IF NOT EXISTS idx_bf_snippets_use ON bf_snippets(use_count DESC)`);
 
     this.db.exec(`CREATE INDEX IF NOT EXISTS idx_bf_entries_created ON bf_entries(created_at)`);
     this.db.exec(`CREATE INDEX IF NOT EXISTS idx_bf_entries_source ON bf_entries(source)`);
@@ -360,6 +420,167 @@ export class SqliteProvider implements StorageProvider {
     const db = this.requireDb();
     db.prepare('DELETE FROM bf_projects WHERE id = ?').run(id);
     this.audit('project_deleted', id);
+  }
+
+  // --- Smart Clipboard: Snippet CRUD ---
+
+  async saveSnippet(snippet: Omit<Snippet, 'id' | 'createdAt' | 'updatedAt' | 'useCount' | 'lastUsedAt'>): Promise<Snippet> {
+    const db = this.requireDb();
+    const id = generateId();
+    const now = nowISO();
+
+    db.prepare(`
+      INSERT INTO bf_snippets (id, content, title, board_id, position, source, use_count, last_used_at, hotkey, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, 0, NULL, ?, ?, ?)
+    `).run(id, snippet.content, snippet.title, snippet.boardId, snippet.position, snippet.source, snippet.hotkey, now, now);
+
+    this.audit('snippet_created', id, { board: snippet.boardId, source: snippet.source });
+
+    const row = db.prepare('SELECT * FROM bf_snippets WHERE id = ?').get(id);
+    return rowToSnippet(row!);
+  }
+
+  async getSnippet(id: string): Promise<Snippet | null> {
+    const db = this.requireDb();
+    const row = db.prepare('SELECT * FROM bf_snippets WHERE id = ?').get(id);
+    return row ? rowToSnippet(row) : null;
+  }
+
+  async getSnippetsByBoard(boardId: string): Promise<readonly Snippet[]> {
+    const db = this.requireDb();
+    const rows = db.prepare('SELECT * FROM bf_snippets WHERE board_id = ? ORDER BY position ASC').all(boardId);
+    return Object.freeze(rows.map(rowToSnippet));
+  }
+
+  async getAllSnippets(): Promise<readonly Snippet[]> {
+    const db = this.requireDb();
+    const rows = db.prepare('SELECT * FROM bf_snippets ORDER BY board_id, position ASC').all();
+    return Object.freeze(rows.map(rowToSnippet));
+  }
+
+  async updateSnippet(id: string, updates: Partial<Omit<Snippet, 'id' | 'createdAt'>>): Promise<Snippet> {
+    const db = this.requireDb();
+
+    const existing = db.prepare('SELECT * FROM bf_snippets WHERE id = ?').get(id);
+    if (!existing) {
+      throw new Error(`Snippet not found: ${id}`);
+    }
+
+    const fieldMap: Record<string, string> = {
+      content: 'content',
+      title: 'title',
+      boardId: 'board_id',
+      position: 'position',
+      source: 'source',
+      useCount: 'use_count',
+      lastUsedAt: 'last_used_at',
+      hotkey: 'hotkey',
+      updatedAt: 'updated_at',
+    };
+
+    const setClauses: string[] = ['updated_at = ?'];
+    const values: unknown[] = [nowISO()];
+
+    for (const [key, column] of Object.entries(fieldMap)) {
+      if (key in updates && key !== 'updatedAt') {
+        setClauses.push(`${column} = ?`);
+        values.push((updates as Record<string, unknown>)[key]);
+      }
+    }
+
+    values.push(id);
+    db.prepare(`UPDATE bf_snippets SET ${setClauses.join(', ')} WHERE id = ?`).run(...values);
+
+    this.audit('snippet_updated', id, { fields: Object.keys(updates) });
+
+    const updated = db.prepare('SELECT * FROM bf_snippets WHERE id = ?').get(id);
+    return rowToSnippet(updated!);
+  }
+
+  async deleteSnippet(id: string): Promise<void> {
+    const db = this.requireDb();
+    db.prepare('DELETE FROM bf_snippets WHERE id = ?').run(id);
+    this.audit('snippet_deleted', id);
+  }
+
+  async recordSnippetUse(id: string): Promise<Snippet> {
+    const db = this.requireDb();
+    const now = nowISO();
+
+    const existing = db.prepare('SELECT * FROM bf_snippets WHERE id = ?').get(id);
+    if (!existing) {
+      throw new Error(`Snippet not found: ${id}`);
+    }
+
+    db.prepare('UPDATE bf_snippets SET use_count = use_count + 1, last_used_at = ?, updated_at = ? WHERE id = ?').run(now, now, id);
+
+    const updated = db.prepare('SELECT * FROM bf_snippets WHERE id = ?').get(id);
+    return rowToSnippet(updated!);
+  }
+
+  // --- Smart Clipboard: Board CRUD ---
+
+  async saveBoard(board: Omit<SnippetBoard, 'id' | 'createdAt'>): Promise<SnippetBoard> {
+    const db = this.requireDb();
+    const id = generateId();
+    const createdAt = nowISO();
+
+    db.prepare(`
+      INSERT INTO bf_snippet_boards (id, name, position, color, created_at)
+      VALUES (?, ?, ?, ?, ?)
+    `).run(id, board.name, board.position, board.color, createdAt);
+
+    this.audit('board_created', id, { name: board.name });
+
+    const row = db.prepare('SELECT * FROM bf_snippet_boards WHERE id = ?').get(id);
+    return rowToBoard(row!);
+  }
+
+  async getBoard(id: string): Promise<SnippetBoard | null> {
+    const db = this.requireDb();
+    const row = db.prepare('SELECT * FROM bf_snippet_boards WHERE id = ?').get(id);
+    return row ? rowToBoard(row) : null;
+  }
+
+  async getBoards(): Promise<readonly SnippetBoard[]> {
+    const db = this.requireDb();
+    const rows = db.prepare('SELECT * FROM bf_snippet_boards ORDER BY position ASC').all();
+    return Object.freeze(rows.map(rowToBoard));
+  }
+
+  async updateBoard(id: string, updates: Partial<Omit<SnippetBoard, 'id' | 'createdAt'>>): Promise<SnippetBoard> {
+    const db = this.requireDb();
+
+    const existing = db.prepare('SELECT * FROM bf_snippet_boards WHERE id = ?').get(id);
+    if (!existing) {
+      throw new Error(`Board not found: ${id}`);
+    }
+
+    const setClauses: string[] = [];
+    const values: unknown[] = [];
+
+    if ('name' in updates) { setClauses.push('name = ?'); values.push(updates.name); }
+    if ('position' in updates) { setClauses.push('position = ?'); values.push(updates.position); }
+    if ('color' in updates) { setClauses.push('color = ?'); values.push(updates.color); }
+
+    if (setClauses.length === 0) {
+      return rowToBoard(existing);
+    }
+
+    values.push(id);
+    db.prepare(`UPDATE bf_snippet_boards SET ${setClauses.join(', ')} WHERE id = ?`).run(...values);
+
+    this.audit('board_updated', id, { fields: Object.keys(updates) });
+
+    const updated = db.prepare('SELECT * FROM bf_snippet_boards WHERE id = ?').get(id);
+    return rowToBoard(updated!);
+  }
+
+  async deleteBoard(id: string): Promise<void> {
+    const db = this.requireDb();
+    // CASCADE will delete associated snippets
+    db.prepare('DELETE FROM bf_snippet_boards WHERE id = ?').run(id);
+    this.audit('board_deleted', id);
   }
 
   // --- Migration ---
