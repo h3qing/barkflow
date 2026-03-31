@@ -317,3 +317,6 @@ Thumbs.db
 eval/audio/
 eval/results/
 .gstack/
+
+# Claude Code agent configs
+.agents/
