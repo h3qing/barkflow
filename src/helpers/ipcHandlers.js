@@ -5729,6 +5729,16 @@ class IPCHandlers {
         return null;
       }
     });
+
+    ipcMain.handle("whisperwoof-suggest-snippets", async (_event, limit) => {
+      try {
+        const { suggestSnippetsFromHistory } = require("../whisperwoof/bridge/app-init");
+        return suggestSnippetsFromHistory(typeof limit === "number" ? limit : 10);
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] suggest-snippets failed: ${error.message}`);
+        return [];
+      }
+    });
   }
 
   broadcastToWindows(channel, payload) {

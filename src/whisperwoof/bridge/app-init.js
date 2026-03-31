@@ -621,6 +621,40 @@ function recordSmartClipboardSnippetUse(id) {
   return mapSnippetRow(whisperwoofDb.prepare('SELECT * FROM bf_snippets WHERE id = ?').get(id));
 }
 
+function suggestSnippetsFromHistory(limit = 10) {
+  if (!whisperwoofDb) return [];
+  try {
+    // Find frequently repeated text in voice/clipboard history
+    // Exclude very short (<10 chars) and very long (>500 chars) entries
+    // Exclude text that's already saved as a snippet
+    const rows = whisperwoofDb.prepare(`
+      SELECT
+        COALESCE(e.polished, e.raw_text) AS text,
+        e.source,
+        COUNT(*) AS freq,
+        MAX(e.created_at) AS last_seen
+      FROM bf_entries e
+      WHERE COALESCE(e.polished, e.raw_text) IS NOT NULL
+        AND LENGTH(COALESCE(e.polished, e.raw_text)) BETWEEN 10 AND 500
+        AND COALESCE(e.polished, e.raw_text) NOT IN (SELECT content FROM bf_snippets)
+      GROUP BY COALESCE(e.polished, e.raw_text)
+      HAVING freq >= 2
+      ORDER BY freq DESC
+      LIMIT ?
+    `).all(limit);
+
+    return rows.map((row) => ({
+      text: row.text,
+      source: row.source,
+      frequency: row.freq,
+      lastSeen: row.last_seen,
+    }));
+  } catch (error) {
+    debugLogger.log(`[WhisperWoof] suggestSnippets failed: ${error.message}`);
+    return [];
+  }
+}
+
 module.exports = {
   initializeWhisperWoof,
   shutdownWhisperWoof,
@@ -650,4 +684,5 @@ module.exports = {
   updateSmartClipboardSnippet,
   deleteSmartClipboardSnippet,
   recordSmartClipboardSnippetUse,
+  suggestSnippetsFromHistory,
 };
