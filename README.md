@@ -104,6 +104,12 @@ Voice ──▶ Local STT (Whisper/Parakeet)
 - **Voice commands** — "Rewrite this." "Translate to Spanish." "Summarize." 10 editing commands.
 - **Cmd+K command bar** — Spotlight-style overlay. Type /todo, /note, /project.
 
+### Smart Clipboard *(new)*
+- **Kanban board** — Organize reusable text snippets into boards (Greetings, Work, Code, etc.)
+- **Quick paste** — Copy any snippet with one click. Hotkey paste with Cmd+Shift+1-9.
+- **Frequency tracking** — See which snippets you use most. Sorted by usage count.
+- **Source tracking** — Know if a snippet was typed manually, AI-generated, or captured from voice.
+
 ### Privacy & Design
 - **Privacy lock** — One toggle blocks ALL cloud access. Ollama-only, zero network.
 - **MCP plugins** — Route voice to Todoist, Notion, Slack. Any MCP server works as a plugin.
@@ -166,8 +172,9 @@ brew install ollama && ollama pull llama3.2:1b && ollama serve
 ## Roadmap
 
 - [x] **Phase 0** — Fork + security hardening + test infrastructure
-- [ ] **Phase 1a** — Core pipeline: StorageProvider, Ollama polish, hotkey routing
-- [ ] **Phase 1b** — Features: clipboard history, voice history UI, floating indicator, projects
+- [x] **Phase 1a** — Core pipeline: StorageProvider, Ollama polish, hotkey routing
+- [x] **Phase 1b** — Features: clipboard history, voice history UI, floating indicator, projects
+- [x] **Smart Clipboard** — Kanban snippet boards, IPC bridge, frequency tracking
 - [ ] **Phase 2** — MCP plugin system (Todoist, Notion, Slack, Calendar)
 - [ ] **Phase 3** — Polish, onboarding wizard, public release
 
