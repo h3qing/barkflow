@@ -26,6 +26,7 @@ import {
   Check,
   X,
   Search,
+  Lightbulb,
 } from "lucide-react";
 import { cn } from "../../../components/lib/utils";
 import type { Snippet, SnippetBoard, SnippetSource } from "../../core/storage/types";
@@ -45,6 +46,14 @@ interface SmartClipboardAPI {
   whisperwoofScUpdateSnippet?: (id: string, updates: Partial<Snippet>) => Promise<Snippet>;
   whisperwoofDeleteSnippet?: (id: string) => Promise<void>;
   whisperwoofRecordSnippetUse?: (id: string) => Promise<Snippet>;
+  whisperwoofSuggestSnippets?: (limit?: number) => Promise<SnippetSuggestion[]>;
+}
+
+interface SnippetSuggestion {
+  readonly text: string;
+  readonly source: string;
+  readonly frequency: number;
+  readonly lastSeen: string;
 }
 
 function getAPI(): SmartClipboardAPI {
@@ -349,6 +358,9 @@ export default function SmartClipboard({ className }: SmartClipboardProps) {
   const [isAddingBoard, setIsAddingBoard] = useState(false);
   const [newBoardName, setNewBoardName] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
+  const [suggestions, setSuggestions] = useState<SnippetSuggestion[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [loadingSuggestions, setLoadingSuggestions] = useState(false);
 
   const fetchData = useCallback(async () => {
     try {
@@ -520,6 +532,52 @@ export default function SmartClipboard({ className }: SmartClipboardProps) {
     }
   };
 
+  const handleLoadSuggestions = async () => {
+    setLoadingSuggestions(true);
+    try {
+      const api = getAPI();
+      if (api.whisperwoofSuggestSnippets) {
+        const results = await api.whisperwoofSuggestSnippets(10);
+        setSuggestions(results);
+      } else {
+        // Demo suggestions
+        setSuggestions([
+          { text: "Thanks for the update! I'll look into this.", source: "clipboard", frequency: 8, lastSeen: new Date().toISOString() },
+          { text: "Let me check and get back to you.", source: "voice", frequency: 5, lastSeen: new Date().toISOString() },
+          { text: "Sounds good, let's proceed with that approach.", source: "voice", frequency: 4, lastSeen: new Date().toISOString() },
+        ]);
+      }
+      setShowSuggestions(true);
+    } catch {
+      setError("Failed to load suggestions.");
+    } finally {
+      setLoadingSuggestions(false);
+    }
+  };
+
+  const handleAddSuggestion = async (suggestion: SnippetSuggestion) => {
+    if (boards.length === 0) return;
+    const targetBoard = boards[0]; // Add to the first board
+    const boardSnippets = snippets.filter((s) => s.boardId === targetBoard.id);
+    const title = suggestion.text.length > 40 ? suggestion.text.slice(0, 40).trimEnd() + "..." : suggestion.text;
+    const source = (suggestion.source === "voice" ? "voice" : "human") as SnippetSource;
+
+    try {
+      const api = getAPI();
+      const newSnippet = { content: suggestion.text, title, boardId: targetBoard.id, position: boardSnippets.length, source, hotkey: null };
+      if (api.whisperwoofSaveSnippet) {
+        const saved = await api.whisperwoofSaveSnippet(newSnippet);
+        setSnippets((prev) => [...prev, saved]);
+      } else {
+        const saved: Snippet = { ...newSnippet, id: `s-${Date.now()}`, useCount: 0, lastUsedAt: null, createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() };
+        setSnippets((prev) => [...prev, saved]);
+      }
+      setSuggestions((prev) => prev.filter((s) => s.text !== suggestion.text));
+    } catch {
+      setError("Failed to add suggestion.");
+    }
+  };
+
   const matchesSearch = (snippet: Snippet): boolean => {
     if (!searchQuery.trim()) return true;
     const q = searchQuery.toLowerCase();
@@ -572,6 +630,54 @@ export default function SmartClipboard({ className }: SmartClipboardProps) {
               >
                 <X size={10} />
               </button>
+            )}
+          </div>
+          <div className="relative">
+            <button
+              onClick={handleLoadSuggestions}
+              disabled={loadingSuggestions}
+              className="flex items-center gap-1.5 text-xs text-muted-foreground/60 hover:text-foreground px-2.5 py-1.5 rounded-md border border-border/20 dark:border-white/6 hover:border-border/40 transition-all disabled:opacity-50"
+              title="Suggest snippets from your voice & clipboard history"
+            >
+              <Lightbulb size={12} />
+              {loadingSuggestions ? "Loading..." : "Suggest"}
+            </button>
+            {showSuggestions && suggestions.length > 0 && (
+              <div className="absolute right-0 top-full mt-2 z-20 w-80 bg-background border border-border/30 dark:border-white/10 rounded-lg shadow-xl overflow-hidden">
+                <div className="flex items-center justify-between px-3 py-2 border-b border-border/20 dark:border-white/6">
+                  <span className="text-xs font-medium text-foreground/80">Frequently used text</span>
+                  <button onClick={() => setShowSuggestions(false)} className="text-muted-foreground/40 hover:text-foreground">
+                    <X size={12} />
+                  </button>
+                </div>
+                <div className="max-h-64 overflow-y-auto">
+                  {suggestions.map((s, i) => (
+                    <button
+                      key={i}
+                      onClick={() => handleAddSuggestion(s)}
+                      className="flex items-start gap-2 w-full px-3 py-2.5 text-left hover:bg-foreground/[0.03] dark:hover:bg-white/[0.04] transition-colors border-b border-border/10 dark:border-white/4 last:border-b-0"
+                    >
+                      <Plus size={12} className="shrink-0 mt-0.5 text-primary/60" />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs text-foreground/80 line-clamp-2">{s.text}</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-[10px] text-muted-foreground/50">{s.source}</span>
+                          <span className="text-[10px] text-muted-foreground/50">{s.frequency}x used</span>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+                {suggestions.length === 0 && (
+                  <p className="text-xs text-muted-foreground/50 text-center py-6">No suggestions — keep using WhisperWoof!</p>
+                )}
+              </div>
+            )}
+            {showSuggestions && suggestions.length === 0 && !loadingSuggestions && (
+              <div className="absolute right-0 top-full mt-2 z-20 w-64 bg-background border border-border/30 dark:border-white/10 rounded-lg shadow-xl p-4 text-center">
+                <p className="text-xs text-muted-foreground/60">No frequent phrases found yet. Keep using WhisperWoof and suggestions will appear!</p>
+                <button onClick={() => setShowSuggestions(false)} className="text-xs text-primary mt-2">OK</button>
+              </div>
             )}
           </div>
           {isAddingBoard ? (

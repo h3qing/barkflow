@@ -899,4 +899,5 @@ contextBridge.exposeInMainWorld("electronAPI", {
   whisperwoofScUpdateSnippet: (id, updates) => ipcRenderer.invoke("whisperwoof-sc-update-snippet", id, updates),
   whisperwoofDeleteSnippet: (id) => ipcRenderer.invoke("whisperwoof-delete-snippet", id),
   whisperwoofRecordSnippetUse: (id) => ipcRenderer.invoke("whisperwoof-record-snippet-use", id),
+  whisperwoofSuggestSnippets: (limit) => ipcRenderer.invoke("whisperwoof-suggest-snippets", limit),
 });
