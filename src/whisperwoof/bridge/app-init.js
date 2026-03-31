@@ -69,6 +69,32 @@ function createWhisperWoofTables(db) {
     CREATE INDEX IF NOT EXISTS idx_bf_entries_created_at ON bf_entries(created_at);
     CREATE INDEX IF NOT EXISTS idx_bf_entries_source ON bf_entries(source);
     CREATE INDEX IF NOT EXISTS idx_bf_entries_project_id ON bf_entries(project_id);
+
+    CREATE TABLE IF NOT EXISTS bf_snippet_boards (
+      id          TEXT PRIMARY KEY,
+      name        TEXT NOT NULL,
+      position    INTEGER NOT NULL DEFAULT 0,
+      color       TEXT NOT NULL DEFAULT '#C87B3A',
+      created_at  TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS bf_snippets (
+      id            TEXT PRIMARY KEY,
+      content       TEXT NOT NULL,
+      title         TEXT NOT NULL,
+      board_id      TEXT NOT NULL REFERENCES bf_snippet_boards(id) ON DELETE CASCADE,
+      position      INTEGER NOT NULL DEFAULT 0,
+      source        TEXT NOT NULL CHECK (source IN ('human', 'ai', 'voice')),
+      use_count     INTEGER NOT NULL DEFAULT 0,
+      last_used_at  TEXT,
+      hotkey        TEXT,
+      created_at    TEXT NOT NULL,
+      updated_at    TEXT NOT NULL
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_bf_snippets_board ON bf_snippets(board_id);
+    CREATE INDEX IF NOT EXISTS idx_bf_snippets_hotkey ON bf_snippets(hotkey);
+    CREATE INDEX IF NOT EXISTS idx_bf_snippets_use ON bf_snippets(use_count DESC);
   `);
 }
 
@@ -490,6 +516,111 @@ function getProjectIntegration(projectId) {
   return project?.integration_target ?? null;
 }
 
+// --- Smart Clipboard: Board + Snippet CRUD ---
+
+function mapSnippetRow(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    content: row.content,
+    title: row.title,
+    boardId: row.board_id,
+    position: row.position,
+    source: row.source,
+    useCount: row.use_count ?? 0,
+    lastUsedAt: row.last_used_at,
+    hotkey: row.hotkey,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+function mapBoardRow(row) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    name: row.name,
+    position: row.position,
+    color: row.color,
+    createdAt: row.created_at,
+  };
+}
+
+function getSmartClipboardBoards() {
+  if (!whisperwoofDb) return [];
+  const rows = whisperwoofDb.prepare('SELECT * FROM bf_snippet_boards ORDER BY position ASC').all();
+  return rows.map(mapBoardRow);
+}
+
+function saveSmartClipboardBoard({ name, position, color }) {
+  if (!whisperwoofDb) return null;
+  const id = crypto.randomUUID();
+  const createdAt = new Date().toISOString();
+  whisperwoofDb.prepare(
+    'INSERT INTO bf_snippet_boards (id, name, position, color, created_at) VALUES (?, ?, ?, ?, ?)'
+  ).run(id, name, position, color, createdAt);
+  return mapBoardRow(whisperwoofDb.prepare('SELECT * FROM bf_snippet_boards WHERE id = ?').get(id));
+}
+
+function updateSmartClipboardBoard(id, updates) {
+  if (!whisperwoofDb) return null;
+  const sets = [];
+  const vals = [];
+  if ('name' in updates) { sets.push('name = ?'); vals.push(updates.name); }
+  if ('position' in updates) { sets.push('position = ?'); vals.push(updates.position); }
+  if ('color' in updates) { sets.push('color = ?'); vals.push(updates.color); }
+  if (sets.length === 0) return mapBoardRow(whisperwoofDb.prepare('SELECT * FROM bf_snippet_boards WHERE id = ?').get(id));
+  vals.push(id);
+  whisperwoofDb.prepare(`UPDATE bf_snippet_boards SET ${sets.join(', ')} WHERE id = ?`).run(...vals);
+  return mapBoardRow(whisperwoofDb.prepare('SELECT * FROM bf_snippet_boards WHERE id = ?').get(id));
+}
+
+function deleteSmartClipboardBoard(id) {
+  if (!whisperwoofDb) return;
+  whisperwoofDb.prepare('DELETE FROM bf_snippet_boards WHERE id = ?').run(id);
+}
+
+function getAllSmartClipboardSnippets() {
+  if (!whisperwoofDb) return [];
+  const rows = whisperwoofDb.prepare('SELECT * FROM bf_snippets ORDER BY board_id, position ASC').all();
+  return rows.map(mapSnippetRow);
+}
+
+function saveSmartClipboardSnippet({ content, title, boardId, position, source, hotkey }) {
+  if (!whisperwoofDb) return null;
+  const id = crypto.randomUUID();
+  const now = new Date().toISOString();
+  whisperwoofDb.prepare(
+    'INSERT INTO bf_snippets (id, content, title, board_id, position, source, use_count, last_used_at, hotkey, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, 0, NULL, ?, ?, ?)'
+  ).run(id, content, title, boardId, position, source, hotkey, now, now);
+  return mapSnippetRow(whisperwoofDb.prepare('SELECT * FROM bf_snippets WHERE id = ?').get(id));
+}
+
+function updateSmartClipboardSnippet(id, updates) {
+  if (!whisperwoofDb) return null;
+  const fieldMap = { content: 'content', title: 'title', boardId: 'board_id', position: 'position', source: 'source', hotkey: 'hotkey' };
+  const sets = ['updated_at = ?'];
+  const vals = [new Date().toISOString()];
+  for (const [key, col] of Object.entries(fieldMap)) {
+    if (key in updates) { sets.push(`${col} = ?`); vals.push(updates[key]); }
+  }
+  vals.push(id);
+  whisperwoofDb.prepare(`UPDATE bf_snippets SET ${sets.join(', ')} WHERE id = ?`).run(...vals);
+  return mapSnippetRow(whisperwoofDb.prepare('SELECT * FROM bf_snippets WHERE id = ?').get(id));
+}
+
+function deleteSmartClipboardSnippet(id) {
+  if (!whisperwoofDb) return;
+  whisperwoofDb.prepare('DELETE FROM bf_snippets WHERE id = ?').run(id);
+}
+
+function recordSmartClipboardSnippetUse(id) {
+  if (!whisperwoofDb) return null;
+  const now = new Date().toISOString();
+  whisperwoofDb.prepare('UPDATE bf_snippets SET use_count = use_count + 1, last_used_at = ?, updated_at = ? WHERE id = ?').run(now, now, id);
+  return mapSnippetRow(whisperwoofDb.prepare('SELECT * FROM bf_snippets WHERE id = ?').get(id));
+}
+
 module.exports = {
   initializeWhisperWoof,
   shutdownWhisperWoof,
@@ -507,4 +638,14 @@ module.exports = {
   getProjectEntries,
   updateProjectIntegration,
   getProjectIntegration,
+  // Smart Clipboard
+  getSmartClipboardBoards,
+  saveSmartClipboardBoard,
+  updateSmartClipboardBoard,
+  deleteSmartClipboardBoard,
+  getAllSmartClipboardSnippets,
+  saveSmartClipboardSnippet,
+  updateSmartClipboardSnippet,
+  deleteSmartClipboardSnippet,
+  recordSmartClipboardSnippetUse,
 };
