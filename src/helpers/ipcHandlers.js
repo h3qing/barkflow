@@ -2496,12 +2496,33 @@ class IPCHandlers {
       }
     });
 
-    ipcMain.handle("whisperwoof-get-stt-hints", async () => {
+    ipcMain.handle("whisperwoof-get-stt-hints", async (_event, bundleId) => {
       try {
         const { getSttHints } = require("../whisperwoof/bridge/vocabulary");
-        return getSttHints();
+        return getSttHints(bundleId || undefined);
       } catch (error) {
         debugLogger.log(`[WhisperWoof] get-stt-hints failed: ${error.message}`);
+        return [];
+      }
+    });
+
+    // Memory: context-aware vocabulary
+    ipcMain.handle("whisperwoof-get-vocabulary-for-app", async (_event, bundleId) => {
+      try {
+        const { getVocabularyForApp } = require("../whisperwoof/bridge/vocabulary");
+        return getVocabularyForApp(bundleId);
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] get-vocabulary-for-app failed: ${error.message}`);
+        return [];
+      }
+    });
+
+    ipcMain.handle("whisperwoof-get-tracked-apps", async () => {
+      try {
+        const { getTrackedApps } = require("../whisperwoof/bridge/vocabulary");
+        return getTrackedApps();
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] get-tracked-apps failed: ${error.message}`);
         return [];
       }
     });

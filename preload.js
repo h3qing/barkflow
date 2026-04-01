@@ -822,7 +822,9 @@ contextBridge.exposeInMainWorld("electronAPI", {
   whisperwoofRemoveWord: (id) => ipcRenderer.invoke("whisperwoof-remove-word", id),
   whisperwoofImportWords: (words, category) => ipcRenderer.invoke("whisperwoof-import-words", words, category),
   whisperwoofGetVocabularyStats: () => ipcRenderer.invoke("whisperwoof-get-vocabulary-stats"),
-  whisperwoofGetSttHints: () => ipcRenderer.invoke("whisperwoof-get-stt-hints"),
+  whisperwoofGetSttHints: (bundleId) => ipcRenderer.invoke("whisperwoof-get-stt-hints", bundleId),
+  whisperwoofGetVocabularyForApp: (bundleId) => ipcRenderer.invoke("whisperwoof-get-vocabulary-for-app", bundleId),
+  whisperwoofGetTrackedApps: () => ipcRenderer.invoke("whisperwoof-get-tracked-apps"),
 
   // WhisperWoof: Telegram companion
   whisperwoofTelegramSyncStatus: () => ipcRenderer.invoke("whisperwoof-telegram-sync-status"),
