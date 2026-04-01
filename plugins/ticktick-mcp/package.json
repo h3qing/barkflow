@@ -1,0 +1,14 @@
+{
+  "name": "@whisperwoof/ticktick-mcp",
+  "version": "0.1.0",
+  "description": "MCP server that creates TickTick tasks from WhisperWoof voice commands",
+  "main": "index.js",
+  "type": "module",
+  "bin": {
+    "ticktick-mcp": "./index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.28.0"
+  },
+  "license": "MIT"
+}

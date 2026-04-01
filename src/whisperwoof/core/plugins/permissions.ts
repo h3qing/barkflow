@@ -48,6 +48,11 @@ const FIRST_PARTY_PERMISSIONS: Record<string, PluginPermissions> = {
     dataTypes: ['polishedText', 'metadata'],
     filesystem: 'none',
   },
+  ticktick: {
+    network: ['api.ticktick.com'],
+    dataTypes: ['polishedText', 'metadata'],
+    filesystem: 'none',
+  },
 };
 
 /**
