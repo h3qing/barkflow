@@ -273,6 +273,21 @@ async function initializeWhisperWoof() {
     }
 
     whisperwoofDb = db;
+
+    // Create default "Favorites" board if no boards exist yet
+    try {
+      const boardCount = db.prepare("SELECT COUNT(*) as cnt FROM bf_snippet_boards").get();
+      if (boardCount.cnt === 0) {
+        const id = crypto.randomUUID();
+        db.prepare(
+          "INSERT INTO bf_snippet_boards (id, name, position, color, created_at) VALUES (?, 'Favorites', 0, '#FBBF24', ?)"
+        ).run(id, new Date().toISOString());
+        debugLogger.log("[WhisperWoof] Created default 'Favorites' board");
+      }
+    } catch (err) {
+      debugLogger.debug("[WhisperWoof] Default board creation skipped", { error: err.message });
+    }
+
     debugLogger.log("[WhisperWoof] Database tables initialized");
 
     // Dedup cleanup: remove clipboard entries that duplicate voice entries
@@ -447,10 +462,39 @@ function deleteWhisperWoofEntry(id) {
 
 function toggleWhisperWoofFavorite(id) {
   if (!whisperwoofDb) return false;
-  const entry = whisperwoofDb.prepare('SELECT favorite FROM bf_entries WHERE id = ?').get(id);
+  const entry = whisperwoofDb.prepare('SELECT * FROM bf_entries WHERE id = ?').get(id);
   if (!entry) return false;
   const newValue = entry.favorite ? 0 : 1;
   whisperwoofDb.prepare('UPDATE bf_entries SET favorite = ? WHERE id = ?').run(newValue, id);
+
+  // Auto-add to Smart Clipboard "Favorites" board when favoriting
+  if (newValue === 1) {
+    try {
+      const text = entry.polished || entry.raw_text;
+      if (text && text.length >= 2) {
+        // Find the first board (default "Favorites" board)
+        const board = whisperwoofDb.prepare("SELECT id FROM bf_snippet_boards ORDER BY position ASC LIMIT 1").get();
+        if (board) {
+          // Check if this text is already a snippet (avoid duplicates)
+          const existing = whisperwoofDb.prepare("SELECT id FROM bf_snippets WHERE content = ?").get(text);
+          if (!existing) {
+            const snippetId = crypto.randomUUID();
+            const now = new Date().toISOString();
+            const title = text.length > 40 ? text.slice(0, 40).trimEnd() + "..." : text;
+            const source = entry.source === "voice" ? "voice" : "human";
+            const pos = whisperwoofDb.prepare("SELECT COUNT(*) as cnt FROM bf_snippets WHERE board_id = ?").get(board.id).cnt;
+            whisperwoofDb.prepare(
+              "INSERT INTO bf_snippets (id, content, title, board_id, position, source, use_count, last_used_at, hotkey, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, 0, NULL, NULL, ?, ?)"
+            ).run(snippetId, text, title, board.id, pos, source, now, now);
+            debugLogger.log(`[WhisperWoof] Auto-added favorite to Smart Clipboard: ${snippetId}`);
+          }
+        }
+      }
+    } catch (err) {
+      debugLogger.debug("[WhisperWoof] Auto-add to clipboard failed", { error: err.message });
+    }
+  }
+
   return newValue === 1;
 }
 
