@@ -207,7 +207,7 @@ class IPCHandlers {
     this.textEditMonitor.on("text-edited", this._textEditHandler);
   }
 
-  _processCorrections() {
+  async _processCorrections() {
     this._autoLearnDebounceTimer = null;
     if (!this._autoLearnLatestData) return;
     if (!this._autoLearnEnabled) {
@@ -219,6 +219,16 @@ class IPCHandlers {
     const { originalText, newFieldValue } = this._autoLearnLatestData;
     this._autoLearnLatestData = null;
 
+    // Detect active app for context-aware Memory tagging
+    let bundleId = null;
+    try {
+      const { detectActiveApp } = require("../whisperwoof/bridge/context-detector");
+      const app = await detectActiveApp();
+      bundleId = app?.bundleId ?? null;
+    } catch {
+      // Context detection is optional, proceed without it
+    }
+
     try {
       const { extractCorrections } = require("../utils/correctionLearner");
       const currentDict = this._getDictionarySafe();
@@ -226,6 +236,7 @@ class IPCHandlers {
       debugLogger.debug("[AutoLearn] Corrections result", {
         corrections,
         dictSize: currentDict.length,
+        bundleId,
       });
 
       if (corrections.length > 0) {
@@ -238,6 +249,17 @@ class IPCHandlers {
         }
 
         this.broadcastToWindows("dictionary-updated", updatedDict);
+
+        // WhisperWoof Memory: also save to context-aware vocabulary
+        try {
+          const { addWord } = require("../whisperwoof/bridge/vocabulary");
+          for (const word of corrections) {
+            addWord(word, { source: "auto-learn", category: "general", bundleId });
+          }
+          debugLogger.debug("[AutoLearn] Saved to Memory vocabulary", { count: corrections.length, bundleId });
+        } catch (vocabErr) {
+          debugLogger.debug("[AutoLearn] Memory vocabulary save failed", { error: vocabErr.message });
+        }
 
         // Show the overlay so the toast is visible (it may have been hidden after dictation)
         this.windowManager.showDictationPanel();
@@ -2612,6 +2634,30 @@ class IPCHandlers {
         const { saveWhisperWoofEntry } = require("../whisperwoof/bridge/app-init");
         const result = saveWhisperWoofEntry(entry);
         if (result) {
+          // Memory: track vocabulary usage from this transcription
+          try {
+            const { getVocabulary, incrementUsage } = require("../whisperwoof/bridge/vocabulary");
+            const text = (entry.polished || entry.rawText || "").toLowerCase();
+            if (text.length > 0) {
+              // Detect active app for context tagging
+              let bundleId = null;
+              try {
+                const { detectActiveApp } = require("../whisperwoof/bridge/context-detector");
+                const app = await detectActiveApp();
+                bundleId = app?.bundleId ?? null;
+              } catch { /* optional */ }
+
+              const vocab = getVocabulary();
+              for (const v of vocab) {
+                if (text.includes(v.word.toLowerCase())) {
+                  incrementUsage(v.word, bundleId);
+                }
+              }
+            }
+          } catch (vocabErr) {
+            debugLogger.debug("[WhisperWoof] Vocabulary usage tracking failed", { error: vocabErr.message });
+          }
+
           return { success: true, ...result };
         }
         return { success: false, error: "WhisperWoof database not initialized" };
