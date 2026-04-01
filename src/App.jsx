@@ -15,10 +15,11 @@ import mandoHeadSvg from "./assets/mando-head.svg";
 // Matches the website preview aesthetic: Mando head on top, status text,
 // animated waveform bars, and transcribed text preview
 
-const WhisperWoofIndicator = ({ state = 'idle', size = 48, animated = false, speaking = false, lastText = '' }) => {
+const WhisperWoofIndicator = ({ state = 'idle', size = 48, animated = false, speaking = false, recording = false, lastText = '' }) => {
   const isSpeaking = speaking;
+  const isRecordingSilent = recording && !speaking;
   const isProcessing = state === 'processing';
-  const isIdle = !isSpeaking && !isProcessing;
+  const isIdle = !recording && !isProcessing;
 
   // Waveform bars — 20 bars with bell-curve heights
   const barCount = 20;
@@ -48,14 +49,14 @@ const WhisperWoofIndicator = ({ state = 'idle', size = 48, animated = false, spe
         src={mandoHeadSvg}
         alt=""
         style={{
-          width: isSpeaking ? '48px' : isProcessing ? '40px' : '36px',
+          width: isSpeaking ? '48px' : (isRecordingSilent || isProcessing) ? '40px' : '36px',
           height: 'auto',
           filter: `drop-shadow(0 2px 8px rgba(0,0,0,0.3))`,
-          opacity: isIdle ? 0.6 : 0.95,
+          opacity: isIdle ? 0.6 : isSpeaking ? 0.95 : 0.8,
           transition: 'width 0.3s, opacity 0.3s',
           animation: isSpeaking
             ? 'mandoListen 1.5s ease-in-out infinite'
-            : isProcessing
+            : (isRecordingSilent || isProcessing)
               ? 'mandoBreath 2s ease-in-out infinite'
               : 'none',
         }}
@@ -72,9 +73,9 @@ const WhisperWoofIndicator = ({ state = 'idle', size = 48, animated = false, spe
         whiteSpace: 'nowrap',
       }}>
         {isSpeaking ? (
-          <>
-            <span style={{ color: '#E8A060', fontWeight: 600 }}>Listening...</span>
-          </>
+          <span style={{ color: '#E8A060', fontWeight: 600 }}>Listening...</span>
+        ) : isRecordingSilent ? (
+          <span style={{ color: 'rgba(232,213,195,0.5)' }}>Waiting for voice...</span>
         ) : isProcessing ? (
           <span style={{ color: '#A06A3C', animation: 'mandoBreath 1.5s ease-in-out infinite' }}>Processing...</span>
         ) : (
@@ -102,11 +103,13 @@ const WhisperWoofIndicator = ({ state = 'idle', size = 48, animated = false, spe
                   ? (i % 3 === 0 ? '#E8A060' : '#C87B3A')
                   : isProcessing
                     ? '#A06A3C'
-                    : 'rgba(232,213,195,0.12)',
+                    : isRecordingSilent
+                      ? 'rgba(232,213,195,0.2)'
+                      : 'rgba(232,213,195,0.12)',
                 '--idle-h': `${idleH}px`,
                 '--peak-h': `${peakH}px`,
                 '--proc-h': `${procH}px`,
-                height: isIdle ? `${idleH}px` : undefined,
+                height: (isIdle || isRecordingSilent) ? `${idleH}px` : undefined,
                 animation: isSpeaking
                   ? `waveBar 0.8s ease-in-out ${i * 0.06}s infinite`
                   : isProcessing
@@ -289,7 +292,7 @@ export default function App() {
     setWindowInteractivity(false);
   }, [setWindowInteractivity]);
 
-  const { isRecording, isProcessing, toggleListening, cancelRecording, cancelProcessing } =
+  const { isRecording, isProcessing, isSpeaking, toggleListening, cancelRecording, cancelProcessing } =
     useAudioRecording(toast, {
       onToggle: handleDictationToggle,
     });
@@ -511,7 +514,8 @@ export default function App() {
               <div className="flex flex-col items-center">
                 <WhisperWoofIndicator
                   state={micState === "recording" ? "recording" : micState === "processing" ? "processing" : "idle"}
-                  speaking={isRecording}
+                  speaking={isSpeaking}
+                  recording={isRecording}
                   animated={isRecording || isProcessing}
                 />
               </div>

@@ -168,12 +168,14 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
     onTranscriptionComplete,
     onPartialTranscript,
     onStreamingCommit,
+    onRmsUpdate,
   }) {
     this.onStateChange = onStateChange;
     this.onError = onError;
     this.onTranscriptionComplete = onTranscriptionComplete;
     this.onPartialTranscript = onPartialTranscript;
     this.onStreamingCommit = onStreamingCommit;
+    this._onRmsUpdate = onRmsUpdate ?? null;
   }
 
   setSkipReasoning(skip) {
@@ -320,6 +322,8 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
           }
           const rms = Math.sqrt(sum / dataArray.length);
           if (rms > this._peakRms) this._peakRms = rms;
+          // Emit real-time RMS for voice activity visualization
+          if (this._onRmsUpdate) this._onRmsUpdate(rms);
         }, 100);
       } catch (e) {
         logger.warn("Silence detection setup failed, skipping", { error: e.message }, "audio");

@@ -11,6 +11,7 @@ export const useAudioRecording = (toast, options = {}) => {
   const [isRecording, setIsRecording] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isStreaming, setIsStreaming] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
   const [transcript, setTranscript] = useState("");
   const [partialTranscript, setPartialTranscript] = useState("");
   const audioManagerRef = useRef(null);
@@ -86,9 +87,14 @@ export const useAudioRecording = (toast, options = {}) => {
         setIsRecording(isRecording);
         setIsProcessing(isProcessing);
         setIsStreaming(isStreaming ?? false);
+        if (!isRecording) setIsSpeaking(false);
         if (!isStreaming) {
           setPartialTranscript("");
         }
+      },
+      onRmsUpdate: (rms) => {
+        // Voice activity threshold: RMS > 0.005 means user is speaking
+        setIsSpeaking(rms > 0.005);
       },
       onError: (error) => {
         const title = getRecordingErrorTitle(error, t);
@@ -437,6 +443,7 @@ export const useAudioRecording = (toast, options = {}) => {
     isRecording,
     isProcessing,
     isStreaming,
+    isSpeaking,
     transcript,
     partialTranscript,
     startRecording: performStartRecording,
