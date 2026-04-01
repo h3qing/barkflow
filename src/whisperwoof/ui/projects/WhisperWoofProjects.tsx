@@ -493,11 +493,29 @@ export default function WhisperWoofProjects({ className }: WhisperWoofProjectsPr
           )}
 
           {!isLoading && !error && projects.length === 0 && (
-            <div className="flex flex-col items-center justify-center h-full text-center px-6 py-12">
-              <FolderOpen size={28} className="text-muted-foreground/30 mb-3" />
-              <p className="text-xs text-muted-foreground">
-                No projects yet. Click + to create one.
+            <div className="flex flex-col items-center justify-center h-full text-center px-6 py-10">
+              <FolderOpen size={32} className="text-muted-foreground/25 mb-4" />
+              <p className="text-sm font-medium text-foreground/70 mb-1.5">
+                Projects — capture buckets for your voice
               </p>
+              <p className="text-xs text-muted-foreground/60 leading-relaxed max-w-[240px] mb-4">
+                Group voice entries by topic. Link a project to a plugin
+                (Todoist, TickTick, etc.) to send captured text as tasks with one click.
+              </p>
+              <div className="rounded-lg border border-border/20 dark:border-white/6 bg-foreground/[0.02] dark:bg-white/[0.02] px-4 py-3 mb-5 max-w-[260px]">
+                <p className="text-[11px] text-foreground/50 leading-relaxed">
+                  <span className="font-medium text-foreground/70">Example:</span> Create
+                  "Work Tasks" → link to Todoist → press <kbd className="px-1 py-0.5 rounded bg-foreground/5 dark:bg-white/5 text-[10px] font-mono">Fn+P</kbd> and
+                  say "fix the login bug" → it becomes a Todoist task.
+                </p>
+              </div>
+              <button
+                onClick={() => setIsAddingProject(true)}
+                className="flex items-center gap-1.5 text-xs text-primary hover:text-primary/80 px-3 py-1.5 rounded-md bg-primary/8 hover:bg-primary/12 transition-colors"
+              >
+                <Plus size={12} />
+                Create your first project
+              </button>
             </div>
           )}
 
