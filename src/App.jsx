@@ -9,97 +9,131 @@ import { formatHotkeyLabel } from "./utils/hotkeys";
 import { useWindowDrag } from "./hooks/useWindowDrag";
 import { useAudioRecording } from "./hooks/useAudioRecording";
 import { useSettingsStore } from "./stores/settingsStore";
-import earLeftSvg from "./assets/ear-left.svg";
-import earRightSvg from "./assets/ear-right.svg";
+import mandoHeadSvg from "./assets/mando-head.svg";
 
-// WhisperWoof Indicator — Mando's actual traced ears + soundbar
-// Ears are real SVG images positioned with CSS, animated with transforms
+// WhisperWoof Indicator — Mando head + waveform + status
+// Matches the website preview aesthetic: Mando head on top, status text,
+// animated waveform bars, and transcribed text preview
 
-const WhisperWoofIndicator = ({ state = 'idle', size = 48, animated = false, speaking = false }) => {
+const WhisperWoofIndicator = ({ state = 'idle', size = 48, animated = false, speaking = false, lastText = '' }) => {
   const isSpeaking = speaking;
   const isProcessing = state === 'processing';
   const isIdle = !isSpeaking && !isProcessing;
 
-  const earStyle = (side) => ({
-    position: 'absolute',
-    width: '36px',
-    bottom: '16px',
-    [side]: '10px',
-    transformOrigin: 'bottom center',
-    transition: 'transform 0.3s ease-out, opacity 0.3s',
-    opacity: isIdle ? 0.7 : 0.95,
-    ...(isSpeaking ? {
-      animation: side === 'left' ? 'earFlopL 0.4s ease-in-out infinite alternate' : 'earFlopR 0.4s ease-in-out infinite alternate',
-    } : {
-      transform: isIdle ? `rotate(${side === 'left' ? '-6' : '6'}deg)` : 'rotate(0deg)',
-    }),
+  // Waveform bars — 20 bars with bell-curve heights
+  const barCount = 20;
+  const bars = Array.from({ length: barCount }, (_, i) => {
+    const center = barCount / 2;
+    const dist = Math.abs(i - center) / center;
+    return Math.round(6 + (1 - dist) * 18);
   });
 
-  // Waveform bars
-  const bars = [3,5,7,9,11,14,12,16,14,16,12,14,11,9,7,9,7,5,7,5,3];
-  const procBars = [2,3,4,5,6,7,6,7,6,7,6,5,4,5,4,3,4,3,2,3,2];
-
   return (
-    <div style={{ position: 'relative', display: 'inline-flex', alignItems: 'flex-end', height: '70px' }}>
-      {/* CSS keyframes injected inline */}
+    <div style={{
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      gap: '4px',
+      minWidth: '180px',
+    }}>
       <style>{`
-        @keyframes earFlopL { from { transform: rotate(-3deg); } to { transform: rotate(3deg); } }
-        @keyframes earFlopR { from { transform: rotate(3deg); } to { transform: rotate(-3deg); } }
+        @keyframes mandoBreath { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-2px); } }
+        @keyframes mandoListen { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.04); } }
+        @keyframes waveBar { 0%, 100% { height: var(--idle-h); opacity: 0.3; } 50% { height: var(--peak-h); opacity: 0.8; } }
+        @keyframes procBar { 0%, 100% { height: var(--idle-h); opacity: 0.2; } 50% { height: var(--proc-h); opacity: 0.5; } }
       `}</style>
 
-      {/* Left ear — actual Mando SVG */}
-      <img src={earLeftSvg} alt="" style={earStyle('left')} />
+      {/* Mando head */}
+      <img
+        src={mandoHeadSvg}
+        alt=""
+        style={{
+          width: isSpeaking ? '48px' : isProcessing ? '40px' : '36px',
+          height: 'auto',
+          filter: `drop-shadow(0 2px 8px rgba(0,0,0,0.3))`,
+          opacity: isIdle ? 0.6 : 0.95,
+          transition: 'width 0.3s, opacity 0.3s',
+          animation: isSpeaking
+            ? 'mandoListen 1.5s ease-in-out infinite'
+            : isProcessing
+              ? 'mandoBreath 2s ease-in-out infinite'
+              : 'none',
+        }}
+      />
 
-      {/* Right ear — actual Mando SVG */}
-      <img src={earRightSvg} alt="" style={earStyle('right')} />
+      {/* Status text */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '4px',
+        fontSize: '9px',
+        fontWeight: 500,
+        letterSpacing: '0.3px',
+        whiteSpace: 'nowrap',
+      }}>
+        {isSpeaking ? (
+          <>
+            <span style={{ color: '#E8A060', fontWeight: 600 }}>Listening...</span>
+          </>
+        ) : isProcessing ? (
+          <span style={{ color: '#A06A3C', animation: 'mandoBreath 1.5s ease-in-out infinite' }}>Processing...</span>
+        ) : (
+          <span style={{ color: 'rgba(232,213,195,0.35)' }}>Hold Fn to record</span>
+        )}
+      </div>
 
-      {/* Soundbar */}
-      <svg width={180} height={24} viewBox="0 0 260 24" fill="none" style={{ position: 'relative', zIndex: 1 }}>
-        <rect x="0" y="0" width="260" height="24" rx="12" fill="rgba(14,12,10,0.5)" />
-
-        {/* Mic */}
-        <circle cx="18" cy="12" r="4.5" fill="none" stroke="#E8D5C4" strokeWidth="1" opacity={isSpeaking ? 0.7 : 0.15} />
-        <rect x="17" y="7.5" width="2" height="5" rx="1" fill="#E8D5C4" opacity={isSpeaking ? 0.7 : 0.15} />
-
-        {/* Status dot */}
-        <circle cx="242" cy="12" r="3.5"
-          fill={isSpeaking ? "#B84C3C" : isProcessing ? "#A06A3C" : "#4A4038"}
-          opacity={isSpeaking ? 1 : isProcessing ? 0.7 : 0.12}
-        >
-          {isSpeaking && <animate attributeName="opacity" values="1;0.4;1" dur="1s" repeatCount="indefinite" />}
-          {isProcessing && <animate attributeName="opacity" values="0.7;0.3;0.7" dur="2s" repeatCount="indefinite" />}
-        </circle>
-
-        {/* Waveform */}
-        {bars.map((fullH, i) => {
-          const x = 50 + i * 8;
-          let h, color, opacity, anim, style;
-          if (isSpeaking) {
-            h = Math.min(20, fullH + 4);
-            color = i % 3 === 1 ? '#C4956A' : '#E8D5C4';
-            opacity = 0.85;
-            anim = 'animate-pulse';
-            style = { animationDelay: `${i * 0.04}s`, animationDuration: '0.5s' };
-          } else if (isProcessing) {
-            h = procBars[i];
-            color = '#A06A3C';
-            opacity = 0.5;
-            anim = 'animate-pulse';
-            style = { animationDelay: `${i * 0.08}s`, animationDuration: '1.2s' };
-          } else {
-            h = 2;
-            color = '#E8D5C4';
-            opacity = 0.12;
-            anim = '';
-            style = {};
-          }
+      {/* Waveform bars */}
+      <div style={{
+        display: 'flex',
+        alignItems: 'center',
+        gap: '2px',
+        height: '24px',
+      }}>
+        {bars.map((peakH, i) => {
+          const idleH = 3;
+          const procH = Math.round(peakH * 0.5);
           return (
-            <rect key={i} x={x} y={(24 - h) / 2} width={3.5} rx={1.75}
-              height={Math.max(2, h)} fill={color} opacity={opacity}
-              className={anim} style={style} />
+            <div
+              key={i}
+              style={{
+                width: '3px',
+                borderRadius: '3px',
+                background: isSpeaking
+                  ? (i % 3 === 0 ? '#E8A060' : '#C87B3A')
+                  : isProcessing
+                    ? '#A06A3C'
+                    : 'rgba(232,213,195,0.12)',
+                '--idle-h': `${idleH}px`,
+                '--peak-h': `${peakH}px`,
+                '--proc-h': `${procH}px`,
+                height: isIdle ? `${idleH}px` : undefined,
+                animation: isSpeaking
+                  ? `waveBar 0.8s ease-in-out ${i * 0.06}s infinite`
+                  : isProcessing
+                    ? `procBar 1.5s ease-in-out ${i * 0.1}s infinite`
+                    : 'none',
+                transition: 'background 0.3s',
+              }}
+            />
           );
         })}
-      </svg>
+      </div>
+
+      {/* Last transcribed text preview */}
+      {lastText && !isIdle && (
+        <div style={{
+          fontSize: '9px',
+          color: 'rgba(232,213,195,0.5)',
+          maxWidth: '200px',
+          textAlign: 'center',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+          fontStyle: 'italic',
+        }}>
+          "{lastText}"
+        </div>
+      )}
     </div>
   );
 };
@@ -473,20 +507,13 @@ export default function App() {
                   "transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.25s ease-out",
               }}
             >
-              {/* WhisperWoof indicator — soundbar + processing status */}
-              <div className="flex flex-col items-center gap-0.5">
-                {micState === "idle" || micState === "hover" ? (
-                  <WhisperWoofIndicator state="idle" size={16} />
-                ) : micState === "recording" ? (
-                  <WhisperWoofIndicator state="recording" size={16} animated={true} speaking={isRecording} />
-                ) : micState === "processing" ? (
-                  <>
-                    <WhisperWoofIndicator state="processing" size={16} animated={true} />
-                    <span className="text-[9px] text-amber-400/80 font-medium animate-pulse whitespace-nowrap">
-                      Processing...
-                    </span>
-                  </>
-                ) : null}
+              {/* WhisperWoof indicator — Mando head + waveform + status */}
+              <div className="flex flex-col items-center">
+                <WhisperWoofIndicator
+                  state={micState === "recording" ? "recording" : micState === "processing" ? "processing" : "idle"}
+                  speaking={isRecording}
+                  animated={isRecording || isProcessing}
+                />
               </div>
             </button>
           </Tooltip>
