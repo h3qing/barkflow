@@ -10,6 +10,7 @@ import {
   CreditCard,
   Shield,
   MessageSquare,
+  Sparkles,
 } from "lucide-react";
 import SidebarModal, { SidebarItem } from "./ui/SidebarModal";
 import SettingsPage, { SettingsSectionType } from "./SettingsPage";
@@ -85,6 +86,13 @@ export default function SettingsModal({ open, onOpenChange, initialSection }: Se
         label: t("settingsModal.sections.agentMode.label"),
         icon: MessageSquare,
         description: t("settingsModal.sections.agentMode.description"),
+        group: t("settingsModal.groups.speechAi"),
+      },
+      {
+        id: "voicePolish" as SettingsSectionType,
+        label: "Voice & Polish",
+        icon: Sparkles,
+        description: "Ollama text polish, clipboard monitoring, notes, and WhisperWoof-specific settings",
         group: t("settingsModal.groups.speechAi"),
       },
       {

@@ -35,7 +35,7 @@ const IntegrationsView = React.lazy(() => import("./IntegrationsView"));
 const CommandSearch = React.lazy(() => import("./CommandSearch"));
 const WhisperWoofHistory = React.lazy(() => import("../whisperwoof/ui/history/WhisperWoofHistory"));
 const WhisperWoofProjects = React.lazy(() => import("../whisperwoof/ui/projects/WhisperWoofProjects"));
-const WhisperWoofSettings = React.lazy(() => import("../whisperwoof/ui/settings/WhisperWoofSettings"));
+// WhisperWoofSettings moved into SettingsModal as "Voice & Polish" tab
 const WhisperWoofPlugins = React.lazy(() => import("../whisperwoof/ui/plugins/WhisperWoofPlugins"));
 const SmartClipboard = React.lazy(() => import("../whisperwoof/ui/smart-clipboard/SmartClipboard"));
 const CommandBar = React.lazy(() => import("../whisperwoof/ui/command-bar/CommandBar"));
@@ -683,11 +683,6 @@ export default function ControlPanel() {
             {activeView === "whisperwoof-plugins" && (
               <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading...</span></div>}>
                 <WhisperWoofPlugins />
-              </Suspense>
-            )}
-            {activeView === "whisperwoof-settings" && (
-              <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading...</span></div>}>
-                <WhisperWoofSettings />
               </Suspense>
             )}
             {activeView === "smart-clipboard" && (

@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useEffect, useRef } from "react";
+const VoicePolishSettings = React.lazy(() => import("../whisperwoof/ui/settings/WhisperWoofSettings"));
 import { useTranslation } from "react-i18next";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -95,7 +96,8 @@ export type SettingsSectionType =
   | "aiModels"
   | "agentConfig"
   | "prompts"
-  | "agentMode";
+  | "agentMode"
+  | "voicePolish";
 
 interface SettingsPageProps {
   activeSection?: SettingsSectionType;
@@ -3683,6 +3685,13 @@ EOF`,
 
       case "agentMode":
         return <AgentModeSettings />;
+
+      case "voicePolish":
+        return (
+          <React.Suspense fallback={<div className="p-8 text-muted-foreground">Loading...</div>}>
+            <VoicePolishSettings />
+          </React.Suspense>
+        );
 
       default:
         return null;
