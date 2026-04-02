@@ -109,17 +109,14 @@ export default function HistoryView({
 
   return (
     <div className="px-4 pt-4 pb-6">
-      {/* WhisperWoof: Stats dashboard at top of home */}
-      <HomeStats onDayClick={(date) => {
-        // Scroll to the date group header in the transcript list
-        // Date headers use formatDateGroup which outputs things like "TODAY", "YESTERDAY", "MAR 28, 2026"
-        const target = document.querySelector(`[data-date="${date}"]`);
-        if (target) {
-          target.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-      }} />
-
       <div className={cn("mx-auto", isConnected ? "max-w-5xl" : "max-w-3xl")}>
+        {/* WhisperWoof: Stats dashboard at top of home */}
+        <HomeStats onDayClick={(date) => {
+          const target = document.querySelector(`[data-date="${date}"]`);
+          if (target) {
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        }} />
         {showCloudMigrationBanner && (
           <div className="mb-3 relative rounded-lg border border-primary/20 bg-primary/5 dark:bg-primary/10 p-3">
             <button
