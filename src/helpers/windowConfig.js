@@ -131,7 +131,7 @@ class WindowPositionUtil {
       y = Math.max(0, workArea.y + workArea.height - height - MARGIN);
     } else if (position === "center") {
       x = Math.round(workArea.x + (workArea.width - width) / 2);
-      y = Math.max(0, workArea.y + workArea.height - height - 120); // bottom-center, 120px above dock
+      y = Math.max(0, workArea.y + workArea.height - height - 48); // bottom-center, just above dock
     } else {
       // bottom-right (default)
       x = Math.max(0, workArea.x + workArea.width - width - MARGIN);
