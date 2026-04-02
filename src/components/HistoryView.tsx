@@ -152,41 +152,7 @@ export default function HistoryView({
           </div>
         )}
 
-        {!useReasoningModel && !aiCTADismissed && (
-          <div className="mb-3 relative rounded-lg border border-primary/20 bg-primary/5 dark:bg-primary/10 p-3">
-            <button
-              onClick={() => {
-                localStorage.setItem("aiCTADismissed", "true");
-                setAiCTADismissed(true);
-              }}
-              aria-label={t("common.close")}
-              className="absolute top-2 right-2 p-1 rounded-sm text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-            >
-              <X size={14} />
-            </button>
-            <div className="flex items-start gap-3 pr-6">
-              <div className="shrink-0 w-8 h-8 rounded-md bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
-                <Sparkles size={16} className="text-primary" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-foreground mb-0.5">
-                  {t("controlPanel.aiCta.title")}
-                </p>
-                <p className="text-xs text-muted-foreground mb-2">
-                  {t("controlPanel.aiCta.description")}
-                </p>
-                <Button
-                  variant="default"
-                  size="sm"
-                  className="h-7 text-xs"
-                  onClick={() => onOpenSettings("intelligence")}
-                >
-                  {t("controlPanel.aiCta.enable")}
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* WhisperWoof: AI CTA banner removed — Ollama polish is configured in Settings > Voice & Polish */}
 
         <div className={cn(isConnected ? "flex gap-6" : "")}>
           <div className={cn("min-w-0", isConnected ? "flex-1" : "w-full")}>

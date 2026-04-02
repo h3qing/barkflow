@@ -1,260 +1,131 @@
 /**
- * HomeStats — Dashboard cards + activity sparkline + fun facts
+ * HomeStats — Compact dashboard strip + sidebar-ready stats
  *
- * Calls the existing whisperwoofGetAnalytics() IPC (already wired)
- * and renders stats at the top of the Home view.
+ * Design: Mix of "Cozy Dashboard" (inline pills) + "Command Center" (dense stats).
+ * Compact, warm, data-rich. No fat cards. Stats feel like metadata, not a section.
  */
 
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { Mic, Clipboard, Flame, Sparkles, Brain, Clock } from "lucide-react";
+import { Mic, Flame, Sparkles, Brain, Clock, Clipboard } from "lucide-react";
 import { cn } from "../../../components/lib/utils";
 
-// --- Types matching analytics.js getDashboard() output ---
-
-interface AnalyticsSummary {
-  totalEntries: number;
-  todayEntries: number;
-  thisWeekEntries: number;
-  thisMonthEntries: number;
-}
-
-interface SourceBreakdown {
-  source: string;
-  count: number;
-}
-
-interface PolishStats {
-  totalPolished: number;
-  totalRaw: number;
-  avgCharsSaved: number;
-  polishRate: number;
-}
-
-interface StreakData {
-  current: number;
-  longest: number;
-}
-
-interface DayCount {
-  day: string;
-  count: number;
-}
+// --- Types matching analytics.js getDashboard() ---
 
 interface Dashboard {
-  summary: AnalyticsSummary;
-  entriesPerDay: DayCount[];
-  sourceBreakdown: SourceBreakdown[];
-  polishStats: PolishStats;
-  streaks: StreakData;
+  summary: { totalEntries: number; todayEntries: number; thisWeekEntries: number; thisMonthEntries: number };
+  entriesPerDay: { day: string; count: number }[];
+  sourceBreakdown: { source: string; count: number }[];
+  polishStats: { totalPolished: number; totalRaw: number; avgCharsSaved: number; polishRate: number };
+  streaks: { current: number; longest: number };
   busiestHours: number[];
   averageDuration: { avgMs: number; totalMs: number; count: number };
 }
 
-interface AnalyticsAPI {
-  whisperwoofGetAnalytics?: () => Promise<Dashboard>;
-  whisperwoofGetVocabularyStats?: () => Promise<{ total: number; autoLearned: number }>;
-}
-
-function getAPI(): AnalyticsAPI {
+function getAPI(): Record<string, unknown> {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (window as any).electronAPI ?? {};
 }
 
-// --- Sparkline (pure SVG, no deps) ---
+// --- Mini sparkline (pure SVG) ---
 
-function Sparkline({ data, width = 200, height = 32 }: { data: number[]; width?: number; height?: number }) {
+function MiniSparkline({ data }: { data: number[] }) {
   if (data.length < 2) return null;
   const max = Math.max(...data, 1);
-  const points = data.map((v, i) => {
-    const x = (i / (data.length - 1)) * width;
-    const y = height - (v / max) * (height - 4) - 2;
-    return `${x},${y}`;
-  }).join(" ");
-
+  const w = 80, h = 20;
+  const points = data.map((v, i) => `${(i / (data.length - 1)) * w},${h - (v / max) * (h - 3) - 1.5}`).join(" ");
   return (
-    <svg width={width} height={height} className="overflow-visible">
-      <polyline
-        points={points}
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        className="text-primary/40"
-      />
-      {/* Fill area under the line */}
-      <polygon
-        points={`0,${height} ${points} ${width},${height}`}
-        className="fill-primary/[0.06]"
-      />
+    <svg width={w} height={h} className="inline-block align-middle ml-1.5 opacity-60">
+      <polyline points={points} fill="none" stroke="#A06A3C" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
   );
 }
 
-// --- Fun fact generator ---
+// --- Fun fact ---
 
-function generateFunFact(dashboard: Dashboard, vocabTotal: number): string {
+function pickFact(d: Dashboard, vocabTotal: number): string | null {
   const facts: string[] = [];
-
-  // Busiest hour
-  if (dashboard.busiestHours) {
-    const maxHour = dashboard.busiestHours.indexOf(Math.max(...dashboard.busiestHours));
-    if (maxHour >= 0 && Math.max(...dashboard.busiestHours) > 0) {
-      const hour = maxHour === 0 ? "12am" : maxHour < 12 ? `${maxHour}am` : maxHour === 12 ? "12pm" : `${maxHour - 12}pm`;
-      facts.push(`You're most productive around ${hour}`);
+  if (d.busiestHours) {
+    const maxH = d.busiestHours.indexOf(Math.max(...d.busiestHours));
+    if (Math.max(...d.busiestHours) > 0) {
+      const t = maxH === 0 ? "midnight" : maxH < 12 ? `${maxH}am` : maxH === 12 ? "noon" : `${maxH - 12}pm`;
+      facts.push(`Most productive around ${t}`);
     }
   }
-
-  // Polish savings
-  if (dashboard.polishStats.avgCharsSaved > 0) {
-    const saved = Math.round(dashboard.polishStats.avgCharsSaved * dashboard.polishStats.totalPolished);
-    if (saved > 100) {
-      facts.push(`AI polish has cleaned up ~${saved.toLocaleString()} characters of filler`);
-    }
+  if (d.polishStats.avgCharsSaved > 0) {
+    const saved = Math.round(d.polishStats.avgCharsSaved * d.polishStats.totalPolished);
+    if (saved > 50) facts.push(`${saved.toLocaleString()} chars of filler cleaned`);
   }
-
-  // Streak
-  if (dashboard.streaks.longest > 1) {
-    facts.push(`Your longest usage streak was ${dashboard.streaks.longest} days`);
+  if (d.streaks.longest > 1) facts.push(`Longest streak: ${d.streaks.longest}d`);
+  if (vocabTotal > 3) facts.push(`Memory knows ${vocabTotal} words`);
+  if (d.averageDuration.avgMs > 0) facts.push(`Avg recording: ${(d.averageDuration.avgMs / 1000).toFixed(1)}s`);
+  const voice = d.sourceBreakdown.find((s) => s.source === "voice");
+  const clip = d.sourceBreakdown.find((s) => s.source === "clipboard");
+  if (voice && clip && voice.count + clip.count > 0) {
+    facts.push(`${Math.round((voice.count / (voice.count + clip.count)) * 100)}% voice`);
   }
-
-  // Voice vs clipboard ratio
-  const voice = dashboard.sourceBreakdown.find((s) => s.source === "voice");
-  const clip = dashboard.sourceBreakdown.find((s) => s.source === "clipboard");
-  if (voice && clip && voice.count > 0 && clip.count > 0) {
-    const ratio = (voice.count / (voice.count + clip.count) * 100).toFixed(0);
-    facts.push(`${ratio}% of your entries come from voice`);
-  }
-
-  // Vocab
-  if (vocabTotal > 5) {
-    facts.push(`Memory has learned ${vocabTotal} words from your speech`);
-  }
-
-  // Average recording duration
-  if (dashboard.averageDuration.avgMs > 0) {
-    const avgSec = (dashboard.averageDuration.avgMs / 1000).toFixed(1);
-    facts.push(`Your average recording is ${avgSec} seconds`);
-  }
-
-  if (facts.length === 0) return "Start talking and fun facts will appear here";
-
-  // Rotate based on day of year
-  const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
-  return facts[dayOfYear % facts.length];
+  if (facts.length === 0) return null;
+  const day = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
+  return facts[day % facts.length];
 }
 
-// --- Stat Card ---
+// --- Stat pill ---
 
-function StatCard({
-  icon: Icon,
-  label,
-  value,
-  subtitle,
-  className,
-}: {
-  icon: typeof Mic;
-  label: string;
-  value: string | number;
-  subtitle?: string;
-  className?: string;
+function Pill({ icon: Icon, value, label, show = true }: {
+  icon: typeof Mic; value: string | number; label: string; show?: boolean;
 }) {
+  if (!show) return null;
   return (
-    <div className={cn(
-      "flex-1 min-w-[120px] rounded-lg border border-border/15 dark:border-white/6",
-      "bg-foreground/[0.015] dark:bg-white/[0.02] px-3.5 py-3",
-      className,
-    )}>
-      <div className="flex items-center gap-2 mb-1.5">
-        <Icon size={13} className="text-primary/60 shrink-0" />
-        <span className="text-[10px] text-muted-foreground/50 uppercase tracking-wider font-medium">{label}</span>
-      </div>
-      <div className="text-lg font-bold text-foreground tracking-tight leading-none">{value}</div>
-      {subtitle && <div className="text-[10px] text-muted-foreground/40 mt-1">{subtitle}</div>}
-    </div>
+    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-foreground/[0.03] dark:bg-white/[0.03] text-xs">
+      <Icon size={11} className="text-[#A06A3C] shrink-0" />
+      <span className="font-semibold text-foreground/90 tabular-nums">{value}</span>
+      <span className="text-muted-foreground/40 text-[10px]">{label}</span>
+    </span>
   );
 }
 
-// --- Main component ---
+// --- Main ---
 
 export default function HomeStats() {
-  const [dashboard, setDashboard] = useState<Dashboard | null>(null);
+  const [data, setData] = useState<Dashboard | null>(null);
   const [vocabTotal, setVocabTotal] = useState(0);
 
-  const fetchData = useCallback(async () => {
+  const fetch = useCallback(async () => {
     const api = getAPI();
     try {
-      if (api.whisperwoofGetAnalytics) {
-        const data = await api.whisperwoofGetAnalytics();
-        setDashboard(data);
-      }
-    } catch { /* analytics unavailable */ }
-
+      if (typeof api.whisperwoofGetAnalytics === "function") setData(await (api.whisperwoofGetAnalytics as () => Promise<Dashboard>)());
+    } catch { /* */ }
     try {
-      if (api.whisperwoofGetVocabularyStats) {
-        const stats = await api.whisperwoofGetVocabularyStats();
-        setVocabTotal(stats?.total ?? 0);
+      if (typeof api.whisperwoofGetVocabularyStats === "function") {
+        const s = await (api.whisperwoofGetVocabularyStats as () => Promise<{ total: number }>)();
+        setVocabTotal(s?.total ?? 0);
       }
-    } catch { /* vocab unavailable */ }
+    } catch { /* */ }
   }, []);
 
-  useEffect(() => { fetchData(); }, [fetchData]);
+  useEffect(() => { fetch(); }, [fetch]);
 
-  const funFact = useMemo(
-    () => dashboard ? generateFunFact(dashboard, vocabTotal) : null,
-    [dashboard, vocabTotal],
-  );
+  const fact = useMemo(() => data ? pickFact(data, vocabTotal) : null, [data, vocabTotal]);
 
-  // Don't render anything if analytics aren't available yet
-  if (!dashboard) return null;
+  if (!data) return null;
 
-  const { summary, entriesPerDay, polishStats, streaks } = dashboard;
-  const sparkData = (entriesPerDay || []).slice(-14).map((d) => d.count);
+  const { summary, entriesPerDay, polishStats, streaks } = data;
+  const spark = (entriesPerDay || []).slice(-14).map((d) => d.count);
+
+  // Hide the whole strip if there's literally no data
+  if (summary.totalEntries === 0) return null;
 
   return (
-    <div className="px-4 pt-3 pb-2 space-y-3">
-      {/* Stats cards */}
-      <div className="flex gap-2 overflow-x-auto">
-        <StatCard
-          icon={Mic}
-          label="Today"
-          value={summary.todayEntries}
-          subtitle={`${summary.thisWeekEntries} this week`}
-        />
-        <StatCard
-          icon={Flame}
-          label="Streak"
-          value={streaks.current > 0 ? `${streaks.current}d` : "—"}
-          subtitle={streaks.longest > 1 ? `Best: ${streaks.longest}d` : undefined}
-        />
-        <StatCard
-          icon={Sparkles}
-          label="Polished"
-          value={polishStats.polishRate > 0 ? `${Math.round(polishStats.polishRate)}%` : "—"}
-          subtitle={polishStats.totalPolished > 0 ? `${polishStats.totalPolished} entries` : undefined}
-        />
-        <StatCard
-          icon={Brain}
-          label="Memory"
-          value={vocabTotal}
-          subtitle="words learned"
-        />
-      </div>
-
-      {/* Activity sparkline */}
-      {sparkData.length >= 2 && (
-        <div className="flex items-center gap-3">
-          <span className="text-[10px] text-muted-foreground/40 shrink-0">14d activity</span>
-          <Sparkline data={sparkData} width={240} height={28} />
-        </div>
-      )}
-
-      {/* Fun fact */}
-      {funFact && (
-        <div className="flex items-center gap-2 px-1">
-          <Clock size={11} className="text-muted-foreground/30 shrink-0" />
-          <span className="text-[11px] text-muted-foreground/50 italic">{funFact}</span>
-        </div>
+    <div className="flex items-center gap-2 px-1 py-2 flex-wrap">
+      <Pill icon={Mic} value={summary.todayEntries} label="today" />
+      <Pill icon={Flame} value={`${streaks.current}d`} label="streak" show={streaks.current > 0} />
+      <Pill icon={Sparkles} value={`${Math.round(polishStats.polishRate)}%`} label="polished" show={polishStats.polishRate > 0} />
+      <Pill icon={Brain} value={vocabTotal} label="memory" show={vocabTotal > 0} />
+      <Pill icon={Clipboard} value={summary.thisWeekEntries} label="this week" />
+      {spark.length >= 2 && <MiniSparkline data={spark} />}
+      {fact && (
+        <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground/35 ml-auto">
+          <Clock size={9} /> {fact}
+        </span>
       )}
     </div>
   );
