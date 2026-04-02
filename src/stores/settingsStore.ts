@@ -283,7 +283,7 @@ export const useSettingsStore = create<SettingsState>()((set, get) => ({
   })(),
   dataRetentionEnabled: readBoolean("dataRetentionEnabled", true),
   audioCuesEnabled: readBoolean("audioCuesEnabled", true),
-  pauseMediaOnDictation: readBoolean("pauseMediaOnDictation", false),
+  pauseMediaOnDictation: readBoolean("pauseMediaOnDictation", true), // WhisperWoof: default ON to prevent AirPods HFP profile switch degrading music
   floatingIconAutoHide: readBoolean("floatingIconAutoHide", true), // WhisperWoof: hide when not recording
   startMinimized: readBoolean("startMinimized", true), // WhisperWoof: start in menu bar, not as visible window
   ...(() => {

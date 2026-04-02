@@ -11,6 +11,7 @@ import { useUpcomingEvents } from "../hooks/useUpcomingEvents";
 import UpcomingMeetings from "./UpcomingMeetings";
 import { useSettingsStore } from "../stores/settingsStore";
 import ClipboardHistory from "../whisperwoof/ui/clipboard-preview/ClipboardHistory";
+import HomeStats from "../whisperwoof/ui/home/HomeStats";
 
 interface HistoryViewProps {
   history: TranscriptionItemType[];
@@ -107,6 +108,9 @@ export default function HistoryView({
 
   return (
     <div className="px-4 pt-4 pb-6">
+      {/* WhisperWoof: Stats dashboard at top of home */}
+      <HomeStats />
+
       <div className={cn("mx-auto", isConnected ? "max-w-5xl" : "max-w-3xl")}>
         {showCloudMigrationBanner && (
           <div className="mb-3 relative rounded-lg border border-primary/20 bg-primary/5 dark:bg-primary/10 p-3">
