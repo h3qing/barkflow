@@ -11,6 +11,7 @@ import { useUpcomingEvents } from "../hooks/useUpcomingEvents";
 import UpcomingMeetings from "./UpcomingMeetings";
 import { useSettingsStore } from "../stores/settingsStore";
 import ClipboardHistory from "../whisperwoof/ui/clipboard-preview/ClipboardHistory";
+import HomeStats from "../whisperwoof/ui/home/HomeStats";
 
 interface HistoryViewProps {
   history: TranscriptionItemType[];
@@ -88,14 +89,15 @@ export default function HistoryView({
   const groupedHistory = useMemo(() => {
     if (filteredHistory.length === 0) return [];
 
-    const groups: { label: string; items: TranscriptionItemType[] }[] = [];
+    const groups: { label: string; date: string; items: TranscriptionItemType[] }[] = [];
     let currentLabel: string | null = null;
 
     for (const item of filteredHistory) {
       const label = formatDateGroup(item.timestamp, t);
+      const date = new Date(item.timestamp).toISOString().split("T")[0]; // YYYY-MM-DD for heatmap scroll
 
       if (label !== currentLabel) {
-        groups.push({ label, items: [item] });
+        groups.push({ label, date, items: [item] });
         currentLabel = label;
       } else {
         groups[groups.length - 1].items.push(item);
@@ -108,6 +110,13 @@ export default function HistoryView({
   return (
     <div className="px-4 pt-4 pb-6">
       <div className={cn("mx-auto", isConnected ? "max-w-5xl" : "max-w-3xl")}>
+        {/* WhisperWoof: Stats dashboard at top of home */}
+        <HomeStats onDayClick={(date) => {
+          const target = document.querySelector(`[data-date="${date}"]`);
+          if (target) {
+            target.scrollIntoView({ behavior: "smooth", block: "start" });
+          }
+        }} />
         {showCloudMigrationBanner && (
           <div className="mb-3 relative rounded-lg border border-primary/20 bg-primary/5 dark:bg-primary/10 p-3">
             <button
@@ -148,41 +157,7 @@ export default function HistoryView({
           </div>
         )}
 
-        {!useReasoningModel && !aiCTADismissed && (
-          <div className="mb-3 relative rounded-lg border border-primary/20 bg-primary/5 dark:bg-primary/10 p-3">
-            <button
-              onClick={() => {
-                localStorage.setItem("aiCTADismissed", "true");
-                setAiCTADismissed(true);
-              }}
-              aria-label={t("common.close")}
-              className="absolute top-2 right-2 p-1 rounded-sm text-muted-foreground hover:text-foreground hover:bg-black/5 dark:hover:bg-white/5 transition-colors"
-            >
-              <X size={14} />
-            </button>
-            <div className="flex items-start gap-3 pr-6">
-              <div className="shrink-0 w-8 h-8 rounded-md bg-primary/10 dark:bg-primary/20 flex items-center justify-center">
-                <Sparkles size={16} className="text-primary" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-xs font-medium text-foreground mb-0.5">
-                  {t("controlPanel.aiCta.title")}
-                </p>
-                <p className="text-xs text-muted-foreground mb-2">
-                  {t("controlPanel.aiCta.description")}
-                </p>
-                <Button
-                  variant="default"
-                  size="sm"
-                  className="h-7 text-xs"
-                  onClick={() => onOpenSettings("intelligence")}
-                >
-                  {t("controlPanel.aiCta.enable")}
-                </Button>
-              </div>
-            </div>
-          </div>
-        )}
+        {/* WhisperWoof: AI CTA banner removed — Ollama polish is configured in Settings > Voice & Polish */}
 
         <div className={cn(isConnected ? "flex gap-6" : "")}>
           <div className={cn("min-w-0", isConnected ? "flex-1" : "w-full")}>
@@ -345,7 +320,7 @@ export default function HistoryView({
             ) : (
               <div className="group">
                 {groupedHistory.map((group, index) => (
-                  <div key={group.label} className={index > 0 ? "mt-4" : ""}>
+                  <div key={group.label} data-date={group.date} className={index > 0 ? "mt-4" : ""}>
                     <div className="sticky -top-1 z-10 -mx-4 px-5 pt-2 pb-2 bg-background flex items-center justify-between">
                       <span className="text-[11px] font-semibold text-muted-foreground dark:text-muted-foreground uppercase tracking-wide">
                         {group.label}

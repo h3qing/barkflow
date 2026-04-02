@@ -15,11 +15,41 @@ import mandoHeadSvg from "./assets/mando-head.svg";
 // Matches the website preview aesthetic: Mando head on top, status text,
 // animated waveform bars, and transcribed text preview
 
+// Dog-themed processing verbs — a random one shows each time
+const PROCESSING_VERBS = [
+  "Fetching your words...",
+  "Sniffing out the meaning...",
+  "Polishing your thoughts...",
+  "Chewing on that...",
+  "Shaking off the filler...",
+  "Grooming your text...",
+  "Digging up the good parts...",
+  "Herding your words...",
+  "Nuzzling the grammar...",
+  "Pawing through the transcript...",
+  "Tail-wagging over this one...",
+  "Rolling in your ideas...",
+  "Perking up the punctuation...",
+];
+
+function pickProcessingVerb() {
+  return PROCESSING_VERBS[Math.floor(Math.random() * PROCESSING_VERBS.length)];
+}
+
 const WhisperWoofIndicator = ({ state = 'idle', size = 48, animated = false, speaking = false, recording = false, lastText = '' }) => {
   const isSpeaking = speaking;
   const isRecordingSilent = recording && !speaking;
   const isProcessing = state === 'processing';
   const isIdle = !recording && !isProcessing;
+
+  // Pick a new verb each time processing starts (stable during processing)
+  const processingVerbRef = useRef(pickProcessingVerb());
+  const wasProcessingRef = useRef(false);
+  if (isProcessing && !wasProcessingRef.current) {
+    processingVerbRef.current = pickProcessingVerb();
+  }
+  wasProcessingRef.current = isProcessing;
+  const processingVerb = processingVerbRef.current;
 
   // Waveform bars — 20 bars with bell-curve heights
   const barCount = 20;
@@ -77,7 +107,7 @@ const WhisperWoofIndicator = ({ state = 'idle', size = 48, animated = false, spe
         ) : isRecordingSilent ? (
           <span style={{ color: 'rgba(232,213,195,0.5)' }}>Waiting for voice...</span>
         ) : isProcessing ? (
-          <span style={{ color: '#A06A3C', animation: 'mandoBreath 1.5s ease-in-out infinite' }}>Processing...</span>
+          <span style={{ color: '#A06A3C', animation: 'mandoBreath 1.5s ease-in-out infinite' }}>{processingVerb}</span>
         ) : (
           <span style={{ color: 'rgba(232,213,195,0.35)' }}>Hold Fn to record</span>
         )}
