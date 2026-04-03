@@ -11,6 +11,21 @@ const path = require("path");
 const http = require("http");
 require("dotenv").config({ path: path.join(__dirname, ".env") });
 
+// WhisperWoof: Aggressive memory optimization
+// Reduce V8 heap limit for helper processes, enable GC hints
+app.commandLine.appendSwitch("js-flags", "--max-old-space-size=256 --expose-gc");
+app.commandLine.appendSwitch("disable-renderer-backgrounding"); // don't throttle hidden renderers, just let them GC
+app.commandLine.appendSwitch("disable-background-timer-throttling");
+
+// Force cleanup of child processes on unexpected exit (SIGTERM, SIGINT)
+for (const signal of ["SIGTERM", "SIGINT", "SIGHUP"]) {
+  process.on(signal, () => {
+    app.quit();
+    // Force kill after 3 seconds if graceful quit hangs
+    setTimeout(() => process.exit(1), 3000);
+  });
+}
+
 const VALID_CHANNELS = new Set(["development", "staging", "production"]);
 const DEFAULT_OAUTH_PROTOCOL_BY_CHANNEL = {
   development: "whisperwoof-dev",
@@ -1131,6 +1146,12 @@ if (gotSingleInstanceLock) {
     // WhisperWoof: Unregister snippet hotkeys
     const { unregisterSnippetHotkeys } = require("./src/whisperwoof/bridge/snippet-hotkeys");
     unregisterSnippetHotkeys();
+
+    // WhisperWoof: Flush vocabulary cache to disk
+    try {
+      const { flushToDisk } = require("./src/whisperwoof/bridge/vocabulary");
+      flushToDisk();
+    } catch { /* */ }
 
     // WhisperWoof: Shutdown WhisperWoof subsystems
     const { shutdownWhisperWoof } = require("./src/whisperwoof/bridge/app-init");

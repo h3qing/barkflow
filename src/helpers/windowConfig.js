@@ -77,7 +77,7 @@ const CONTROL_PANEL_CONFIG = {
     // through the main process for full security.
     webSecurity: true,
     spellcheck: false,
-    backgroundThrottling: false,
+    backgroundThrottling: true, // WhisperWoof: throttle hidden windows to save memory
   },
   title: "Control Panel",
   resizable: true,
@@ -203,7 +203,7 @@ const AGENT_OVERLAY_CONFIG = {
     // WhisperWoof: webSecurity re-enabled (same as control panel)
     webSecurity: true,
     spellcheck: false,
-    backgroundThrottling: false,
+    backgroundThrottling: true, // WhisperWoof: throttle hidden windows to save memory
   },
 };
 

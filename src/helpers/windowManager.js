@@ -41,6 +41,11 @@ class WindowManager {
     app.on("before-quit", () => {
       this.isQuitting = true;
     });
+
+    // WhisperWoof: reposition widget when displays change (monitor plugged/unplugged/rearranged)
+    screen.on("display-added", () => this._repositionToCursorDisplay());
+    screen.on("display-removed", () => this._repositionToCursorDisplay());
+    screen.on("display-metrics-changed", () => this._repositionToCursorDisplay());
   }
 
   async createMainWindow() {
@@ -848,31 +853,26 @@ class WindowManager {
 
     const cursorPos = screen.getCursorScreenPoint();
     const cursorDisplay = screen.getDisplayNearestPoint(cursorPos);
-
     const currentBounds = this.mainWindow.getBounds();
-    const currentDisplay = screen.getDisplayNearestPoint({
-      x: currentBounds.x + currentBounds.width / 2,
-      y: currentBounds.y + currentBounds.height / 2,
-    });
-
-    if (currentDisplay.id === cursorDisplay.id) return;
 
     const newPos = WindowPositionUtil.getMainWindowPosition(
       cursorDisplay,
       { width: currentBounds.width, height: currentBounds.height },
       this._panelStartPosition
     );
-    this.mainWindow.setBounds(newPos);
+
+    // Only move if position actually changed (avoid flicker)
+    if (newPos.x !== currentBounds.x || newPos.y !== currentBounds.y) {
+      this.mainWindow.setBounds(newPos);
+    }
   }
 
   showDictationPanel(options = {}) {
     const { focus = false } = options;
     if (this.mainWindow && !this.mainWindow.isDestroyed()) {
-      const wasHidden = !this.mainWindow.isVisible() || this.mainWindow.isMinimized();
-
-      if (wasHidden) {
-        this._repositionToCursorDisplay();
-      }
+      // WhisperWoof: always reposition to the cursor's display, not just when hidden.
+      // This handles the case where the user switches monitors while the widget is visible.
+      this._repositionToCursorDisplay();
 
       if (this.mainWindow.isMinimized()) {
         this.mainWindow.restore();
