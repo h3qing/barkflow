@@ -39,6 +39,7 @@ const WhisperWoofProjects = React.lazy(() => import("../whisperwoof/ui/projects/
 // WhisperWoofSettings moved into SettingsModal as "Voice & Polish" tab
 const WhisperWoofPlugins = React.lazy(() => import("../whisperwoof/ui/plugins/WhisperWoofPlugins"));
 const SmartClipboard = React.lazy(() => import("../whisperwoof/ui/smart-clipboard/SmartClipboard"));
+const StorageManager = React.lazy(() => import("../whisperwoof/ui/storage/StorageManager"));
 const CommandBar = React.lazy(() => import("../whisperwoof/ui/command-bar/CommandBar"));
 
 export default function ControlPanel() {
@@ -694,6 +695,11 @@ export default function ControlPanel() {
             {activeView === "smart-clipboard" && (
               <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading...</span></div>}>
                 <SmartClipboard />
+              </Suspense>
+            )}
+            {activeView === "storage" && (
+              <Suspense fallback={<div className="flex items-center justify-center h-full"><span className="text-muted-foreground">Loading...</span></div>}>
+                <StorageManager />
               </Suspense>
             )}
           </div>
