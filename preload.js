@@ -902,4 +902,13 @@ contextBridge.exposeInMainWorld("electronAPI", {
   whisperwoofDeleteSnippet: (id) => ipcRenderer.invoke("whisperwoof-delete-snippet", id),
   whisperwoofRecordSnippetUse: (id) => ipcRenderer.invoke("whisperwoof-record-snippet-use", id),
   whisperwoofSuggestSnippets: (limit) => ipcRenderer.invoke("whisperwoof-suggest-snippets", limit),
+
+  // Storage Manager
+  whisperwoofStorageUsage: () => ipcRenderer.invoke("whisperwoof-storage-usage"),
+  whisperwoofStorageEntries: (options) => ipcRenderer.invoke("whisperwoof-storage-entries", options),
+  whisperwoofStorageDeleteBatch: (ids) => ipcRenderer.invoke("whisperwoof-storage-delete-batch", ids),
+  whisperwoofStorageDeleteBySource: (source) => ipcRenderer.invoke("whisperwoof-storage-delete-by-source", source),
+  whisperwoofStorageDeleteOlder: (days) => ipcRenderer.invoke("whisperwoof-storage-delete-older", days),
+  whisperwoofStorageExport: (ids) => ipcRenderer.invoke("whisperwoof-storage-export", ids),
+  whisperwoofStorageCleanupOrphans: () => ipcRenderer.invoke("whisperwoof-storage-cleanup-orphans"),
 });

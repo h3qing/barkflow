@@ -5806,6 +5806,85 @@ class IPCHandlers {
         return [];
       }
     });
+
+    // --- Storage Manager ---
+
+    ipcMain.handle("whisperwoof-storage-usage", async () => {
+      try {
+        const sm = require("../whisperwoof/bridge/storage-manager");
+        sm.setDatabase(require("../whisperwoof/bridge/app-init").getWhisperWoofDb());
+        return sm.getStorageUsage();
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] storage-usage failed: ${error.message}`);
+        return null;
+      }
+    });
+
+    ipcMain.handle("whisperwoof-storage-entries", async (_event, options) => {
+      try {
+        const sm = require("../whisperwoof/bridge/storage-manager");
+        sm.setDatabase(require("../whisperwoof/bridge/app-init").getWhisperWoofDb());
+        return sm.getEntriesForStorageView(options);
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] storage-entries failed: ${error.message}`);
+        return [];
+      }
+    });
+
+    ipcMain.handle("whisperwoof-storage-delete-batch", async (_event, ids) => {
+      try {
+        const sm = require("../whisperwoof/bridge/storage-manager");
+        sm.setDatabase(require("../whisperwoof/bridge/app-init").getWhisperWoofDb());
+        return sm.deleteEntriesWithCleanup(ids);
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] storage-delete-batch failed: ${error.message}`);
+        return { deleted: 0, filesRemoved: 0 };
+      }
+    });
+
+    ipcMain.handle("whisperwoof-storage-delete-by-source", async (_event, source) => {
+      try {
+        const sm = require("../whisperwoof/bridge/storage-manager");
+        sm.setDatabase(require("../whisperwoof/bridge/app-init").getWhisperWoofDb());
+        return sm.deleteEntriesBySource(source);
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] storage-delete-by-source failed: ${error.message}`);
+        return { deleted: 0, filesRemoved: 0 };
+      }
+    });
+
+    ipcMain.handle("whisperwoof-storage-delete-older", async (_event, days) => {
+      try {
+        const sm = require("../whisperwoof/bridge/storage-manager");
+        sm.setDatabase(require("../whisperwoof/bridge/app-init").getWhisperWoofDb());
+        return sm.deleteEntriesOlderThan(days);
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] storage-delete-older failed: ${error.message}`);
+        return { deleted: 0, filesRemoved: 0 };
+      }
+    });
+
+    ipcMain.handle("whisperwoof-storage-export", async (_event, ids) => {
+      try {
+        const sm = require("../whisperwoof/bridge/storage-manager");
+        sm.setDatabase(require("../whisperwoof/bridge/app-init").getWhisperWoofDb());
+        return sm.exportEntries(ids);
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] storage-export failed: ${error.message}`);
+        return [];
+      }
+    });
+
+    ipcMain.handle("whisperwoof-storage-cleanup-orphans", async () => {
+      try {
+        const sm = require("../whisperwoof/bridge/storage-manager");
+        sm.setDatabase(require("../whisperwoof/bridge/app-init").getWhisperWoofDb());
+        return sm.cleanupOrphanedFiles();
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] storage-cleanup-orphans failed: ${error.message}`);
+        return { removed: 0, bytes: 0 };
+      }
+    });
   }
 
   broadcastToWindows(channel, payload) {
