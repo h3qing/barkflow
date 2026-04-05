@@ -5,7 +5,7 @@
  * select and batch delete, export as JSON, clean up orphaned files.
  */
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import {
   HardDrive,
   Trash2,
@@ -21,6 +21,9 @@ import {
   ArrowUpDown,
   Sparkles,
   AlertTriangle,
+  Play,
+  StopCircle,
+  X,
 } from "lucide-react";
 import { cn } from "../../../components/lib/utils";
 
@@ -143,6 +146,9 @@ export default function StorageManager() {
   const [filterSource, setFilterSource] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [actionResult, setActionResult] = useState<string | null>(null);
+  const [confirmAction, setConfirmAction] = useState<{ message: string; onConfirm: () => void } | null>(null);
+  const [playingAudio, setPlayingAudio] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const fetchUsage = useCallback(async () => {
     const api = getAPI();
@@ -188,7 +194,11 @@ export default function StorageManager() {
     setTimeout(() => setActionResult(null), 4000);
   };
 
-  const handleDeleteSelected = async () => {
+  const confirmThen = (message: string, action: () => void) => {
+    setConfirmAction({ message, onConfirm: action });
+  };
+
+  const doDeleteSelected = async () => {
     if (selected.size === 0) return;
     setLoading(true);
     const api = getAPI();
@@ -200,6 +210,30 @@ export default function StorageManager() {
     await fetchUsage();
     await fetchEntries();
     setLoading(false);
+  };
+
+  const handleDeleteSelected = () => {
+    if (selected.size === 0) return;
+    confirmThen(`Delete ${selected.size} selected entries? Associated files will also be removed. This cannot be undone.`, doDeleteSelected);
+  };
+
+  // Audio playback
+  const handlePlayAudio = (filePath: string) => {
+    if (playingAudio === filePath) {
+      // Stop
+      audioRef.current?.pause();
+      audioRef.current = null;
+      setPlayingAudio(null);
+      return;
+    }
+    // Stop any existing playback
+    audioRef.current?.pause();
+    const audio = new Audio(`file://${filePath}`);
+    audio.onended = () => { setPlayingAudio(null); audioRef.current = null; };
+    audio.onerror = () => { setPlayingAudio(null); audioRef.current = null; };
+    audio.play().catch(() => setPlayingAudio(null));
+    audioRef.current = audio;
+    setPlayingAudio(filePath);
   };
 
   const handleExportSelected = async () => {
@@ -217,21 +251,25 @@ export default function StorageManager() {
     showResult(`Exported ${data.length} entries`);
   };
 
-  const handleExportAndDelete = async () => {
-    await handleExportSelected();
-    await handleDeleteSelected();
+  const handleExportAndDelete = () => {
+    confirmThen(`Export ${selected.size > 0 ? selected.size + " selected" : "all"} entries as JSON, then delete them? This cannot be undone.`, async () => {
+      await handleExportSelected();
+      await doDeleteSelected();
+    });
   };
 
-  const handleDeleteOlder = async (days: number) => {
-    setLoading(true);
-    const api = getAPI();
-    if (api.whisperwoofStorageDeleteOlder) {
-      const result = await api.whisperwoofStorageDeleteOlder(days);
-      showResult(`Deleted ${result.deleted} entries older than ${days} days (${result.filesRemoved} files removed)`);
-    }
-    await fetchUsage();
-    await fetchEntries();
-    setLoading(false);
+  const handleDeleteOlder = (days: number) => {
+    confirmThen(`Delete all entries older than ${days} days? Favorited entries will be preserved. This cannot be undone.`, async () => {
+      setLoading(true);
+      const api = getAPI();
+      if (api.whisperwoofStorageDeleteOlder) {
+        const result = await api.whisperwoofStorageDeleteOlder(days);
+        showResult(`Deleted ${result.deleted} entries older than ${days} days (${result.filesRemoved} files removed)`);
+      }
+      await fetchUsage();
+      await fetchEntries();
+      setLoading(false);
+    });
   };
 
   const handleCleanupOrphans = async () => {
@@ -247,6 +285,32 @@ export default function StorageManager() {
 
   return (
     <div className="flex flex-col h-full">
+      {/* Confirmation Dialog */}
+      {confirmAction && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-background border border-border/30 dark:border-white/10 rounded-xl shadow-2xl max-w-sm w-full mx-4 p-5">
+            <div className="flex items-start gap-3 mb-4">
+              <AlertTriangle size={20} className="text-amber-500 shrink-0 mt-0.5" />
+              <p className="text-sm text-foreground leading-relaxed">{confirmAction.message}</p>
+            </div>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={() => setConfirmAction(null)}
+                className="px-4 py-1.5 text-xs text-muted-foreground hover:text-foreground rounded-md border border-border/20 dark:border-white/8 hover:bg-foreground/5 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => { confirmAction.onConfirm(); setConfirmAction(null); }}
+                className="px-4 py-1.5 text-xs text-white bg-red-500 hover:bg-red-600 rounded-md transition-colors"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="px-5 py-3 border-b border-border/15 dark:border-white/6 shrink-0">
         <div className="flex items-center gap-2">
@@ -384,6 +448,17 @@ export default function StorageManager() {
                     {entry.favorite === 1 && <span className="text-amber-400">★</span>}
                   </div>
                 </div>
+
+                {/* Play button for audio files */}
+                {entry.filePath && entry.source === "voice" && (
+                  <button
+                    onClick={(e) => { e.stopPropagation(); handlePlayAudio(entry.filePath!); }}
+                    className="p-1 rounded hover:bg-foreground/8 dark:hover:bg-white/8 text-muted-foreground/40 hover:text-foreground transition-colors shrink-0"
+                    title={playingAudio === entry.filePath ? "Stop" : "Play recording"}
+                  >
+                    {playingAudio === entry.filePath ? <StopCircle size={14} className="text-amber-500" /> : <Play size={14} />}
+                  </button>
+                )}
 
                 {/* Size badge for large items */}
                 {entry.fileSize > 100000 && (
