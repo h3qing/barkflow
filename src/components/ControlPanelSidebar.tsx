@@ -16,6 +16,7 @@ import {
   Puzzle,
   Copy,
   HardDrive,
+  Beaker,
 } from "lucide-react";
 import logoIcon from "../assets/mando-head.svg";
 import { useTranslation } from "react-i18next";
@@ -25,7 +26,7 @@ import { getCachedPlatform } from "../utils/platform";
 
 const platform = getCachedPlatform();
 
-export type ControlPanelView = "home" | "personal-notes" | "dictionary" | "memory" | "upload" | "integrations" | "whisperwoof-history" | "whisperwoof-projects" | "whisperwoof-plugins" | "smart-clipboard" | "storage";
+export type ControlPanelView = "home" | "personal-notes" | "dictionary" | "memory" | "upload" | "integrations" | "whisperwoof-history" | "whisperwoof-projects" | "whisperwoof-plugins" | "smart-clipboard" | "storage" | "tuning";
 
 interface ControlPanelSidebarProps {
   activeView: ControlPanelView;
@@ -282,6 +283,19 @@ export default function ControlPanelSidebar({
         >
           <HardDrive size={15} className="shrink-0 text-foreground/60" />
           <span className="text-xs text-foreground/80">Storage</span>
+        </button>
+
+        <button
+          onClick={() => onViewChange("tuning")}
+          aria-label="Pipeline Tuning"
+          className={`group flex items-center gap-2.5 w-full h-8 px-2.5 rounded-md text-left outline-none ${
+            activeView === "tuning"
+              ? "bg-foreground/8 dark:bg-white/8"
+              : "hover:bg-foreground/4 dark:hover:bg-white/4"
+          } focus-visible:ring-1 focus-visible:ring-primary/30 transition-colors duration-150`}
+        >
+          <Beaker size={15} className="shrink-0 text-foreground/60" />
+          <span className="text-xs text-foreground/80">Tuning</span>
         </button>
 
         <button
