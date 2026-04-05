@@ -25,7 +25,7 @@ let lastClipboardText = "";
 // When voice text is pasted at cursor, it appears on clipboard — we don't want
 // to capture it again as a "clipboard" entry.
 const recentVoiceTexts = new Set();
-const VOICE_DEDUP_TTL_MS = 5000; // forget after 5 seconds
+const VOICE_DEDUP_TTL_MS = 10000; // forget after 10 seconds (was 5s, too short for rapid dictation)
 
 function markAsVoiceTranscription(text) {
   if (!text) return;

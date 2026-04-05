@@ -911,4 +911,13 @@ contextBridge.exposeInMainWorld("electronAPI", {
   whisperwoofStorageDeleteOlder: (days) => ipcRenderer.invoke("whisperwoof-storage-delete-older", days),
   whisperwoofStorageExport: (ids) => ipcRenderer.invoke("whisperwoof-storage-export", ids),
   whisperwoofStorageCleanupOrphans: () => ipcRenderer.invoke("whisperwoof-storage-cleanup-orphans"),
+
+  // Pipeline Tuning Bench
+  whisperwoofTuningGetConfigs: () => ipcRenderer.invoke("whisperwoof-tuning-get-configs"),
+  whisperwoofTuningSaveTest: (testCase) => ipcRenderer.invoke("whisperwoof-tuning-save-test", testCase),
+  whisperwoofTuningGetTests: () => ipcRenderer.invoke("whisperwoof-tuning-get-tests"),
+  whisperwoofTuningDeleteTest: (id) => ipcRenderer.invoke("whisperwoof-tuning-delete-test", id),
+  whisperwoofTuningGetVariants: (testCaseId) => ipcRenderer.invoke("whisperwoof-tuning-get-variants", testCaseId),
+  whisperwoofTuningRunVariant: (config) => ipcRenderer.invoke("whisperwoof-tuning-run-variant", config),
+  whisperwoofTuningDeleteVariant: (id) => ipcRenderer.invoke("whisperwoof-tuning-delete-variant", id),
 });
