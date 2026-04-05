@@ -117,7 +117,8 @@ export class SqliteProvider implements StorageProvider {
         duration_ms INTEGER,
         project_id  TEXT REFERENCES bf_projects(id) ON DELETE SET NULL,
         audio_path  TEXT,
-        metadata    TEXT
+        metadata    TEXT,
+        favorite    INTEGER NOT NULL DEFAULT 0
       )
     `);
 
@@ -277,6 +278,7 @@ export class SqliteProvider implements StorageProvider {
       projectId: 'project_id',
       audioPath: 'audio_path',
       metadata: 'metadata',
+      favorite: 'favorite',
     };
 
     for (const [key, column] of Object.entries(fieldMap)) {

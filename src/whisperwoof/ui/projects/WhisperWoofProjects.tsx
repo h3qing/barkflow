@@ -510,7 +510,7 @@ export default function WhisperWoofProjects({ className }: WhisperWoofProjectsPr
                 </p>
               </div>
               <button
-                onClick={() => setIsAddingProject(true)}
+                onClick={() => setIsCreating(true)}
                 className="flex items-center gap-1.5 text-xs text-primary hover:text-primary/80 px-3 py-1.5 rounded-md bg-primary/8 hover:bg-primary/12 transition-colors"
               >
                 <Plus size={12} />
