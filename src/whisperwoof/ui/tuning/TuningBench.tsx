@@ -1,16 +1,14 @@
 /**
  * TuningBench — Horizontal flow chart pipeline tuner
  *
- * Three columns: STT Model → Polish Preset → LLM Model
- * Users record audio, select nodes in each column to create paths,
- * run them, and see output cards on the right.
+ * Record audio → transcribe → select preset × LLM combos → compare outputs
+ * Includes audio playback, ideal output for scoring, and flow chart node selection.
  */
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import {
   Beaker,
   Mic,
-  MicOff,
   Play,
   Trash2,
   Check,
@@ -21,7 +19,9 @@ import {
   Star,
   Copy,
   StopCircle,
-  Plus,
+  Volume2,
+  Pause,
+  Target,
 } from "lucide-react";
 import { cn } from "../../../components/lib/utils";
 
@@ -29,20 +29,20 @@ import { cn } from "../../../components/lib/utils";
 
 interface Variant {
   id: string;
-  sttModel: string;
   polishPreset: string;
   llmProvider: string;
   llmModel: string;
-  sttOutput: string | null;
+  output: string | null;
   polishedOutput: string | null;
   durationMs: number | null;
   error: string | null;
   status: "pending" | "running" | "done" | "error";
+  score?: number; // WER against ideal output
 }
 
 interface TuningAPI {
-  whisperwoofTuningGetConfigs?: () => Promise<{ presets: string[]; providers: { provider: string; models: string[] }[] }>;
   whisperwoofTuningRunVariant?: (config: Record<string, string>) => Promise<Variant>;
+  transcribeLocalWhisper?: (blob: ArrayBuffer, opts: Record<string, unknown>) => Promise<{ text?: string; error?: string }>;
 }
 
 function getAPI(): TuningAPI {
@@ -50,16 +50,28 @@ function getAPI(): TuningAPI {
   return (window as any).electronAPI ?? {};
 }
 
-// --- Constants ---
+// --- WER scoring ---
 
-const STT_MODELS = [
-  { id: "tiny", label: "Tiny", size: "75MB", speed: "fastest" },
-  { id: "base", label: "Base", size: "142MB", speed: "fast" },
-  { id: "small", label: "Small", size: "466MB", speed: "balanced" },
-  { id: "medium", label: "Medium", size: "1.5GB", speed: "slow" },
-  { id: "large", label: "Large", size: "3GB", speed: "best quality" },
-  { id: "turbo", label: "Turbo", size: "1.6GB", speed: "fast + good" },
-];
+function wordErrorRate(expected: string, actual: string): number {
+  const exp = expected.toLowerCase().trim().split(/\s+/).filter(Boolean);
+  const act = actual.toLowerCase().trim().split(/\s+/).filter(Boolean);
+  if (exp.length === 0) return 0;
+
+  const m = exp.length, n = act.length;
+  const dp: number[][] = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+  for (let i = 0; i <= m; i++) dp[i][0] = i;
+  for (let j = 0; j <= n; j++) dp[0][j] = j;
+  for (let i = 1; i <= m; i++) {
+    for (let j = 1; j <= n; j++) {
+      dp[i][j] = exp[i - 1] === act[j - 1]
+        ? dp[i - 1][j - 1]
+        : 1 + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+    }
+  }
+  return Math.round((dp[m][n] / m) * 100);
+}
+
+// --- Constants ---
 
 const PRESETS = [
   { id: "clean", label: "Clean", desc: "Remove fillers, fix grammar" },
@@ -80,18 +92,8 @@ const LLM_MODELS = [
 
 // --- Flow Node ---
 
-function FlowNode({
-  label,
-  sublabel,
-  selected,
-  active,
-  onClick,
-}: {
-  label: string;
-  sublabel?: string;
-  selected: boolean;
-  active?: boolean;
-  onClick: () => void;
+function FlowNode({ label, sublabel, selected, onClick }: {
+  label: string; sublabel?: string; selected: boolean; onClick: () => void;
 }) {
   return (
     <button
@@ -100,8 +102,7 @@ function FlowNode({
         "w-full text-left px-3 py-2 rounded-lg border transition-all duration-150",
         selected
           ? "border-[#A06A3C]/40 bg-[#A06A3C]/[0.08] text-foreground"
-          : "border-border/15 dark:border-white/6 text-muted-foreground/60 hover:text-foreground hover:border-border/30",
-        active && "ring-1 ring-[#A06A3C]/30"
+          : "border-border/15 dark:border-white/6 text-muted-foreground/60 hover:text-foreground hover:border-border/30"
       )}
     >
       <span className="text-xs font-medium block">{label}</span>
@@ -110,29 +111,131 @@ function FlowNode({
   );
 }
 
-// --- Recording Button ---
+// --- Output Card ---
 
-function RecordButton({
-  onRecorded,
-}: {
-  onRecorded: (text: string) => void;
+function OutputCard({ variant, isFastest, isBest }: {
+  variant: Variant; isFastest: boolean; isBest: boolean;
 }) {
+  const handleCopy = () => {
+    const text = variant.polishedOutput || variant.output;
+    if (text) navigator.clipboard.writeText(text);
+  };
+
+  return (
+    <div className={cn(
+      "rounded-lg border p-3 space-y-2 transition-all",
+      isBest
+        ? "border-emerald-500/30 bg-emerald-500/[0.03] ring-1 ring-emerald-500/20"
+        : variant.status === "error"
+          ? "border-red-500/20 bg-red-500/[0.03]"
+          : "border-border/15 dark:border-white/6 bg-foreground/[0.01] dark:bg-white/[0.015]"
+    )}>
+      <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground/50">
+        <span className="px-1.5 py-0.5 rounded bg-foreground/[0.04] dark:bg-white/[0.04] font-medium">{variant.polishPreset}</span>
+        <ChevronRight size={8} />
+        <span className="px-1.5 py-0.5 rounded bg-foreground/[0.04] dark:bg-white/[0.04]">{variant.llmModel.split(":").pop()}</span>
+        <span className="ml-auto flex items-center gap-1.5">
+          {variant.score != null && (
+            <span className={cn("font-medium", variant.score < 20 ? "text-emerald-500/70" : variant.score < 50 ? "text-amber-500/70" : "text-red-400/70")}>
+              {100 - variant.score}% match
+            </span>
+          )}
+          {variant.durationMs != null && (
+            <span className="flex items-center gap-0.5"><Clock size={8} />{(variant.durationMs / 1000).toFixed(1)}s</span>
+          )}
+          {isFastest && <Star size={8} className="text-emerald-500/60" />}
+          {isBest && <Target size={8} className="text-emerald-500/60" />}
+        </span>
+      </div>
+
+      {variant.status === "running" && (
+        <div className="flex items-center gap-2 text-xs text-muted-foreground/50 py-2">
+          <Loader2 size={12} className="animate-spin" /> Processing...
+        </div>
+      )}
+      {variant.status === "error" && (
+        <p className="text-xs text-red-400/70 flex items-start gap-1.5">
+          <AlertCircle size={11} className="shrink-0 mt-0.5" />{variant.error}
+        </p>
+      )}
+      {variant.status === "done" && (
+        <div className="flex items-start justify-between gap-2">
+          <p className="text-xs text-foreground/80 leading-relaxed whitespace-pre-wrap flex-1">
+            {variant.polishedOutput || variant.output || "(empty)"}
+          </p>
+          <button onClick={handleCopy} className="shrink-0 p-1 rounded hover:bg-foreground/5 text-muted-foreground/25 hover:text-foreground">
+            <Copy size={11} />
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// --- Main ---
+
+export default function TuningBench() {
+  // Recording state
   const [isRecording, setIsRecording] = useState(false);
-  const [recordedText, setRecordedText] = useState<string | null>(null);
+  const [isTranscribing, setIsTranscribing] = useState(false);
+  const [audioUrl, setAudioUrl] = useState<string | null>(null);
+  const [audioPlaying, setAudioPlaying] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Pipeline state
+  const [rawTranscript, setRawTranscript] = useState("");
+  const [idealOutput, setIdealOutput] = useState("");
+  const [selectedPresets, setSelectedPresets] = useState<Set<string>>(new Set(["clean", "professional"]));
+  const [selectedLLMs, setSelectedLLMs] = useState<Set<string>>(new Set(["ollama:llama3.2:1b"]));
+  const [variants, setVariants] = useState<Variant[]>([]);
+  const [isRunning, setIsRunning] = useState(false);
+
+  const toggleSet = (set: Set<string>, id: string): Set<string> => {
+    const next = new Set(set);
+    next.has(id) ? next.delete(id) : next.add(id);
+    return next;
+  };
+
+  // --- Recording ---
 
   const startRecording = async () => {
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: { echoCancellation: false, noiseSuppression: false, autoGainControl: false },
+      });
+      const mediaRecorder = new MediaRecorder(stream, { mimeType: "audio/webm" });
       chunksRef.current = [];
       mediaRecorder.ondataavailable = (e) => { if (e.data.size > 0) chunksRef.current.push(e.data); };
-      mediaRecorder.onstop = () => {
+      mediaRecorder.onstop = async () => {
         stream.getTracks().forEach((t) => t.stop());
-        // For now, use the text input approach since we can't run STT from here
-        // In the real implementation, this would send audio to the whisper-server
+        const blob = new Blob(chunksRef.current, { type: "audio/webm" });
+
+        // Create playback URL
+        const url = URL.createObjectURL(blob);
+        setAudioUrl(url);
         setIsRecording(false);
+
+        // Transcribe via whisper-server
+        setIsTranscribing(true);
+        try {
+          const api = getAPI();
+          if (api.transcribeLocalWhisper) {
+            const arrayBuffer = await blob.arrayBuffer();
+            const result = await api.transcribeLocalWhisper(arrayBuffer, {});
+            if (result?.text) {
+              setRawTranscript(result.text);
+            } else {
+              setRawTranscript(`[Transcription failed: ${result?.error || "unknown error"}]`);
+            }
+          } else {
+            setRawTranscript("[Whisper not available — paste text below instead]");
+          }
+        } catch (err) {
+          setRawTranscript(`[Error: ${err instanceof Error ? err.message : "transcription failed"}]`);
+        }
+        setIsTranscribing(false);
       };
       mediaRecorderRef.current = mediaRecorder;
       mediaRecorder.start();
@@ -147,111 +250,29 @@ function RecordButton({
     mediaRecorderRef.current = null;
   };
 
-  return (
-    <div className="space-y-2">
-      <div className="flex items-center gap-2">
-        <button
-          onClick={isRecording ? stopRecording : startRecording}
-          className={cn(
-            "flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-medium transition-all",
-            isRecording
-              ? "bg-red-500/10 text-red-400 border border-red-500/20"
-              : "bg-[#A06A3C]/10 text-[#A06A3C] border border-[#A06A3C]/20 hover:bg-[#A06A3C]/15"
-          )}
-        >
-          {isRecording ? <StopCircle size={14} className="animate-pulse" /> : <Mic size={14} />}
-          {isRecording ? "Stop recording" : "Record a sample"}
-        </button>
-        {isRecording && (
-          <span className="text-[10px] text-red-400/60 animate-pulse">Recording...</span>
-        )}
-      </div>
-      <p className="text-[10px] text-muted-foreground/40">
-        Or paste text below to test polish quality without recording
-      </p>
-    </div>
-  );
-}
-
-// --- Output Card ---
-
-function OutputCard({
-  variant,
-  isFastest,
-}: {
-  variant: Variant;
-  isFastest: boolean;
-}) {
-  return (
-    <div className={cn(
-      "rounded-lg border p-3 space-y-2",
-      variant.status === "done"
-        ? "border-border/20 dark:border-white/8 bg-foreground/[0.015] dark:bg-white/[0.02]"
-        : variant.status === "error"
-          ? "border-red-500/20 bg-red-500/[0.03]"
-          : "border-border/10 dark:border-white/4"
-    )}>
-      {/* Path label */}
-      <div className="flex items-center gap-1 text-[10px] text-muted-foreground/50">
-        <span className="px-1.5 py-0.5 rounded bg-foreground/[0.04] dark:bg-white/[0.04]">{variant.polishPreset}</span>
-        <ChevronRight size={8} />
-        <span className="px-1.5 py-0.5 rounded bg-foreground/[0.04] dark:bg-white/[0.04]">{variant.llmModel.split(":").pop()}</span>
-        {variant.durationMs && (
-          <span className="ml-auto flex items-center gap-0.5">
-            <Clock size={8} />
-            {(variant.durationMs / 1000).toFixed(1)}s
-            {isFastest && <Star size={8} className="text-emerald-500/60 ml-0.5" />}
-          </span>
-        )}
-      </div>
-
-      {/* Output */}
-      {variant.status === "running" && (
-        <div className="flex items-center gap-2 text-xs text-muted-foreground/50 py-3">
-          <Loader2 size={12} className="animate-spin" /> Processing...
-        </div>
-      )}
-      {variant.status === "error" && (
-        <p className="text-xs text-red-400/70 flex items-start gap-1.5">
-          <AlertCircle size={11} className="shrink-0 mt-0.5" />
-          {variant.error}
-        </p>
-      )}
-      {variant.status === "done" && variant.polishedOutput && (
-        <p className="text-xs text-foreground/80 leading-relaxed whitespace-pre-wrap">
-          {variant.polishedOutput}
-        </p>
-      )}
-      {variant.status === "pending" && (
-        <p className="text-xs text-muted-foreground/30 italic py-3">Waiting...</p>
-      )}
-    </div>
-  );
-}
-
-// --- Main ---
-
-export default function TuningBench() {
-  const [inputText, setInputText] = useState("");
-  const [selectedSTT, setSelectedSTT] = useState<Set<string>>(new Set(["small"]));
-  const [selectedPresets, setSelectedPresets] = useState<Set<string>>(new Set(["clean"]));
-  const [selectedLLMs, setSelectedLLMs] = useState<Set<string>>(new Set(["ollama:llama3.2:1b"]));
-  const [variants, setVariants] = useState<Variant[]>([]);
-  const [isRunning, setIsRunning] = useState(false);
-
-  const toggleSet = (set: Set<string>, id: string): Set<string> => {
-    const next = new Set(set);
-    next.has(id) ? next.delete(id) : next.add(id);
-    return next;
+  const togglePlayback = () => {
+    if (!audioUrl) return;
+    if (audioPlaying) {
+      audioRef.current?.pause();
+      setAudioPlaying(false);
+    } else {
+      const audio = new Audio(audioUrl);
+      audio.onended = () => { setAudioPlaying(false); audioRef.current = null; };
+      audio.play();
+      audioRef.current = audio;
+      setAudioPlaying(true);
+    }
   };
+
+  // --- Run variants ---
 
   const pathCount = selectedPresets.size * selectedLLMs.size;
 
   const handleRun = async () => {
-    if (!inputText.trim() || pathCount === 0) return;
+    const text = rawTranscript.trim();
+    if (!text || text.startsWith("[") || pathCount === 0) return;
     setIsRunning(true);
 
-    // Generate all combinations
     const combos: { preset: string; provider: string; model: string }[] = [];
     for (const preset of selectedPresets) {
       for (const llmId of selectedLLMs) {
@@ -260,14 +281,12 @@ export default function TuningBench() {
       }
     }
 
-    // Create pending variants
     const pending: Variant[] = combos.map((c, i) => ({
       id: `v-${Date.now()}-${i}`,
-      sttModel: [...selectedSTT][0] || "small",
       polishPreset: c.preset,
       llmProvider: c.provider,
       llmModel: c.model,
-      sttOutput: inputText,
+      output: null,
       polishedOutput: null,
       durationMs: null,
       error: null,
@@ -275,47 +294,48 @@ export default function TuningBench() {
     }));
     setVariants(pending);
 
-    // Run all in parallel
     const api = getAPI();
     if (api.whisperwoofTuningRunVariant) {
       const results = await Promise.all(
         combos.map((c) =>
           api.whisperwoofTuningRunVariant!({
             testCaseId: "live",
-            inputText: inputText,
+            inputText: text,
             polishPreset: c.preset,
             llmProvider: c.provider,
             llmModel: c.model,
           }).catch((err) => ({
             id: `err-${Date.now()}`,
-            testCaseId: "live",
-            sttModel: "n/a",
             polishPreset: c.preset,
             llmProvider: c.provider,
             llmModel: c.model,
             output: null,
             polishedOutput: null,
-            sttOutput: null,
             durationMs: null,
-            error: err.message,
+            error: err instanceof Error ? err.message : "failed",
             status: "error" as const,
           }))
         )
       );
-      // Map the results to match our Variant shape
-      setVariants(results.map((r) => ({
-        ...r,
-        polishedOutput: (r as any).output || (r as any).polishedOutput || null,
-        status: (r as any).status || "done",
-      })));
+
+      // Score against ideal output if provided
+      const scored = results.map((r) => {
+        const out = (r as any).output || (r as any).polishedOutput || "";
+        const score = idealOutput.trim() ? wordErrorRate(idealOutput, out) : undefined;
+        return { ...r, polishedOutput: out, status: (r as any).status || "done", score };
+      });
+
+      setVariants(scored as Variant[]);
     }
 
     setIsRunning(false);
   };
 
+  // Find best variant (lowest WER score)
   const doneVariants = variants.filter((v) => v.status === "done" && v.durationMs);
-  const fastestId = doneVariants.length > 0
-    ? doneVariants.reduce((a, b) => (a.durationMs! < b.durationMs! ? a : b)).id
+  const fastestId = doneVariants.length > 0 ? doneVariants.reduce((a, b) => (a.durationMs! < b.durationMs! ? a : b)).id : null;
+  const bestId = variants.filter((v) => v.score != null).length > 0
+    ? variants.filter((v) => v.score != null).reduce((a, b) => (a.score! < b.score! ? a : b)).id
     : null;
 
   return (
@@ -327,49 +347,81 @@ export default function TuningBench() {
           Pipeline Tuning Bench
         </h2>
         <p className="text-[11px] text-muted-foreground/50 mt-0.5">
-          Select nodes in each stage, then run to compare outputs
+          Record → transcribe → compare polish configs → pick the best
         </p>
       </div>
 
       <div className="flex-1 overflow-y-auto px-5 py-4 space-y-4">
-        {/* Input: Record or paste */}
+        {/* Step 1: Record */}
         <div className="space-y-2">
-          <RecordButton onRecorded={setInputText} />
+          <div className="text-[10px] text-muted-foreground/40 uppercase tracking-wider font-medium">
+            1. Record or paste
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={isRecording ? stopRecording : startRecording}
+              disabled={isTranscribing}
+              className={cn(
+                "flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all",
+                isRecording
+                  ? "bg-red-500/10 text-red-400 border border-red-500/20"
+                  : "bg-[#A06A3C]/10 text-[#A06A3C] border border-[#A06A3C]/20 hover:bg-[#A06A3C]/15"
+              )}
+            >
+              {isRecording ? <><StopCircle size={12} className="animate-pulse" /> Stop</> : <><Mic size={12} /> Record</>}
+            </button>
+
+            {isTranscribing && (
+              <span className="flex items-center gap-1.5 text-[11px] text-muted-foreground/50">
+                <Loader2 size={11} className="animate-spin" /> Transcribing...
+              </span>
+            )}
+
+            {audioUrl && !isRecording && !isTranscribing && (
+              <button
+                onClick={togglePlayback}
+                className="flex items-center gap-1.5 text-[11px] text-muted-foreground/50 hover:text-foreground px-2 py-1 rounded border border-border/15 dark:border-white/6 transition-colors"
+              >
+                {audioPlaying ? <Pause size={11} /> : <Volume2 size={11} />}
+                {audioPlaying ? "Pause" : "Play back"}
+              </button>
+            )}
+
+            {isRecording && <span className="text-[10px] text-red-400/50 animate-pulse">● Recording...</span>}
+          </div>
+        </div>
+
+        {/* Raw transcript */}
+        <div>
+          <div className="text-[10px] text-muted-foreground/40 uppercase tracking-wider font-medium mb-1">
+            Raw transcript
+          </div>
           <textarea
-            value={inputText}
-            onChange={(e) => setInputText(e.target.value)}
-            placeholder="Paste a voice transcript to test... e.g. 'um so like I need to buy milk and uh eggs from the store'"
-            className="w-full text-xs bg-transparent border border-border/20 dark:border-white/8 rounded-lg px-3 py-2.5 outline-none focus:border-primary/30 min-h-[56px] resize-none placeholder:text-muted-foreground/25"
+            value={rawTranscript}
+            onChange={(e) => setRawTranscript(e.target.value)}
+            placeholder="Record above or paste raw voice text here..."
+            className="w-full text-xs bg-transparent border border-border/15 dark:border-white/6 rounded-lg px-3 py-2 outline-none focus:border-primary/30 min-h-[48px] resize-none placeholder:text-muted-foreground/25"
             rows={2}
           />
         </div>
 
-        {/* Three-column flow chart */}
-        <div className="flex gap-2 items-start">
-          {/* Column 1: STT Model */}
-          <div className="flex-1 min-w-0">
-            <div className="text-[10px] text-muted-foreground/40 uppercase tracking-wider font-medium mb-2 px-1">
-              1. STT Model
-            </div>
-            <div className="space-y-1.5">
-              {STT_MODELS.map((m) => (
-                <FlowNode
-                  key={m.id}
-                  label={m.label}
-                  sublabel={`${m.size} · ${m.speed}`}
-                  selected={selectedSTT.has(m.id)}
-                  onClick={() => setSelectedSTT(toggleSet(selectedSTT, m.id))}
-                />
-              ))}
-            </div>
+        {/* Ideal output (optional, for scoring) */}
+        <div>
+          <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground/40 uppercase tracking-wider font-medium mb-1">
+            <Target size={9} /> Ideal output <span className="normal-case font-normal">(optional — for quality scoring)</span>
           </div>
+          <textarea
+            value={idealOutput}
+            onChange={(e) => setIdealOutput(e.target.value)}
+            placeholder="Type what the perfect output should look like. Variants will be scored against this."
+            className="w-full text-xs bg-transparent border border-border/15 dark:border-white/6 rounded-lg px-3 py-2 outline-none focus:border-primary/30 min-h-[40px] resize-none placeholder:text-muted-foreground/25"
+            rows={2}
+          />
+        </div>
 
-          {/* Arrow */}
-          <div className="flex items-center pt-8 shrink-0 text-muted-foreground/15">
-            <ChevronRight size={16} />
-          </div>
-
-          {/* Column 2: Polish Preset */}
+        {/* Flow chart: Preset × LLM */}
+        <div className="flex gap-3 items-start">
+          {/* Column: Polish Preset */}
           <div className="flex-1 min-w-0">
             <div className="text-[10px] text-muted-foreground/40 uppercase tracking-wider font-medium mb-2 px-1">
               2. Polish Preset
@@ -387,12 +439,11 @@ export default function TuningBench() {
             </div>
           </div>
 
-          {/* Arrow */}
           <div className="flex items-center pt-8 shrink-0 text-muted-foreground/15">
             <ChevronRight size={16} />
           </div>
 
-          {/* Column 3: LLM Model */}
+          {/* Column: LLM Model */}
           <div className="flex-1 min-w-0">
             <div className="text-[10px] text-muted-foreground/40 uppercase tracking-wider font-medium mb-2 px-1">
               3. LLM Model
@@ -411,11 +462,11 @@ export default function TuningBench() {
           </div>
         </div>
 
-        {/* Run Button */}
+        {/* Run */}
         <div className="flex items-center gap-3">
           <button
             onClick={handleRun}
-            disabled={isRunning || !inputText.trim() || pathCount === 0}
+            disabled={isRunning || !rawTranscript.trim() || rawTranscript.startsWith("[") || pathCount === 0}
             className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium bg-[#A06A3C] text-white hover:bg-[#B8863C] disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             {isRunning ? <Loader2 size={12} className="animate-spin" /> : <Play size={12} />}
@@ -424,17 +475,18 @@ export default function TuningBench() {
           <span className="text-[10px] text-muted-foreground/40">
             {selectedPresets.size} preset{selectedPresets.size !== 1 ? "s" : ""} × {selectedLLMs.size} model{selectedLLMs.size !== 1 ? "s" : ""}
           </span>
+          {idealOutput.trim() && <span className="text-[10px] text-emerald-500/50">● Scoring enabled</span>}
         </div>
 
-        {/* Output Cards */}
+        {/* Results */}
         {variants.length > 0 && (
           <div className="space-y-2">
             <div className="text-[10px] text-muted-foreground/40 uppercase tracking-wider font-medium px-1">
-              Results
+              Results {bestId && <span className="text-emerald-500/60 normal-case ml-1">— best match highlighted</span>}
             </div>
             <div className="grid grid-cols-1 gap-2">
               {variants.map((v) => (
-                <OutputCard key={v.id} variant={v} isFastest={v.id === fastestId} />
+                <OutputCard key={v.id} variant={v} isFastest={v.id === fastestId} isBest={v.id === bestId} />
               ))}
             </div>
           </div>
