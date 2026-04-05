@@ -3749,14 +3749,42 @@ class IPCHandlers {
 
     ipcMain.handle("retry-transcription", async (event, id) => {
       const buffer = this.audioStorageManager.getAudioBuffer(id);
-      if (!buffer) return { success: false, error: "Audio file not found" };
+      if (!buffer) return { success: false, error: "Audio file not found. The original recording may have been deleted by retention policy." };
       try {
         let result;
-        // Try local engines first
+
+        // WhisperWoof: Clear cached binary path so freshly downloaded binaries are detected
+        if (this.whisperManager?.serverManager) {
+          this.whisperManager.serverManager.cachedServerBinaryPath = null;
+        }
+
+        // Try local engines first — check binary availability fresh each time
         if (this.parakeetManager?.serverManager?.isAvailable?.()) {
           result = await this.parakeetManager.transcribeLocalParakeet(buffer, {});
         } else if (this.whisperManager?.serverManager?.isAvailable?.()) {
-          result = await this.whisperManager.transcribeLocalWhisper(buffer, {});
+          // Find a model that's actually downloaded
+          const modelDir = path.join(app.getPath("userData"), "models");
+          let modelPath = null;
+          try {
+            if (fs.existsSync(modelDir)) {
+              const models = fs.readdirSync(modelDir).filter((f) => f.endsWith(".bin"));
+              if (models.length > 0) {
+                // Prefer the user's configured model, fall back to any available
+                const preferred = getSettings().whisperModel || "base";
+                const match = models.find((m) => m.includes(preferred)) || models[0];
+                modelPath = path.join(modelDir, match);
+              }
+            }
+          } catch { /* */ }
+
+          if (!modelPath) {
+            return { success: false, error: "No Whisper model downloaded. Go to Settings → Transcription to download a model, then retry." };
+          }
+
+          result = await this.whisperManager.transcribeLocalWhisper(buffer, { model: modelPath });
+        } else {
+          // Binary still not available — maybe auto-download was skipped
+          return { success: false, error: "Whisper server binary not found. Restart the app to trigger auto-download, or run: npm run download:whisper-cpp" };
         }
 
         // Fall back to cloud transcription
