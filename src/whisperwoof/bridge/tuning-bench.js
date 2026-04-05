@@ -51,8 +51,25 @@ function saveTestCase({ name, inputText, audioPath }) {
   return testCase;
 }
 
+function getSampleTestCases() {
+  // Built-in starter test cases covering common dictation patterns
+  return [
+    { id: "sample-filler", name: "Filler words", inputText: "um so like I need to buy milk and uh eggs from the store", category: "filler-removal" },
+    { id: "sample-list", name: "Numbered list", inputText: "um so first I need to go to the store and then second I need to pick up the kids and third I need to make dinner tonight", category: "list-detection" },
+    { id: "sample-action", name: "Action items", inputText: "hey can you um remind me to call Sarah about Friday's meeting and also I need to you know check the budget numbers", category: "action" },
+    { id: "sample-long", name: "Long dictation", inputText: "so basically what I'm thinking is that we should um you know redesign the landing page because like the current one isn't really converting well and uh I think if we add some social proof and like testimonials it would help a lot", category: "dictation" },
+    { id: "sample-technical", name: "Technical terms", inputText: "we need to update the API endpoint from version 2 to version 3 and make sure the JSON schema validates correctly", category: "technical" },
+    { id: "sample-short", name: "Short command", inputText: "add milk to groceries", category: "command" },
+  ];
+}
+
 function getTestCases() {
-  return loadBench().testCases;
+  const bench = loadBench();
+  if (bench.testCases.length === 0) {
+    // First time — seed with sample test cases
+    return getSampleTestCases();
+  }
+  return bench.testCases;
 }
 
 function deleteTestCase(id) {
@@ -157,6 +174,7 @@ function getAvailableConfigs() {
 module.exports = {
   saveTestCase,
   getTestCases,
+  getSampleTestCases,
   deleteTestCase,
   saveVariantResult,
   getVariantsForTest,
