@@ -530,6 +530,26 @@ async function startApp() {
   initializeCoreManagers();
   startAuthBridgeServer();
 
+  // WhisperWoof: Auto-download whisper-server binary if missing
+  const { isBinaryAvailable, autoDownloadWhisperServer } = require("./src/whisperwoof/bridge/binary-check");
+  if (!isBinaryAvailable()) {
+    debugLogger.log("[WhisperWoof] whisper-server binary not found, auto-downloading...");
+    try {
+      await autoDownloadWhisperServer((status) => {
+        debugLogger.log(`[WhisperWoof] ${status}`);
+        // Broadcast status to any open windows
+        const { BrowserWindow } = require("electron");
+        for (const win of BrowserWindow.getAllWindows()) {
+          if (!win.isDestroyed()) {
+            win.webContents.send("whisper-download-status", status);
+          }
+        }
+      });
+    } catch (err) {
+      debugLogger.log(`[WhisperWoof] Auto-download failed: ${err.message}. User can manually run: npm run download:whisper-cpp`);
+    }
+  }
+
   // WhisperWoof: Initialize WhisperWoof subsystems
   const { initializeWhisperWoof, getWhisperWoofDb } = require("./src/whisperwoof/bridge/app-init");
   await initializeWhisperWoof();
