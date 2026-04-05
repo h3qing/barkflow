@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { FolderOpen, Loader2 } from "lucide-react";
+import { cn } from "../../../components/lib/utils";
 import { Toggle } from "../../../components/ui/toggle";
 import {
   SettingsSection,
@@ -178,7 +179,7 @@ export default function WhisperWoofSettings({ className }: WhisperWoofSettingsPr
       : "text-muted-foreground/60";
 
   return (
-    <div className={`max-w-2xl mx-auto w-full space-y-6 p-6 ${className ?? ""}`}>
+    <div className={cn("max-w-2xl mx-auto w-full space-y-6 p-6", className)}>
       <div>
         <h2 className="text-sm font-semibold text-foreground">WhisperWoof</h2>
         <p className="text-xs text-muted-foreground mt-0.5">

@@ -2,28 +2,11 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { Clipboard, ArrowRight } from "lucide-react";
 import { cn } from "../../../components/lib/utils";
 import type { Entry } from "../../core/storage/types";
+import { relativeTime, truncateText } from "../shared/format";
 
 const MAX_VISIBLE = 5;
 const REFRESH_INTERVAL_MS = 5_000;
 const FETCH_LIMIT = 20;
-
-function relativeTime(iso: string): string {
-  const diff = Date.now() - new Date(iso).getTime();
-  const seconds = Math.floor(diff / 1000);
-  if (seconds < 60) return "just now";
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  if (days < 7) return `${days}d ago`;
-  return new Date(iso).toLocaleDateString();
-}
-
-function truncateText(text: string, max: number): string {
-  if (text.length <= max) return text;
-  return text.slice(0, max).trimEnd() + "\u2026";
-}
 
 function displayLabel(entry: Entry): string {
   const meta = entry.metadata as Record<string, unknown>;
