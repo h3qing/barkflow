@@ -180,8 +180,8 @@
       "description": "Set your hotkey to start voice capture — WhisperWoof transcribes, polishes, and routes it for you",
       "hotkey": "Hotkey",
       "mode": "Mode",
-      "tapDescription": "Press to start/stop",
-      "holdDescription": "Hold while speaking",
+      "tapDescription": "Tap to start, tap again to stop. Hold to talk, release to paste.",
+      "holdDescription": "Hold while speaking, release to paste. Double-tap to lock on, tap to stop.",
       "test": "Try it out",
       "hotkeyToStartStop": "{{hotkey}} to start/stop",
       "holdHotkey": "Hold {{hotkey}}",
@@ -1317,7 +1317,8 @@
         "badges": {
           "dev": "Dev",
           "latest": "Latest",
-          "update": "Update"
+          "update": "Update",
+          "local": "Local"
         },
         "checkForUpdates": "Check for Updates",
         "checking": "Checking...",
@@ -1367,7 +1368,8 @@
         "restarting": "Restarting...",
         "title": "Updates",
         "versionPlaceholder": "—",
-        "whatsNew": "What's new in v{{version}}"
+        "whatsNew": "What's new in v{{version}}",
+        "localBuild": "Local build — update checks are off. Pull and rebuild to update."
       }
     },
     "permissions": {
@@ -2003,7 +2005,9 @@
   "updateNotification": {
     "title": "WhisperWoof Update Available",
     "body": "Version {{version}} is ready to download",
-    "cta": "Update Now"
+    "cta": "Update Now",
+    "skip": "Skip",
+    "viewRelease": "View release"
   },
   "permissionsGate": {
     "title": "Permissions Required",

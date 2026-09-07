@@ -61,6 +61,8 @@ Nobody built the bridge. **WhisperWoof is that bridge.**
 </tr>
 </table>
 
+Hands-free: **double-tap Fn** to lock recording on, then tap once to stop and paste.
+
 ```
 Voice ──▶ Local STT (Whisper / Parakeet / Distil-Whisper)
               │

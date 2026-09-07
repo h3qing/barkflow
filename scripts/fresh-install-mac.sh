@@ -122,10 +122,21 @@ npm run build:renderer
 
 # Unsigned local build: notarization needs Apple credentials this machine
 # almost certainly does not have, and CI builds the same way (ci.yml).
-say "Packaging the app (unsigned, arm64)"
+#
+# extraMetadata is merged into the packaged package.json:
+#   version            — stamp the VERSION file's number (what release.yml
+#                        does with `npm pkg set`), so About matches the tag.
+#   whisperwoofUpdateMode=off — a build you made from source can only be
+#                        updated by rebuilding, and an unsigned app cannot
+#                        self-install anyway; this stops the "update
+#                        available" prompt from ever appearing.
+APP_VERSION="$(tr -d '[:space:]' < "$REPO_ROOT/VERSION")"
+say "Packaging the app (unsigned, arm64, v$APP_VERSION, update checks off)"
 npx electron-builder --mac --arm64 \
   --config.mac.identity=null \
   --config.mac.notarize=false \
+  --config.extraMetadata.version="$APP_VERSION" \
+  --config.extraMetadata.whisperwoofUpdateMode=off \
   --publish never
 
 APP_BUILT="$(find "$REPO_ROOT/dist" -maxdepth 3 -name "$APP_NAME.app" -type d 2>/dev/null | head -1)"

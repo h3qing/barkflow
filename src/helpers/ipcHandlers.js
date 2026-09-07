@@ -5827,6 +5827,9 @@ class IPCHandlers {
 
     ipcMain.handle("update-notification-respond", async (_event, action) => {
       this.windowManager?.dismissUpdateNotification();
+      if (action === "skip") {
+        return this.updateManager?.skipCurrentVersion() ?? { success: false };
+      }
       if (action === "update") {
         try {
           await this.updateManager?.downloadUpdate();

@@ -345,6 +345,10 @@ function initializeCoreManagers() {
   googleCalendarManager.setMeetingDetectionEngine(meetingDetectionEngine);
   updateManager = new UpdateManager();
   updateManager.setWindowManager(windowManager);
+  updateManager.setPreferences({
+    getSkippedVersion: () => environmentManager.getSkippedUpdateVersion(),
+    saveSkippedVersion: (version) => environmentManager.saveSkippedUpdateVersion(version),
+  });
   windowsKeyManager = new WindowsKeyManager();
   textEditMonitor = new TextEditMonitor();
   audioTapManager = new AudioTapManager();
@@ -763,11 +767,16 @@ async function startApp() {
     const { createFnActivationMachine } = require("./src/helpers/fnActivationMachine");
     let activeFnComboKey = null; // Track letter key pressed with Fn (e.g. "T" for Fn+T routing)
 
-    // Push mode is a press-and-hold / double-tap-latch machine (pure logic in
-    // fnActivationMachine.js, unit-tested): hold to talk, release to paste;
-    // double-tap to latch hands-free; tap again to stop; a stray single tap
-    // cancels quietly. Timers are owned here — the machine only requests them.
+    // Fn is driven by a press-and-hold / double-tap-latch machine in BOTH
+    // activation modes (pure logic in fnActivationMachine.js, unit-tested):
+    // hold to talk, release to paste; double-tap to latch hands-free; tap
+    // again to stop. The mode only decides what a lone tap means — "tap"
+    // mode latches (tap to start, tap to stop), "push" mode discards it.
+    // Timers are owned here — the machine only requests them.
     const fnMachine = createFnActivationMachine();
+    const loneTapFor = (activationMode) => ({
+      loneTap: activationMode === "tap" ? "latch" : "cancel",
+    });
     const runFnActions = (actions) => {
       for (const action of actions) {
         switch (action.type) {
@@ -818,15 +827,14 @@ async function startApp() {
 
       // Handle dictation if Globe/Fn is the current hotkey
       if (isGlobeLikeHotkey(currentHotkey)) {
-        if (mainWindowLive) {
+        if (hotkeyManager.isInListeningMode()) {
+          // Hotkey capture: send* are no-ops, so keep the machine out of it
+          // too or it would wake up latched with nothing recording.
+          debugLogger?.debug("[Globe] Ignored — capturing a new hotkey");
+        } else if (mainWindowLive) {
           // Capture target app PID BEFORE showing the overlay
           if (textEditMonitor) textEditMonitor.captureTargetPid();
-          const activationMode = windowManager.getActivationMode();
-          if (activationMode === "push") {
-            runFnActions(fnMachine.press(Date.now()));
-          } else {
-            windowManager.sendToggleDictation();
-          }
+          runFnActions(fnMachine.press(Date.now(), loneTapFor(windowManager.getActivationMode())));
         } else {
           debugLogger?.debug("[Globe] Ignored — mainWindow not live");
         }
@@ -851,7 +859,6 @@ async function startApp() {
       }
 
       if (hotkeyManager.getCurrentHotkey && isGlobeLikeHotkey(hotkeyManager.getCurrentHotkey())) {
-        const activationMode = windowManager.getActivationMode();
         const hasComboKey = activeFnComboKey !== null;
 
         // Fn+letter combos always behave as push-to-talk (hold to record,
@@ -861,7 +868,7 @@ async function startApp() {
           debugLogger?.debug("[Globe] Stopping dictation (combo release)", { hotkeyUsed });
           windowManager.sendStopDictation(hotkeyUsed);
           fnMachine.forceReset(Date.now());
-        } else if (activationMode === "push") {
+        } else if (!hotkeyManager.isInListeningMode()) {
           runFnActions(fnMachine.release(Date.now()));
         }
       }
@@ -923,14 +930,12 @@ async function startApp() {
 
       if (currentHotkey !== modifier) return;
       if (!isLiveWindow(windowManager.mainWindow)) return;
+      if (hotkeyManager.isInListeningMode()) return;
 
-      const activationMode = windowManager.getActivationMode();
       if (textEditMonitor) textEditMonitor.captureTargetPid();
-      if (activationMode === "push") {
-        runRightModActions(rightModMachine.press(Date.now()));
-      } else {
-        windowManager.sendToggleDictation();
-      }
+      runRightModActions(
+        rightModMachine.press(Date.now(), loneTapFor(windowManager.getActivationMode()))
+      );
     });
 
     globeKeyManager.on("right-modifier-up", async (modifier) => {
@@ -938,9 +943,7 @@ async function startApp() {
 
       if (currentHotkey === modifier) {
         if (!isLiveWindow(windowManager.mainWindow)) return;
-
-        const activationMode = windowManager.getActivationMode();
-        if (activationMode === "push") {
+        if (!hotkeyManager.isInListeningMode()) {
           runRightModActions(rightModMachine.release(Date.now()));
         }
       }
@@ -988,6 +991,17 @@ async function startApp() {
 
     // Reset native key state when hotkey changes
     ipcMain.on("hotkey-changed", (_event, _newHotkey) => {
+      fnMachine.forceReset(Date.now());
+      rightModMachine.forceReset(Date.now());
+    });
+
+    // Switching Tap/Hold mid-latch: finish the recording the user has going
+    // (their words paste, nothing is silently lost), then resync both
+    // machines so the new lone-tap meaning applies from the next press.
+    ipcMain.on("activation-mode-changed", () => {
+      if (fnMachine.isRecording() || rightModMachine.isRecording()) {
+        windowManager.sendStopDictation();
+      }
       fnMachine.forceReset(Date.now());
       rightModMachine.forceReset(Date.now());
     });

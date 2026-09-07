@@ -10,13 +10,10 @@ import {
 } from "../../../helpers/fnActivationMachine.js";
 
 type Action = { type: string; id?: string; seq?: number; delayMs?: number };
-
-function types(actions: Action[]): string[] {
-  return actions.map((a) => a.type + (a.id ? `:${a.id}` : ""));
-}
+type LoneTap = "latch" | "cancel";
 
 /** Drives the machine like main.js does: fires armTimer requests on schedule. */
-function harness() {
+function harness(loneTap: LoneTap = "cancel") {
   const m = createFnActivationMachine();
   const timers: Array<{ id: string; seq: number; at: number }> = [];
   const log: string[] = [];
@@ -33,7 +30,8 @@ function harness() {
 
   return {
     log,
-    press: (now: number) => run(m.press(now) as Action[], now),
+    press: (now: number, mode: LoneTap = loneTap) =>
+      run(m.press(now, { loneTap: mode }) as Action[], now),
     release: (now: number) => run(m.release(now) as Action[], now),
     /** Fire every armed timer whose deadline has passed, in order. */
     advanceTo: (now: number) => {
@@ -135,6 +133,71 @@ describe("stray single tap", () => {
     h.release(50);
     h.advanceTo(351);
     expect(h.log).toEqual(["showPanel", "startRecording", "cancelRecording", "hidePanel"]);
+  });
+});
+
+describe("tap mode (loneTap: latch) — the default activation mode", () => {
+  it("a lone tap latches: tap to start, tap again to stop", () => {
+    const h = harness("latch");
+    h.press(0);
+    h.advanceTo(75);
+    h.release(150); // tap
+    h.advanceTo(451); // window expires — no cancel in tap mode
+    expect(h.log).toEqual(["showPanel", "startRecording"]);
+    expect(h.state()).toBe("latched");
+    h.press(3000); // stop tap
+    expect(h.log).toEqual(["showPanel", "startRecording", "stopAndProcess"]);
+    h.release(3060);
+    h.advanceTo(9999);
+    expect(h.log).toEqual(["showPanel", "startRecording", "stopAndProcess"]);
+  });
+
+  it("holding still works as push-to-talk in tap mode", () => {
+    const h = harness("latch");
+    h.press(0);
+    h.advanceTo(75);
+    h.release(900); // held — release pastes, no latch
+    expect(h.log).toEqual(["showPanel", "startRecording", "stopAndProcess"]);
+    expect(h.state()).toBe("idle");
+  });
+
+  it("double-tap latches in tap mode too, without restarting the recording", () => {
+    const h = harness("latch");
+    h.press(0);
+    h.advanceTo(75);
+    h.release(150);
+    h.press(300);
+    h.release(360);
+    h.advanceTo(5000);
+    expect(h.log).toEqual(["showPanel", "startRecording"]);
+    expect(h.state()).toBe("latched");
+  });
+
+  it("a sub-75ms lone tap still ends up latched with the mic open", () => {
+    const h = harness("latch");
+    h.press(0);
+    h.release(40);
+    h.advanceTo(400);
+    expect(h.log).toEqual(["showPanel", "startRecording"]); // exactly one start
+    expect(h.state()).toBe("latched");
+  });
+
+  it("the mode is read per press, so a settings change applies on the next key-down", () => {
+    const h = harness("cancel");
+    h.press(0, "latch"); // user is in tap mode for this press
+    h.advanceTo(75);
+    h.release(150);
+    h.advanceTo(451);
+    expect(h.state()).toBe("latched");
+    h.press(2000); // stop
+    expect(h.log.at(-1)).toBe("stopAndProcess");
+    h.release(2050);
+    h.press(3000, "cancel"); // switched to hold mode
+    h.advanceTo(3075);
+    h.release(3150);
+    h.advanceTo(3451);
+    expect(h.log.slice(-2)).toEqual(["cancelRecording", "hidePanel"]);
+    expect(h.state()).toBe("idle");
   });
 });
 

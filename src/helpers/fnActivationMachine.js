@@ -6,7 +6,17 @@
  *   hold Fn, speak, release          -> transcript pastes (classic push-to-talk)
  *   double-tap Fn                    -> recording latches on, hands free
  *   tap Fn while latched             -> stop + paste
- *   single stray tap                 -> cancelled quietly (nothing pastes)
+ *   single lone tap                  -> depends on `loneTap` (see below)
+ *
+ * The machine drives BOTH activation modes; they differ only in what a lone
+ * tap (no second tap inside the double-tap window) means:
+ *
+ *   loneTap: "latch"   ("Tap" mode)  the tap latches recording on — tap to
+ *                                    start, tap again to stop, exactly what
+ *                                    tap-to-toggle users expect, plus hold
+ *                                    and double-tap for free.
+ *   loneTap: "cancel"  ("Hold" mode) the tap is an accident: the recording
+ *                                    is discarded and nothing pastes.
  *
  * The latency-critical property: a press held longer than `tapMaxMs` is a
  * HOLD, and its release stops + processes immediately — the double-tap
@@ -17,7 +27,9 @@
  * Pure on purpose (the repo's truthfulness pattern): no timers, no Date —
  * the caller owns the clock. Every input returns a list of actions; timers
  * are requested via an `armTimer` action and delivered back through
- * `fire(id, now)`. All timing paths are unit-testable.
+ * `fire(id, now)`. All timing paths are unit-testable. The activation mode
+ * is read by the caller and passed per press, so a settings change takes
+ * effect on the very next key-down without rebuilding the machine.
  *
  * Actions emitted:
  *   showPanel                       show the dictation overlay
@@ -37,6 +49,8 @@ const DEFAULTS = {
   doubleTapMs: 300,
   // Presses inside this window after a stop are ignored (key-bounce guard).
   cooldownMs: 100,
+  // What a lone tap means when no second tap follows: "latch" | "cancel".
+  loneTap: "cancel",
 };
 
 const TIMER_HOLD_START = "holdStart";
@@ -52,6 +66,7 @@ function createFnActivationMachine(options = {}) {
   let recordingStarted = false;
   let lastStopAt = -Infinity;
   let consumeNextRelease = false;
+  let loneTap = cfg.loneTap; // captured per press; the mode can change between presses
 
   function reset(now) {
     state = "idle";
@@ -70,7 +85,12 @@ function createFnActivationMachine(options = {}) {
       return recordingStarted;
     },
 
-    press(now) {
+    /**
+     * @param {number} now
+     * @param {{loneTap?: "latch"|"cancel"}} [opts] per-press override of the
+     *   lone-tap meaning (the caller passes the current activation mode).
+     */
+    press(now, opts) {
       if (state === "latched") {
         // Single press while latched stops the hands-free recording. Stop on
         // key-DOWN, not release — snappiest possible stop.
@@ -99,6 +119,7 @@ function createFnActivationMachine(options = {}) {
       pressedAt = now;
       pressSeq++;
       recordingStarted = false;
+      loneTap = opts?.loneTap === "latch" ? "latch" : opts?.loneTap === "cancel" ? "cancel" : cfg.loneTap;
       return [
         { type: "showPanel" },
         { type: "armTimer", id: TIMER_HOLD_START, seq: pressSeq, delayMs: cfg.minHoldMs },
@@ -145,7 +166,18 @@ function createFnActivationMachine(options = {}) {
 
       if (id === TIMER_TAP_DECISION) {
         if (state !== "tapWait" || seq !== tapSeq) return [];
-        // No second tap came: a lone sub-250ms tap is an accident or a missed
+
+        if (loneTap === "latch") {
+          // Tap mode: a lone tap means "start and keep going". Recording has
+          // (almost always) been running since minHoldMs after the press, so
+          // the user's opening words are already captured; just latch.
+          const needStart = !recordingStarted;
+          state = "latched";
+          recordingStarted = true;
+          return needStart ? [{ type: "startRecording" }] : [];
+        }
+
+        // Hold mode: a lone sub-250ms tap is an accident or a missed
         // double-tap — nothing meaningful was said. Discard, never paste.
         const wasRecording = recordingStarted;
         reset(now);

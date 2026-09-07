@@ -93,8 +93,12 @@ jobs:
       - name: Build renderer
         run: cd src && npx vite build
 
+      # whisperwoofUpdateMode=manual: the app still checks for new releases,
+      # but an unsigned build cannot self-install (Squirrel refuses), so the
+      # prompt opens this release page for a manual download instead of a
+      # download that can never finish. Switch to signed builds to drop it.
       - name: Build macOS arm64 (unsigned)
-        run: npx electron-builder --mac --arm64 --config.mac.identity=null --publish never
+        run: npx electron-builder --mac --arm64 --config.mac.identity=null --config.extraMetadata.whisperwoofUpdateMode=manual --publish never
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: false
 

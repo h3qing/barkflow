@@ -180,8 +180,8 @@
       "description": "Configurez la façon de déclencher la dictée",
       "hotkey": "Raccourci",
       "mode": "Mode",
-      "tapDescription": "Appuyer pour démarrer/arrêter",
-      "holdDescription": "Maintenir pendant que vous parlez",
+      "tapDescription": "Appuyez pour démarrer, appuyez de nouveau pour arrêter. Maintenez pour parler, relâchez pour coller.",
+      "holdDescription": "Maintenez pendant que vous parlez, relâchez pour coller. Double-appui pour verrouiller, appuyez pour arrêter.",
       "test": "Test",
       "hotkeyToStartStop": "{{hotkey}} pour démarrer/arrêter",
       "holdHotkey": "Maintenir {{hotkey}}",
@@ -1268,7 +1268,8 @@
         "badges": {
           "dev": "Dev",
           "latest": "À jour",
-          "update": "Mise à jour"
+          "update": "Mise à jour",
+          "local": "Local"
         },
         "checkForUpdates": "Rechercher les mises à jour",
         "checking": "Vérification...",
@@ -1318,7 +1319,8 @@
         "restarting": "Redémarrage...",
         "title": "Mises à jour",
         "versionPlaceholder": "—",
-        "whatsNew": "Nouveautés de la v{{version}}"
+        "whatsNew": "Nouveautés de la v{{version}}",
+        "localBuild": "Build local — la vérification des mises à jour est désactivée. Recompilez pour mettre à jour."
       }
     },
     "permissions": {
@@ -2000,7 +2002,9 @@
   "updateNotification": {
     "title": "Mise à jour WhisperWoof disponible",
     "body": "La version {{version}} est prête à télécharger",
-    "cta": "Mettre à jour"
+    "cta": "Mettre à jour",
+    "skip": "Ignorer",
+    "viewRelease": "Voir la version"
   },
   "permissionsGate": {
     "title": "Autorisations requises",

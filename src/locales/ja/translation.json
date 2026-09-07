@@ -180,8 +180,8 @@
       "description": "ディクテーションの起動方法を設定",
       "hotkey": "ホットキー",
       "mode": "モード",
-      "tapDescription": "押して開始/停止",
-      "holdDescription": "押しながら話す",
+      "tapDescription": "押して開始、もう一度押して停止。押しながら話し、離すと貼り付け。",
+      "holdDescription": "押しながら話し、離すと貼り付け。ダブルタップで固定、タップで停止。",
       "test": "テスト",
       "hotkeyToStartStop": "{{hotkey}} で開始/停止",
       "holdHotkey": "{{hotkey}} を押し続ける",
@@ -1268,7 +1268,8 @@
         "badges": {
           "dev": "開発版",
           "latest": "最新",
-          "update": "アップデート"
+          "update": "アップデート",
+          "local": "ローカル"
         },
         "checkForUpdates": "アップデートを確認",
         "checking": "確認中...",
@@ -1318,7 +1319,8 @@
         "restarting": "再起動中...",
         "title": "アップデート",
         "versionPlaceholder": "—",
-        "whatsNew": "v{{version}} の新機能"
+        "whatsNew": "v{{version}} の新機能",
+        "localBuild": "ローカルビルド — 更新チェックは無効です。更新するには再ビルドしてください。"
       }
     },
     "permissions": {
@@ -2000,7 +2002,9 @@
   "updateNotification": {
     "title": "WhisperWoof のアップデートあり",
     "body": "バージョン {{version}} がダウンロード可能です",
-    "cta": "今すぐ更新"
+    "cta": "今すぐ更新",
+    "skip": "スキップ",
+    "viewRelease": "リリースを見る"
   },
   "permissionsGate": {
     "title": "権限が必要です",

@@ -1,4 +1,25 @@
+const path = require("path");
 const { autoUpdater } = require("electron-updater");
+const {
+  resolveUpdateMode,
+  shouldShowUpdateNotification,
+  releasePageUrl,
+} = require("./whisperwoof/bridge/update-policy-pure");
+
+/**
+ * The build stamps how it wants to be updated into the packaged package.json
+ * (electron-builder --config.extraMetadata.whisperwoofUpdateMode=off|manual).
+ * See update-policy-pure.js for what each mode means.
+ */
+function readPackagedUpdateMode() {
+  try {
+    const { app } = require("electron");
+    const pkg = require(path.join(app.getAppPath(), "package.json"));
+    return pkg?.whisperwoofUpdateMode;
+  } catch {
+    return undefined;
+  }
+}
 
 class UpdateManager {
   constructor() {
@@ -13,6 +34,19 @@ class UpdateManager {
     this.updateCheckInterval = null;
     this.windowManager = null;
     this._suppressNotification = false;
+    // Persisted "skip this version" lives with the other user preferences
+    // (environment.js); injected by main.js so this module stays testable.
+    this._preferences = null;
+
+    const { mode, reason } = resolveUpdateMode({
+      nodeEnv: process.env.NODE_ENV,
+      packageMode: readPackagedUpdateMode(),
+    });
+    this.updateMode = mode;
+    this.disabledReason = reason;
+    if (mode === "off") {
+      console.log(`🔕 Update checks disabled (${reason})`);
+    }
 
     this.setupAutoUpdater();
   }
@@ -26,8 +60,17 @@ class UpdateManager {
     this.windowManager = windowManager;
   }
 
+  /** @param {{getSkippedVersion: () => string, saveSkippedVersion: (v: string) => void}} prefs */
+  setPreferences(prefs) {
+    this._preferences = prefs;
+  }
+
+  isDisabled() {
+    return this.updateMode === "off";
+  }
+
   setupAutoUpdater() {
-    if (process.env.NODE_ENV === "development") {
+    if (this.isDisabled()) {
       return;
     }
 
@@ -95,10 +138,17 @@ class UpdateManager {
           };
         }
         this.notifyRenderers("update-available", info);
-        if (this.windowManager && info && !this._suppressNotification) {
-          this.windowManager.showUpdateNotification(info).catch((err) => {
-            console.error("Failed to show update notification:", err);
-          });
+        const skippedVersion = this._preferences?.getSkippedVersion?.() || "";
+        const show = shouldShowUpdateNotification({ version: info?.version, skippedVersion });
+        if (!show && info?.version) {
+          console.log(`🔕 Update ${info.version} was skipped by the user — not prompting`);
+        }
+        if (this.windowManager && info && show && !this._suppressNotification) {
+          this.windowManager
+            .showUpdateNotification({ ...info, manual: this.updateMode === "manual" })
+            .catch((err) => {
+              console.error("Failed to show update notification:", err);
+            });
         }
         this._suppressNotification = false;
       },
@@ -160,10 +210,15 @@ class UpdateManager {
 
   async checkForUpdates() {
     try {
-      if (process.env.NODE_ENV === "development") {
+      if (this.isDisabled()) {
         return {
           updateAvailable: false,
-          message: "Update checks are disabled in development mode",
+          updatesDisabled: true,
+          reason: this.disabledReason,
+          message:
+            this.disabledReason === "development"
+              ? "Update checks are disabled in development mode"
+              : "This is a local build — update checks are off. Pull and rebuild to update.",
         };
       }
 
@@ -195,11 +250,24 @@ class UpdateManager {
 
   async downloadUpdate() {
     try {
-      if (process.env.NODE_ENV === "development") {
+      if (this.isDisabled()) {
         return {
           success: false,
-          message: "Update downloads are disabled in development mode",
+          message:
+            this.disabledReason === "development"
+              ? "Update downloads are disabled in development mode"
+              : "This is a local build — update downloads are off",
         };
+      }
+
+      if (this.updateMode === "manual") {
+        // Unsigned build: Squirrel cannot install it, so the honest action is
+        // to open the release page and let the user drag the new DMG in.
+        const { shell } = require("electron");
+        const url = releasePageUrl(this.lastUpdateInfo?.version);
+        console.log("🌐 Manual update mode — opening release page:", url);
+        await shell.openExternal(url);
+        return { success: true, manual: true, url, message: "Opened the release page" };
       }
 
       if (this.isDownloading) {
@@ -229,12 +297,29 @@ class UpdateManager {
     }
   }
 
+  /** Persist "don't prompt me again for this version" and close the prompt. */
+  skipCurrentVersion() {
+    const version = this.lastUpdateInfo?.version;
+    if (!version) return { success: false, message: "No update to skip" };
+    try {
+      this._preferences?.saveSkippedVersion?.(version);
+      console.log(`🔕 Skipping update ${version} until a newer one appears`);
+      return { success: true, version };
+    } catch (error) {
+      console.error("❌ Failed to persist skipped update version:", error);
+      return { success: false, message: error.message };
+    }
+  }
+
   async installUpdate() {
     try {
-      if (process.env.NODE_ENV === "development") {
+      if (this.isDisabled() || this.updateMode === "manual") {
         return {
           success: false,
-          message: "Update installation is disabled in development mode",
+          message:
+            this.updateMode === "manual"
+              ? "This build installs updates manually from the release page"
+              : "Update installation is disabled for this build",
         };
       }
 
@@ -291,6 +376,9 @@ class UpdateManager {
         updateAvailable: this.updateAvailable,
         updateDownloaded: this.updateDownloaded,
         isDevelopment: process.env.NODE_ENV === "development",
+        updateMode: this.updateMode,
+        updatesDisabled: this.isDisabled(),
+        disabledReason: this.disabledReason,
       };
     } catch (error) {
       console.error("❌ Error getting update status:", error);
@@ -308,7 +396,7 @@ class UpdateManager {
   }
 
   checkForUpdatesOnStartup() {
-    if (process.env.NODE_ENV !== "development") {
+    if (!this.isDisabled()) {
       setTimeout(() => {
         console.log("🔄 Checking for updates on startup...");
         autoUpdater.checkForUpdates().catch((err) => {

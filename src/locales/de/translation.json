@@ -180,8 +180,8 @@
       "description": "Legen Sie fest, wie Sie das Diktat auslösen",
       "hotkey": "Hotkey",
       "mode": "Modus",
-      "tapDescription": "Drücken zum Starten/Stoppen",
-      "holdDescription": "Gedrückt halten beim Sprechen",
+      "tapDescription": "Tippen zum Starten, erneut tippen zum Stoppen. Gedrückt halten zum Sprechen, loslassen zum Einfügen.",
+      "holdDescription": "Gedrückt halten beim Sprechen, loslassen zum Einfügen. Doppelt tippen zum Feststellen, tippen zum Stoppen.",
       "test": "Test",
       "hotkeyToStartStop": "{{hotkey}} zum Starten/Stoppen",
       "holdHotkey": "{{hotkey}} gedrückt halten",
@@ -1268,7 +1268,8 @@
         "badges": {
           "dev": "Dev",
           "latest": "Aktuell",
-          "update": "Update"
+          "update": "Update",
+          "local": "Lokal"
         },
         "checkForUpdates": "Nach Updates suchen",
         "checking": "Wird geprüft...",
@@ -1318,7 +1319,8 @@
         "restarting": "Wird neu gestartet...",
         "title": "Updates",
         "versionPlaceholder": "—",
-        "whatsNew": "Neu in v{{version}}"
+        "whatsNew": "Neu in v{{version}}",
+        "localBuild": "Lokaler Build — Update-Prüfung ist aus. Zum Aktualisieren neu bauen."
       }
     },
     "permissions": {
@@ -2000,7 +2002,9 @@
   "updateNotification": {
     "title": "WhisperWoof-Update verfügbar",
     "body": "Version {{version}} steht zum Download bereit",
-    "cta": "Jetzt aktualisieren"
+    "cta": "Jetzt aktualisieren",
+    "skip": "Überspringen",
+    "viewRelease": "Release ansehen"
   },
   "permissionsGate": {
     "title": "Berechtigungen erforderlich",

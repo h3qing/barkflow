@@ -1233,6 +1233,7 @@ declare global {
       getUpdateNotificationData?: () => Promise<{
         version: string;
         releaseDate?: string;
+        manual?: boolean;
       } | null>;
       updateNotificationReady?: () => Promise<void>;
       updateNotificationRespond?: (action: string) => Promise<{ success: boolean }>;

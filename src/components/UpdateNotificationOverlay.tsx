@@ -5,6 +5,8 @@ import { X } from "lucide-react";
 interface UpdateNotificationData {
   version: string;
   releaseDate?: string;
+  /** Unsigned build: "update" opens the release page rather than downloading. */
+  manual?: boolean;
 }
 
 export default function UpdateNotificationOverlay() {
@@ -82,10 +84,18 @@ export default function UpdateNotificationOverlay() {
           </div>
 
           <button
+            onClick={() => respond("skip")}
+            title={t("updateNotification.skip")}
+            className="shrink-0 text-[11px] text-muted-foreground/70 hover:text-foreground px-1.5 py-1 rounded-md transition-colors"
+          >
+            {t("updateNotification.skip")}
+          </button>
+
+          <button
             onClick={() => respond("update")}
             className="shrink-0 bg-primary text-primary-foreground hover:bg-primary/90 active:bg-primary/80 text-[11px] font-medium px-2.5 py-1 rounded-md transition-colors"
           >
-            {t("updateNotification.cta")}
+            {data?.manual ? t("updateNotification.viewRelease") : t("updateNotification.cta")}
           </button>
 
           <button

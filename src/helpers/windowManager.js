@@ -1097,6 +1097,9 @@ class WindowManager {
     this._pendingUpdateNotificationData = {
       version: info?.version,
       releaseDate: info?.releaseDate,
+      // Unsigned build: the button opens the release page instead of an
+      // in-app download the OS would refuse to install.
+      manual: info?.manual === true,
     };
 
     this._updateNotificationReadyFallback = setTimeout(() => {

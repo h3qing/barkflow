@@ -454,9 +454,21 @@ export const useAudioRecording = (toast, options = {}) => {
 
     // A stray single Fn tap: the main-process activation machine decided
     // nothing meaningful was said — discard the capture, paste nothing.
+    // Same teardown as the hook's cancelRecording(): a cloud streaming
+    // session has no MediaRecorder to cancel, and paused media must resume.
     const disposeCancel = window.electronAPI.onCancelDictation?.(() => {
       activeHotkeyRef.current = null;
-      audioManagerRef.current?.cancelRecording();
+      const manager = audioManagerRef.current;
+      if (manager) {
+        if (getSettings().pauseMediaOnDictation) {
+          window.electronAPI?.resumeMediaPlayback?.();
+        }
+        if (manager.getState().isStreaming) {
+          manager.stopStreamingRecording();
+        } else {
+          manager.cancelRecording();
+        }
+      }
       onToggle?.();
     });
 
