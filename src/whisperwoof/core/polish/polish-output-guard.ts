@@ -16,7 +16,9 @@
  *     fixed slack for punctuation/number expansion) is not a cleanup.
  *  2. Language flip: a mostly-Chinese input can never come back with almost
  *     no Han characters (or the reverse) — that is a translation, also
- *     observed in production ("Pizzo,你知不知道…" -> pure English).
+ *     observed in production ("Pizzo,你知不知道…" -> pure English). The same
+ *     check also catches PARTIAL translation (one clause flipped): losing a
+ *     chunk of one script while gaining the other in proportion.
  *  3. Emote: a reply that is just "*punch*" is the model roleplaying, unless
  *     the user dictated the asterisks (literally or as 星号/asterisk).
  *  4. Meta markers: a short, high-precision list of phrases a cleanup model
@@ -94,17 +96,36 @@ function isLanguageFlip(raw: string, polished: string): boolean {
   const p = letterCounts(polished);
   const rTotal = r.han + r.latin;
   const pTotal = p.han + p.latin;
-  if (rTotal < 6 || pTotal < 2) return false; // too little signal to judge
+  if (rTotal < 2 || pTotal < 2) return false; // too little signal to judge
 
   const rHanRatio = r.han / rTotal;
   const pHanRatio = p.han / pTotal;
 
-  // zh -> en: substantial Chinese in, almost none out.
+  // Whole flip, zh -> en: substantial Chinese in, almost none out.
   if (rHanRatio >= 0.3 && pHanRatio <= rHanRatio * 0.25) return true;
-  // en -> zh: substantial Latin in, almost none out.
+  // Whole flip, en -> zh: substantial Latin in, almost none out.
   const rLatinRatio = 1 - rHanRatio;
   const pLatinRatio = 1 - pHanRatio;
   if (rLatinRatio >= 0.5 && pLatinRatio <= rLatinRatio * 0.25) return true;
+
+  // Partial translation: one clause rewritten in the other language while
+  // the rest survives, so the ratios above never collapse. Cleanup can
+  // legitimately DROP letters of either script (fillers 嗯/那个/就是, spoken
+  // punctuation, self-corrections, "like"/"you know") — but it has no reason
+  // to drop one script AND grow the other at the same time. Translating N
+  // Han characters yields roughly 2-3N Latin letters, so the growth is
+  // required to be in proportion to the loss; digit conversion ("五点半" ->
+  // "5:30 PM") loses Han but adds almost no letters and stays accepted.
+  const hanLost = r.han - p.han;
+  const latinGained = p.latin - r.latin;
+  if (hanLost >= Math.max(2, r.han * 0.3) && latinGained >= Math.max(4, hanLost * 1.2)) {
+    return true;
+  }
+  const latinLost = r.latin - p.latin;
+  const hanGained = p.han - r.han;
+  if (latinLost >= Math.max(6, r.latin * 0.3) && hanGained >= Math.max(3, latinLost * 0.4)) {
+    return true;
+  }
 
   return false;
 }
@@ -122,16 +143,18 @@ export function guardPolishedOutput(raw: string, polished: string): PolishGuardR
     return { accepted: false, text: rawText, reason: "growth" };
   }
 
-  if (isLanguageFlip(rawText, polishedText)) {
-    return { accepted: false, text: rawText, reason: "language-flip" };
-  }
-
   // "*punch*" out of thin air is an LLM roleplay emote — unless the user
   // dictated the asterisks themselves (literally, or as spoken punctuation:
   // "星号 punch 星号" / "asterisk punch asterisk" legitimately becomes *punch*).
+  // Checked before the language rule: an emote is also a translation, and
+  // the more specific reason is the useful one in the logs.
   const dictatedAsterisk = rawText.includes("*") || /星号|asterisk/i.test(rawText);
   if (EMOTE_RE.test(polishedText) && !dictatedAsterisk) {
     return { accepted: false, text: rawText, reason: "emote" };
+  }
+
+  if (isLanguageFlip(rawText, polishedText)) {
+    return { accepted: false, text: rawText, reason: "language-flip" };
   }
 
   const polishedLower = polishedText.toLowerCase();

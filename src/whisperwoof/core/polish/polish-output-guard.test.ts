@@ -77,6 +77,84 @@ describe("guardPolishedOutput", () => {
     expect(r.reason).toBe("language-flip");
   });
 
+  describe("partial translation (one clause flipped, the rest kept)", () => {
+    it("rejects a Chinese clause rewritten in English", () => {
+      const r = guardPolishedOutput(
+        "我们明天要 review 这个 pull request 然后再决定要不要 merge",
+        "我们明天要 review this pull request and then decide whether to merge."
+      );
+      expect(r.accepted).toBe(false);
+      expect(r.reason).toBe("language-flip");
+    });
+
+    it("rejects a short Chinese clause flipped in a mostly-English sentence", () => {
+      const r = guardPolishedOutput(
+        "这个 bug 我今天修一下 你先 review 别的",
+        "这个 bug I'll fix today, 你先 review 别的."
+      );
+      expect(r.accepted).toBe(false);
+      expect(r.reason).toBe("language-flip");
+    });
+
+    it("rejects an English clause rewritten in Chinese", () => {
+      const r = guardPolishedOutput(
+        "帮我看一下 the deploy pipeline is broken 我们得赶紧修",
+        "帮我看一下，部署流水线坏了，我们得赶紧修。"
+      );
+      expect(r.accepted).toBe(false);
+      expect(r.reason).toBe("language-flip");
+    });
+
+    it("rejects short utterances translated outright", () => {
+      expect(guardPolishedOutput("好的谢谢", "Okay, thanks").accepted).toBe(false);
+      expect(guardPolishedOutput("拜拜", "Bye bye").accepted).toBe(false);
+      expect(guardPolishedOutput("thanks a lot", "非常感谢").accepted).toBe(false);
+    });
+
+    it("accepts heavy Chinese filler removal (loses Han, gains no Latin)", () => {
+      const r = guardPolishedOutput(
+        "嗯 然后 就是 那个 我们 deploy 一下 然后 就是 看看 log",
+        "我们 deploy 一下，看看 log。"
+      );
+      expect(r.accepted).toBe(true);
+    });
+
+    it("accepts a self-correction that deletes most of the Chinese", () => {
+      const r = guardPolishedOutput(
+        "我想要蓝色的 不对 等一下 我是说绿色的 the green one",
+        "我想要绿色的，the green one。"
+      );
+      expect(r.accepted).toBe(true);
+    });
+
+    it("accepts English filler and spoken punctuation removal", () => {
+      const r = guardPolishedOutput(
+        "so like basically 我们 you know need to ship it period new line 然后 review comma okay",
+        "我们 need to ship it.\n然后 review, okay."
+      );
+      expect(r.accepted).toBe(true);
+    });
+
+    it("accepts time/date/number conversion that drops Han without adding letters", () => {
+      expect(guardPolishedOutput("下午五点半到 三百块", "下午5:30到，300元。").accepted).toBe(true);
+      expect(guardPolishedOutput("明天下午三点 pm 开会", "明天下午3 PM 开会。").accepted).toBe(true);
+    });
+
+    it("accepts a spoken email assembled into an address", () => {
+      const r = guardPolishedOutput(
+        "我的邮箱是 john at acme dot com 发到这里",
+        "我的邮箱是 john@acme.com，发到这里。"
+      );
+      expect(r.accepted).toBe(true);
+    });
+
+    it("accepts a tiny transliteration fix (欧克 -> OK)", () => {
+      expect(guardPolishedOutput("欧克 那我们明天 deploy", "OK，那我们明天 deploy。").accepted).toBe(
+        true
+      );
+    });
+  });
+
   it("accepts genuine zh/en code-switching preserved by the cleanup", () => {
     const r = guardPolishedOutput(
       "帮我把这个 pull request 的 description 写一下 重点说明我们改了 pipeline",
