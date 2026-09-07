@@ -34,6 +34,9 @@ class UpdateManager {
     this.updateCheckInterval = null;
     this.windowManager = null;
     this._suppressNotification = false;
+    // True while a check/download the USER started is in flight — only
+    // those errors are worth a dialog in the renderer.
+    this._userInitiated = false;
     // Persisted "skip this version" lives with the other user preferences
     // (environment.js); injected by main.js so this module stays testable.
     this._preferences = null;
@@ -113,6 +116,11 @@ class UpdateManager {
       }
 
       autoUpdater.channel = nativeArch === "arm64" ? "latest-arm64" : "latest-x64";
+      // electron-updater's channel setter silently flips allowDowngrade on,
+      // which makes ANY version that differs from the running one an
+      // "update" — a build ahead of the latest release would be nagged to
+      // go backwards. The channel is only here for the per-arch yml name.
+      autoUpdater.allowDowngrade = false;
     }
 
     autoUpdater.autoDownload = false;
@@ -165,7 +173,13 @@ class UpdateManager {
         console.error("❌ Auto-updater error:", err);
         this._suppressNotification = false;
         this.isDownloading = false;
-        this.notifyRenderers("update-error", err);
+        // A failed BACKGROUND check (offline, a release without a channel
+        // yml, GitHub down) is a log line, not a modal: the renderer turns
+        // update-error into an alert every time Settings mounts. Errors
+        // from something the user clicked still surface.
+        if (this._userInitiated) {
+          this.notifyRenderers("update-error", err);
+        }
       },
       "download-progress": (progressObj) => {
         console.log(
@@ -177,6 +191,7 @@ class UpdateManager {
         console.log("✅ Update downloaded successfully:", info?.version);
         this.updateDownloaded = true;
         this.isDownloading = false;
+        this._userInitiated = false;
         if (info) {
           this.lastUpdateInfo = {
             version: info.version,
@@ -224,7 +239,10 @@ class UpdateManager {
 
       console.log("🔍 Checking for updates...");
       this._suppressNotification = true;
-      const result = await autoUpdater.checkForUpdates();
+      this._userInitiated = true;
+      const result = await autoUpdater.checkForUpdates().finally(() => {
+        this._userInitiated = false;
+      });
 
       if (result?.isUpdateAvailable && result?.updateInfo) {
         console.log("📋 Update available:", result.updateInfo.version);
@@ -285,6 +303,7 @@ class UpdateManager {
       }
 
       this.isDownloading = true;
+      this._userInitiated = true;
       console.log("📥 Starting update download...");
       await autoUpdater.downloadUpdate();
       console.log("📥 Download initiated successfully");
@@ -292,6 +311,7 @@ class UpdateManager {
       return { success: true, message: "Update download started" };
     } catch (error) {
       this.isDownloading = false;
+      this._userInitiated = false;
       console.error("❌ Update download error:", error);
       throw error;
     }
