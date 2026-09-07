@@ -2,6 +2,7 @@ import promptData from "./promptData.json";
 import i18n, { normalizeUiLanguage } from "../i18n";
 import { en as enPrompts, type PromptBundle } from "../locales/prompts";
 import { getLanguageInstruction } from "../utils/languageSupport";
+import { scriptMixHint } from "../whisperwoof/core/language/script-mix";
 
 export const CLEANUP_PROMPT = promptData.CLEANUP_PROMPT;
 export const FULL_PROMPT = promptData.FULL_PROMPT;
@@ -17,6 +18,13 @@ export const UNIFIED_SYSTEM_PROMPT = promptData.FULL_PROMPT;
 // custom prompts keep the registry instruction so an explicit "translate this" works.
 export const CLEANUP_LANGUAGE_DIRECTIVE =
   "Output in the same language as the input. Never translate.";
+
+// Agent mode may translate ON COMMAND ("translate this to Spanish"), but a
+// name-match alone must not license rewriting the rest of the dictation in
+// another language — the registry's "maintain consistent language" line was
+// a monolingual push on mixed input.
+export const AGENT_LANGUAGE_DIRECTIVE =
+  "Keep every word in the language it was spoken unless the speaker explicitly asks you to translate.";
 
 function getPromptBundle(uiLanguage?: string): PromptBundle {
   const locale = normalizeUiLanguage(uiLanguage || "en");
@@ -124,14 +132,17 @@ export function getSystemPrompt(
     }
   }
 
+  // Whether the speaker addressed the agent by name decides the language
+  // rules for BOTH the built-in prompts and a saved Prompt Studio prompt: a
+  // custom prompt is still a cleanup prompt unless the agent was called.
+  const addressedAgent = transcript ? detectAgentName(transcript, name) : false;
+  const isCleanupMode = !addressedAgent;
+
   let prompt: string;
-  let isCleanupMode = false;
   if (promptTemplate) {
     prompt = promptTemplate.replace(/\{\{agentName\}\}/g, name);
   } else {
-    const useFullPrompt = transcript ? detectAgentName(transcript, name) : false;
-    isCleanupMode = !useFullPrompt;
-    prompt = (useFullPrompt ? prompts.fullPrompt : prompts.cleanupPrompt).replace(
+    prompt = (addressedAgent ? prompts.fullPrompt : prompts.cleanupPrompt).replace(
       /\{\{agentName\}\}/g,
       name
     );
@@ -148,10 +159,19 @@ export function getSystemPrompt(
     if (langInstruction) {
       prompt += "\n\n" + langInstruction;
     }
+    prompt += "\n\n" + AGENT_LANGUAGE_DIRECTIVE;
   }
 
   if (customDictionary && customDictionary.length > 0) {
     prompt += prompts.dictionarySuffix + customDictionary.join(", ");
+  }
+
+  if (isCleanupMode && transcript) {
+    // Input-specific hint LAST: "this input mixes Chinese and English, keep
+    // both". A concrete statement about the text in hand beats the general
+    // rule for a 2B model, and appending keeps llama-server's cached prefix.
+    const hint = scriptMixHint(transcript);
+    if (hint) prompt += "\n\n" + hint;
   }
 
   return prompt;

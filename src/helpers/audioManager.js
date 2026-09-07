@@ -1012,6 +1012,29 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
     return apiKey;
   }
 
+  /**
+   * The output guard rejected a polish result and the raw transcript pastes
+   * instead. Logged at WARN so it is visible at the default log level: a
+   * report of "it translated my Chinese" needs this line, and the
+   * REASONING_* stages are debug-only.
+   */
+  _logRejectedPolish(raw, polished, guarded) {
+    const preview = (s) => (s.length > 80 ? `${s.slice(0, 80)}…` : s);
+    logger.warn(
+      "REASONING_OUTPUT_REJECTED",
+      {
+        reason: guarded.reason,
+        detail: guarded.detail,
+        marker: guarded.marker,
+        rawLength: raw.length,
+        resultLength: polished.length,
+        raw: preview(raw),
+        polished: preview(polished),
+      },
+      "reasoning"
+    );
+  }
+
   async processWithReasoningModel(text, model, agentName) {
     // Signal the polish phase so the UI can switch "Transcribing…" → "Polishing…".
     this.onProcessingPhase?.("polishing");
@@ -1262,12 +1285,7 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
         // carries meta-markers the raw text lacks, paste what the user said.
         const guarded = guardPolishedOutput(normalizedText, result);
         if (!guarded.accepted) {
-          logger.logReasoning("REASONING_OUTPUT_REJECTED", {
-            reason: guarded.reason,
-            marker: guarded.marker,
-            resultLength: result.length,
-            rawLength: normalizedText.length,
-          });
+          this._logRejectedPolish(normalizedText, result, guarded);
           return normalizedText;
         }
 
@@ -1531,8 +1549,15 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
             effectiveModel,
             agentName
           );
+          // Same guard as the local-STT path: this branch used to paste
+          // whatever the model returned.
           if (result) {
-            processedText = result;
+            const guarded = guardPolishedOutput(processedText, result);
+            if (guarded.accepted) {
+              processedText = result;
+            } else {
+              this._logRejectedPolish(processedText, result, guarded);
+            }
           }
         }
       }
@@ -2752,8 +2777,15 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
               effectiveModel,
               agentName
             );
+            // Same guard as the batch path: streamed dictation must not be
+            // the one surface where a translation or emote slips through.
             if (result) {
-              finalText = result;
+              const guarded = guardPolishedOutput(finalText, result);
+              if (guarded.accepted) {
+                finalText = result;
+              } else {
+                this._logRejectedPolish(finalText, result, guarded);
+              }
             }
             logger.info(
               "Streaming BYOK reasoning complete",

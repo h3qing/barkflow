@@ -146,6 +146,11 @@ class LlamaServerManager {
       String(this.port),
       "--threads",
       String(options.threads || 4),
+      // chat_template_kwargs (enable_thinking: false, below) is only honored
+      // by the jinja template engine. Current llama-server enables it by
+      // default; say so explicitly so a differently built binary behaves
+      // the same instead of burning the token budget on <think>.
+      "--jinja",
     ];
 
     if (process.platform === "darwin") {
@@ -414,8 +419,11 @@ class LlamaServerManager {
 
     const body = JSON.stringify({
       messages,
-      temperature: options.temperature ?? 0.7,
+      temperature: options.temperature ?? 0.3,
       max_tokens: options.max_tokens ?? 512,
+      // Sampling caps the bridge chose; llama-server defaults apply when unset.
+      ...(options.top_k != null ? { top_k: options.top_k } : {}),
+      ...(options.top_p != null ? { top_p: options.top_p } : {}),
       stream: false,
       // Disable Qwen3/Qwen3.5 "thinking" mode. Without this the model spends the
       // whole token budget emitting <think>… (≈4s, finish_reason=length, empty

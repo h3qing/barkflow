@@ -393,8 +393,10 @@ class ModelManager {
 
     try {
       const result = await this.serverManager.inference(messages, {
-        temperature: options.temperature ?? 0.7,
+        temperature: options.temperature ?? 0.3,
         max_tokens: options.maxTokens ?? 512,
+        top_k: options.topK,
+        top_p: options.topP,
       });
 
       const totalTime = Date.now() - startTime;

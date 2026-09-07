@@ -1,0 +1,6 @@
+{
+  "mixed": "The input mixes Chinese and English. Keep the Chinese as Chinese and the English as English, exactly as spoken. 输入中英混杂：中文保持中文，英文保持英文，不要翻译。",
+  "zh": "The input is Chinese. Output Chinese only; any English term in it stays as-is. 输入是中文，输出必须是中文。",
+  "en": "The input is English. Output English only.",
+  "none": ""
+}

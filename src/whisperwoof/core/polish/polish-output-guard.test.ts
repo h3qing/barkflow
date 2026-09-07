@@ -155,6 +155,123 @@ describe("guardPolishedOutput", () => {
     });
   });
 
+  describe("token novelty (single terms and clauses swapped across languages)", () => {
+    it("rejects a Chinese clause rendered in English behind heavy filler removal", () => {
+      const r = guardPolishedOutput(
+        "嗯 然后 就是 那个 我们 deploy 一下 然后 就是 看看 log 有没有报错 然后再决定",
+        "我们 deploy 一下，看看 log，then decide."
+      );
+      expect(r.accepted).toBe(false);
+      expect(r.reason).toBe("language-flip");
+      expect(["ratio", "new-latin"]).toContain(r.detail);
+    });
+
+    it("rejects a single Chinese term turned into an English one (延迟 -> latency)", () => {
+      const r = guardPolishedOutput(
+        "这个 feature 的延迟太高了 我们能不能先改成 async 的",
+        "这个 feature 的 latency 太高了，我们能不能先改成 async 的？"
+      );
+      expect(r.accepted).toBe(false);
+      expect(r.detail).toBe("new-latin");
+    });
+
+    it("rejects a spoken English term rendered in Chinese (deploy -> 部署)", () => {
+      const r = guardPolishedOutput(
+        "我们明天把这个新功能 deploy 一下然后看看有没有问题",
+        "我们明天把这个新功能部署一下，然后看看有没有问题。"
+      );
+      expect(r.accepted).toBe(false);
+      expect(r.detail).toBe("lost-latin");
+    });
+
+    it("rejects pull request -> 拉取请求 even with the rest intact", () => {
+      const r = guardPolishedOutput(
+        "嗯 帮我把这个 pull request 的 description 写一下 就是 重点说明我们改了 pipeline",
+        "帮我把这个拉取请求的 description 写一下，重点说明我们改了 pipeline。"
+      );
+      expect(r.accepted).toBe(false);
+      expect(r.detail).toBe("lost-latin");
+    });
+
+    it("rejects an English translation appended next to intact Chinese", () => {
+      // Short raw: the whole-sentence ratio collapses first.
+      const short = guardPolishedOutput(
+        "我们明天开会讨论一下预算",
+        "我们明天开会讨论一下预算。(We have a meeting tomorrow to discuss the budget.)"
+      );
+      expect(short.accepted).toBe(false);
+      expect(short.reason).toBe("language-flip");
+      // Long raw: the ratio survives, only the novelty of the appended
+      // English gives it away.
+      const long = guardPolishedOutput(
+        "我们明天开会讨论一下预算和进度安排 还有招聘的事情",
+        "我们明天开会讨论一下预算和进度安排，还有招聘的事情。(Meeting tomorrow on budget.)"
+      );
+      expect(long.accepted).toBe(false);
+      expect(long.detail).toBe("append");
+    });
+
+    it("rejects a term translated inside a self-correction that also deleted Chinese", () => {
+      const r = guardPolishedOutput(
+        "我想要蓝色的 不对 绿色的 the green one 然后 deploy 一下",
+        "我想要绿色的，the green one，然后部署一下。"
+      );
+      expect(r.accepted).toBe(false);
+      expect(r.detail).toBe("lost-latin");
+    });
+
+    it("accepts an English STT fix inside filler-heavy Chinese (cube or netties -> Kubernetes)", () => {
+      const r = guardPolishedOutput(
+        "嗯 那个 我们用 cube or netties 部署 就是 然后看看",
+        "我们用 Kubernetes 部署，然后看看。"
+      );
+      expect(r.accepted).toBe(true);
+    });
+
+    it("accepts a one-letter STT fix and a loanword (pool -> pull, 好的 -> OK)", () => {
+      expect(
+        guardPolishedOutput("帮我看一下这个 pool request", "帮我看一下这个 pull request。").accepted
+      ).toBe(true);
+      expect(guardPolishedOutput("好的 那我们明天 sync", "OK，那我们明天 sync。").accepted).toBe(true);
+    });
+
+    it("accepts contraction expansion and number words in mixed text", () => {
+      expect(
+        guardPolishedOutput(
+          "我们 gonna ship it 明天 ill send the link 三百二十块",
+          "我们 are going to ship it 明天，I will send the link，320元。"
+        ).accepted
+      ).toBe(true);
+    });
+
+    it("accepts a Chinese homophone fix (架构 -> 结构) with an English word kept", () => {
+      expect(
+        guardPolishedOutput(
+          "这个 pipeline 的架构要改一下 架构不太合理",
+          "这个 pipeline 的结构要改一下，结构不太合理。"
+        ).accepted
+      ).toBe(true);
+    });
+
+    it("accepts an English self-correction that drops an English word", () => {
+      expect(
+        guardPolishedOutput("把 config 不对 是 setting 改一下", "把 setting 改一下。").accepted
+      ).toBe(true);
+    });
+
+    it("never touches pure-English or pure-Chinese rephrasing", () => {
+      expect(
+        guardPolishedOutput(
+          "we was thinking to move meeting to thursday",
+          "We were thinking of moving the meeting to Thursday."
+        ).accepted
+      ).toBe(true);
+      expect(
+        guardPolishedOutput("嗯 那个 明天 那个 会议 改到 周四 吧", "明天的会议改到周四吧。").accepted
+      ).toBe(true);
+    });
+  });
+
   it("accepts genuine zh/en code-switching preserved by the cleanup", () => {
     const r = guardPolishedOutput(
       "帮我把这个 pull request 的 description 写一下 重点说明我们改了 pipeline",
