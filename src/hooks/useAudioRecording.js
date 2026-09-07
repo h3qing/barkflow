@@ -337,7 +337,11 @@ export const useAudioRecording = (toast, options = {}) => {
           }
           tracker?.mark("pasteEnd");
 
-          audioManagerRef.current.saveTranscription(textToPaste, rawText);
+          // Awaited (after the paste, so nothing the user sees waits on it):
+          // the upstream row's id is the only link from this entry to the
+          // audio file it was transcribed from, which History → Regenerate
+          // needs. Retention off / failure → no id, and the entry still saves.
+          const saved = await audioManagerRef.current.saveTranscription(textToPaste, rawText);
 
           // WhisperWoof: Build latency timings + persist to bf_entries
           const capturedTimings = tracker?.toTimings() ?? null;
@@ -376,7 +380,16 @@ export const useAudioRecording = (toast, options = {}) => {
             durationMs: speakingDurationMs,
             projectId: null,
             audioPath: null,
-            metadata: capturedTimings ? { timings: capturedTimings } : {},
+            metadata: {
+              ...(capturedTimings ? { timings: capturedTimings } : {}),
+              ...(saved?.id ? { transcriptionId: saved.id } : {}),
+              // What produced this text, so History can show it and offer a
+              // different model for regeneration.
+              stt: {
+                source: result.source ?? null,
+                model: result.model ?? result.sttModel ?? null,
+              },
+            },
           });
 
           if (result.source === "openai" && getSettings().useLocalWhisper) {

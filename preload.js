@@ -846,6 +846,10 @@ contextBridge.exposeInMainWorld("electronAPI", {
   whisperwoofGetFavorites: (limit) => ipcRenderer.invoke("whisperwoof-get-favorites", limit),
   whisperwoofGetImage: (imagePath) => ipcRenderer.invoke("whisperwoof-get-image", imagePath),
   whisperwoofClipboardToggle: (enabled) => ipcRenderer.invoke("whisperwoof-clipboard-toggle", enabled),
+  // WhisperWoof: Regenerate an entry from its stored audio (History → Regenerate)
+  whisperwoofRegenerateOptions: (id) => ipcRenderer.invoke("whisperwoof-regenerate-options", id),
+  whisperwoofRegenerateStt: (id, request) => ipcRenderer.invoke("whisperwoof-regenerate-stt", id, request),
+  whisperwoofUpdateEntry: (id, patch) => ipcRenderer.invoke("whisperwoof-update-entry", id, patch),
 
   // WhisperWoof: Projects — named buckets for voice capture routing
   whisperwoofCreateProject: (name) => ipcRenderer.invoke("whisperwoof-create-project", name),

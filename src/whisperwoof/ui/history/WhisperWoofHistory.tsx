@@ -1,9 +1,22 @@
 import React, { useState, useEffect, useCallback, useRef, useMemo } from "react";
-import { Search, Mic, Clipboard, Trash2, Star, Sparkles, Upload, ImageIcon } from "lucide-react";
+import {
+  Search,
+  Mic,
+  Clipboard,
+  Trash2,
+  Star,
+  Sparkles,
+  Upload,
+  ImageIcon,
+  RotateCcw,
+  Undo2,
+} from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import { cn } from "../../../components/lib/utils";
 import type { Entry, EntrySource } from "../../core/storage/types";
+import { RegeneratePanel } from "./RegeneratePanel";
+import { describeProvenance, regenerationHistory } from "./regenerate-selections";
 
 // WhisperWoof-specific electronAPI methods (exposed in preload.js).
 // These augment the global Window.electronAPI declared in src/types/electron.ts.
@@ -14,6 +27,10 @@ interface WhisperWoofElectronAPI {
   whisperwoofToggleFavorite: (id: string) => Promise<{ success: boolean; isFavorite: boolean }>;
   whisperwoofGetFavorites: (limit: number) => Promise<Entry[]>;
   whisperwoofGetImage: (imagePath: string) => Promise<{ success: boolean; data?: string; error?: string }>;
+  whisperwoofUpdateEntry: (
+    id: string,
+    patch: { undo: true }
+  ) => Promise<{ success: boolean; entry?: Entry; error?: string }>;
 }
 
 function getAPI(): WhisperWoofElectronAPI {
@@ -238,8 +255,6 @@ function ImagePreview({ imagePath }: { readonly imagePath: string }) {
 
   useEffect(() => {
     let cancelled = false;
-    setImageData(null);
-    setLoadError(null);
 
     getAPI()
       .whisperwoofGetImage(imagePath)
@@ -247,12 +262,16 @@ function ImagePreview({ imagePath }: { readonly imagePath: string }) {
         if (cancelled) return;
         if (result.success && result.data) {
           setImageData(result.data);
+          setLoadError(null);
         } else {
+          setImageData(null);
           setLoadError(result.error ?? "Failed to load image");
         }
       })
       .catch(() => {
-        if (!cancelled) setLoadError("Failed to load image");
+        if (cancelled) return;
+        setImageData(null);
+        setLoadError("Failed to load image");
       });
 
     return () => {
@@ -289,14 +308,34 @@ function EntryDetail({
   entry,
   onDelete,
   onToggleFavorite,
+  onUpdated,
 }: {
   readonly entry: Entry;
   readonly onDelete: (id: string) => void;
   readonly onToggleFavorite: (id: string) => void;
+  readonly onUpdated: (entry: Entry) => void;
 }) {
   const hasPolish = entry.polished != null && entry.rawText != null && entry.polished !== entry.rawText;
   const isFavorite = entry.favorite === 1;
   const imageMeta = parseImageMetadata(entry);
+  const [showRegenerate, setShowRegenerate] = useState(false);
+  const [undoError, setUndoError] = useState<string | null>(null);
+  const history = regenerationHistory(entry.metadata);
+  const provenance = describeProvenance(entry.metadata, {});
+  const canRegenerate = imageMeta == null && entry.source !== "clipboard";
+  // (Rendered with key={entry.id}, so a different entry remounts this
+  // component and the panel/undo state never leaks across entries.)
+
+  const handleUndo = useCallback(async () => {
+    setUndoError(null);
+    try {
+      const result = await getAPI().whisperwoofUpdateEntry(entry.id, { undo: true });
+      if (result.success && result.entry) onUpdated(result.entry);
+      else setUndoError(result.error ?? "Could not undo.");
+    } catch (err) {
+      setUndoError((err as Error).message);
+    }
+  }, [entry.id, onUpdated]);
 
   return (
     <div className="flex flex-col gap-4 p-4">
@@ -307,6 +346,14 @@ function EntryDetail({
         {entry.hotkeyUsed && (
           <span className="text-xs text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
             {entry.hotkeyUsed}
+          </span>
+        )}
+        {provenance && (
+          <span
+            className="text-[11px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded"
+            title="Models that produced this text"
+          >
+            {provenance}
           </span>
         )}
         <button
@@ -372,18 +419,53 @@ function EntryDetail({
         </div>
       )}
 
+      {/* Previous text (before the last regeneration) */}
+      {history.length > 0 && history[0] && (
+        <details className="text-xs">
+          <summary className="cursor-pointer text-[11px] font-medium text-muted-foreground/70">
+            Previous version{history.length > 1 ? ` (${history.length} kept)` : ""}
+          </summary>
+          <div className="mt-1 p-3 rounded-md bg-muted/50 dark:bg-white/5 text-xs text-muted-foreground whitespace-pre-wrap leading-relaxed">
+            {history[0].polished ?? history[0].rawText ?? ""}
+          </div>
+        </details>
+      )}
+
       {/* Actions */}
-      <div className="flex items-center gap-2 pt-2 border-t border-border/20 dark:border-white/6">
+      <div className="flex items-center gap-2 pt-2 border-t border-border/20 dark:border-white/6 flex-wrap">
+        {canRegenerate && (
+          <Button
+            variant="outline-flat"
+            size="sm"
+            onClick={() => setShowRegenerate((v) => !v)}
+            className="gap-1.5"
+            aria-expanded={showRegenerate}
+          >
+            <RotateCcw size={13} />
+            Regenerate
+          </Button>
+        )}
+        {history.length > 0 && (
+          <Button variant="outline-flat" size="sm" onClick={handleUndo} className="gap-1.5">
+            <Undo2 size={13} />
+            Undo
+          </Button>
+        )}
         <Button
           variant="destructive"
           size="sm"
           onClick={() => onDelete(entry.id)}
-          className="gap-1.5"
+          className="gap-1.5 ml-auto"
         >
           <Trash2 size={13} />
           Delete
         </Button>
       </div>
+      {undoError && <p className="text-xs text-destructive">{undoError}</p>}
+
+      {showRegenerate && canRegenerate && (
+        <RegeneratePanel entry={entry} onUpdated={onUpdated} onClose={() => setShowRegenerate(false)} />
+      )}
     </div>
   );
 }
@@ -577,6 +659,13 @@ export default function WhisperWoofHistory({ className }: WhisperWoofHistoryProp
     }
   }, [fetchFavorites]);
 
+  // A regenerated / undone entry: swap it in place so the detail pane and the
+  // list agree immediately (the entry-saved broadcast refetch is the catch-all).
+  const handleEntryUpdated = useCallback((updated: Entry) => {
+    setEntries((prev) => prev.map((e) => (e.id === updated.id ? updated : e)));
+    setFavoriteEntries((prev) => prev.map((e) => (e.id === updated.id ? updated : e)));
+  }, []);
+
   const filteredEntries = useMemo(() => {
     if (sourceFilter === "favorites") return favoriteEntries;
     if (sourceFilter === "all") return entries;
@@ -693,7 +782,13 @@ export default function WhisperWoofHistory({ className }: WhisperWoofHistoryProp
       {/* Detail panel */}
       <div className="flex-1 overflow-y-auto">
         {selectedEntry ? (
-          <EntryDetail entry={selectedEntry} onDelete={handleDelete} onToggleFavorite={handleToggleFavorite} />
+          <EntryDetail
+            key={selectedEntry.id}
+            entry={selectedEntry}
+            onDelete={handleDelete}
+            onToggleFavorite={handleToggleFavorite}
+            onUpdated={handleEntryUpdated}
+          />
         ) : (
           <NoSelectionPlaceholder />
         )}

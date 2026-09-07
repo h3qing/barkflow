@@ -7,35 +7,34 @@
 import { describe, it, expect } from "vitest";
 import * as retry from "../../bridge/retry-transcription-pure.js";
 
-const { resolveRetryModelFile, resolveRetryProvider, resolveRetryLanguage } = retry;
+const { resolveRetryWhisperModel, resolveRetryProvider, resolveRetryLanguage } = retry;
 
-describe("resolveRetryModelFile", () => {
-  const downloaded = ["ggml-small.bin", "ggml-large-v3-turbo.bin", "ggml-base.bin"];
+describe("resolveRetryWhisperModel", () => {
+  const downloaded = ["small", "turbo", "base"];
 
-  it("resolves a model id to its registry filename", () => {
-    expect(resolveRetryModelFile(downloaded, "turbo")).toBe("ggml-large-v3-turbo.bin");
-    expect(resolveRetryModelFile(downloaded, "small")).toBe("ggml-small.bin");
+  it("uses the requested model when it is downloaded", () => {
+    expect(resolveRetryWhisperModel(downloaded, "small")).toBe("small");
+    expect(resolveRetryWhisperModel(downloaded, "turbo")).toBe("turbo");
   });
 
-  it("does not let a substring id claim a different model's file", () => {
-    // "large" must not silently resolve to the turbo build when large-v3
-    // itself was never downloaded — but it may fall back to a real match.
-    const only = ["ggml-large-v3-turbo.bin"];
-    expect(resolveRetryModelFile(only, "turbo")).toBe("ggml-large-v3-turbo.bin");
-  });
-
-  it("falls back to any downloaded model rather than refusing to retry", () => {
-    expect(resolveRetryModelFile(["ggml-base.bin"], "turbo")).toBe("ggml-base.bin");
+  it("falls back to the best downloaded model rather than refusing to retry", () => {
+    expect(resolveRetryWhisperModel(["base", "small"], "turbo")).toBe("small");
+    expect(resolveRetryWhisperModel(["tiny"], "large")).toBe("tiny");
   });
 
   it("returns null only when nothing is downloaded", () => {
-    expect(resolveRetryModelFile([], "turbo")).toBeNull();
-    expect(resolveRetryModelFile(["notes.txt"], "turbo")).toBeNull();
-    expect(resolveRetryModelFile(undefined, "turbo")).toBeNull();
+    expect(resolveRetryWhisperModel([], "turbo")).toBeNull();
+    expect(resolveRetryWhisperModel(["not-a-model"], "turbo")).toBeNull();
+    expect(resolveRetryWhisperModel(undefined, "turbo")).toBeNull();
   });
 
   it("still picks a model when no id is requested", () => {
-    expect(resolveRetryModelFile(downloaded)).toBe("ggml-small.bin");
+    expect(resolveRetryWhisperModel(downloaded)).toBe("turbo");
+  });
+
+  it("returns a registry id, never a filename — transcribeLocalWhisper validates ids", () => {
+    expect(resolveRetryWhisperModel(["ggml-small.bin", "small"], "small")).toBe("small");
+    expect(resolveRetryWhisperModel(["ggml-small.bin"], "small")).toBeNull();
   });
 });
 

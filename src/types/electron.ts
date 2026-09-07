@@ -91,6 +91,53 @@ export interface WhisperModelDeleteResult {
   error?: string;
 }
 
+// WhisperWoof — History → Regenerate (see src/whisperwoof/bridge/regenerate-entry-pure.js)
+export interface RegenerateSttOption {
+  engine: "whisper" | "parakeet";
+  model: string;
+  label: string;
+  downloaded: boolean;
+  runtime: "offline" | "online";
+  kind: string;
+  runnable: boolean;
+  languages: string[] | null;
+}
+
+export interface RegenerateOptionsResult {
+  success: boolean;
+  error?: string;
+  canRegenerateStt?: boolean;
+  audioReason?: "no_audio_link" | "audio_deleted" | null;
+  stt?: RegenerateSttOption[];
+  currentStt?: { engine?: string; model?: string | null; source?: string | null } | null;
+}
+
+export interface RegenerateSttRequest {
+  engine: "whisper" | "parakeet";
+  model: string;
+  language?: string;
+  script?: "simplified" | "off" | string;
+}
+
+export interface RegenerateSttResult {
+  success: boolean;
+  code?: string;
+  error?: string;
+  rawText?: string;
+  engine?: "whisper" | "parakeet";
+  requestedModel?: string;
+  modelUsed?: string;
+  durationMs?: number;
+}
+
+export interface RegenerateEntryPatch {
+  undo?: boolean;
+  rawText?: string;
+  polished?: string | null;
+  stt?: { engine: string; model: string } | null;
+  cleanup?: { choice: string; accepted: boolean; reason?: string; detail?: string } | null;
+}
+
 export interface WhisperModelsListResult {
   success: boolean;
   models: Array<{ model: string; downloaded: boolean; size_mb?: number }>;
@@ -1242,6 +1289,16 @@ declare global {
       whisperwoofGetEntries: (limit: number, offset: number) => Promise<any[]>;
       whisperwoofSearchEntries: (query: string, limit: number) => Promise<any[]>;
       whisperwoofDeleteEntry: (id: string) => Promise<void>;
+      whisperwoofToggleFavorite?: (id: string) => Promise<{ success: boolean; isFavorite: boolean }>;
+      whisperwoofGetFavorites?: (limit: number) => Promise<any[]>;
+      whisperwoofGetImage?: (imagePath: string) => Promise<{ success: boolean; data?: string; error?: string }>;
+      onWhisperwoofEntrySaved?: (
+        callback: (info: { id: string; source: string; updated?: boolean }) => void
+      ) => () => void;
+      // WhisperWoof — Regenerate (History → Regenerate)
+      whisperwoofRegenerateOptions?: (id: string) => Promise<RegenerateOptionsResult>;
+      whisperwoofRegenerateStt?: (id: string, request: RegenerateSttRequest) => Promise<RegenerateSttResult>;
+      whisperwoofUpdateEntry?: (id: string, patch: RegenerateEntryPatch) => Promise<{ success: boolean; entry?: any; error?: string }>;
 
       // WhisperWoof — Projects
       whisperwoofGetProjects: () => Promise<any[]>;

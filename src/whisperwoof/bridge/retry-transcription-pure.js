@@ -29,31 +29,33 @@ function sherpaModelServesLanguage(parakeetModel, base) {
   return !PARAKEET_UNSUPPORTED.has(base);
 }
 
+// Best-first when the requested model is not on disk: a retry with a
+// slightly different model beats refusing to retry.
+const WHISPER_QUALITY_ORDER = [
+  "turbo",
+  "large",
+  "medium",
+  "distil-large-v3.5",
+  "distil-large-v3",
+  "small",
+  "base",
+  "tiny",
+];
+
 /**
- * Resolve a whisper model id (`"turbo"`, `"small"`) to the `.bin` file to load,
- * given the files actually present on disk.
+ * Resolve the whisper model id to load for a retry, given the registry ids
+ * actually downloaded (from whisperManager.listWhisperModels). Returns a
+ * registry id — transcribeLocalWhisper validates ids, never paths.
  *
- * Prefers the registry filename for the requested id, then any downloaded file
- * whose name contains the id, then any downloaded model at all — a retry with
- * a slightly different model beats refusing to retry.
- *
- * @returns {string|null} the filename to load, or null when nothing is downloaded
+ * @returns {string|null} the id to load, or null when nothing is downloaded
  */
-function resolveRetryModelFile(downloadedFiles, requestedModelId) {
-  const bins = (Array.isArray(downloadedFiles) ? downloadedFiles : []).filter(
-    (f) => typeof f === "string" && f.endsWith(".bin")
+function resolveRetryWhisperModel(downloadedIds, requestedModelId) {
+  const ids = (Array.isArray(downloadedIds) ? downloadedIds : []).filter(
+    (id) => typeof id === "string" && whisperModels[id]
   );
-  if (bins.length === 0) return null;
-
-  if (requestedModelId) {
-    const registryFile = whisperModels[requestedModelId]?.fileName;
-    if (registryFile && bins.includes(registryFile)) return registryFile;
-
-    const contains = bins.find((f) => f.includes(requestedModelId));
-    if (contains) return contains;
-  }
-
-  return bins[0];
+  if (ids.length === 0) return null;
+  if (requestedModelId && ids.includes(requestedModelId)) return requestedModelId;
+  return WHISPER_QUALITY_ORDER.find((id) => ids.includes(id)) ?? ids[0];
 }
 
 /**
@@ -98,7 +100,7 @@ function resolveRetryLanguage(language) {
 }
 
 module.exports = {
-  resolveRetryModelFile,
+  resolveRetryWhisperModel,
   resolveRetryProvider,
   resolveRetryLanguage,
   PARAKEET_UNSUPPORTED,

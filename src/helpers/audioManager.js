@@ -2133,12 +2133,17 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
     }
   }
 
+  /**
+   * Persist the transcription (and its audio) to the upstream store.
+   * @returns {Promise<{success: boolean, id: number|null}>} the upstream row id
+   *   when one was written — History entries keep it as the link to the audio.
+   */
   async saveTranscription(text, rawText = null) {
     if (!getSettings().dataRetentionEnabled) {
       logger.debug("Skipping transcription save — data retention disabled", {}, "audio");
       this.lastAudioBlob = null;
       this.lastAudioMetadata = null;
-      return true;
+      return { success: true, id: null };
     }
 
     try {
@@ -2161,9 +2166,9 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
         this.lastAudioMetadata = null;
       }
 
-      return true;
+      return { success: true, id: Number.isInteger(result?.id) ? result.id : null };
     } catch (error) {
-      return false;
+      return { success: false, id: null };
     }
   }
 
