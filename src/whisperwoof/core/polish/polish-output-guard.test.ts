@@ -296,6 +296,37 @@ describe("guardPolishedOutput", () => {
     expect(r.accepted).toBe(true);
   });
 
+  describe("answering instead of cleaning (production leak, verbatim)", () => {
+    const RAW =
+      "你总结一下之前高信号 然后后来不可以的这些币有什么特征 有没有什么办法 在早期的时候就可以去筛选并且阻止错误的投资";
+    const ANSWER =
+      "你总结一下之前高信号， 然后后来不可以的这些币有什么特征， 有没有什么办法， 在早期的时候就可以去筛选并且阻止错误的投资。 **回答：** ** 1. **这些币的特征** - **高信号但后来不可用**： 这类代币往往在早期或中期表现出强烈的增长信号（如高流动性、高交易量、社区热度或早期获利）。 然而， 随着项目发展， 它们可能因为后续出现安全漏洞、核心功能失败、监管风险或市场共识逆转等原因， 导致价值暴跌甚至归零。 - **早期筛选与阻止错误投资的方法**： - **深度基本面分析**： 不仅关注短期热度， 更要考察项目的核心技术壁垒、真实团队背景、长期路线图以及社区凝聚力。";
+
+    it("rejects the full answer (it is many times the transcript)", () => {
+      const r = guardPolishedOutput(RAW, ANSWER);
+      expect(r.accepted).toBe(false);
+      expect(r.text).toBe(RAW);
+    });
+
+    it("rejects a SHORT answer by its marker, before growth would notice", () => {
+      const short = `${RAW}。 **回答：** 关注团队背景和流动性。`;
+      const r = guardPolishedOutput(RAW, short);
+      expect(r.accepted).toBe(false);
+      expect(r.reason).toBe("meta-marker");
+    });
+
+    it("rejects markdown emphasis the user never dictated", () => {
+      const r = guardPolishedOutput("这些币有什么特征", "**这些币的特征**：高流动性。");
+      expect(r.accepted).toBe(false);
+      expect(r.marker).toBe("**");
+    });
+
+    it("keeps a dictated question as a question, and dictated bold as bold", () => {
+      expect(guardPolishedOutput(RAW, `${RAW.replace(/ /g, "，")}？`).accepted).toBe(true);
+      expect(guardPolishedOutput("加粗 重要 加粗 明天交", "**重要** 明天交").accepted).toBe(true);
+    });
+  });
+
   it("empty polish passes through for the callers' existing fallback", () => {
     const r = guardPolishedOutput("说了点什么", "");
     expect(r.accepted).toBe(true);

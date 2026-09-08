@@ -50,6 +50,12 @@ const META_MARKERS = [
   "清理后的文本",
   "以下是清理",
   "处理后的文本",
+  // answering instead of cleaning (observed: a dictated question came back
+  // as the question plus "**回答：** 1. …" — a full markdown answer)
+  "回答：",
+  "回答:",
+  "答：",
+  "answer:",
   // en deliberation
   "here is the cleaned",
   "here's the cleaned",
@@ -280,6 +286,14 @@ export function guardPolishedOutput(raw: string, polished: string): PolishGuardR
   const flip = languageFlip(rawText, polishedText);
   if (flip) {
     return { accepted: false, text: rawText, reason: "language-flip", detail: flip };
+  }
+
+  // Markdown bold/headers out of nowhere: a cleanup never emphasises, an
+  // answer does ("**1. 这些币的特征**"). Dictated markup (raw has '*' or
+  // says 加粗/bold) is exempt.
+  const dictatedMarkup = rawText.includes("*") || /加粗|粗体|bold/i.test(rawText);
+  if (!dictatedMarkup && /\*\*[^*\n]{1,80}\*\*/.test(polishedText)) {
+    return { accepted: false, text: rawText, reason: "meta-marker", marker: "**" };
   }
 
   const polishedLower = polishedText.toLowerCase();
