@@ -2756,6 +2756,7 @@ class IPCHandlers {
     // renderer re-runs cleanup and persists via whisperwoof-update-entry.
     ipcMain.handle("whisperwoof-regenerate-options", async (_event, entryId) => {
       try {
+        const fs = require("fs");
         const appInit = require("../whisperwoof/bridge/app-init");
         const { resolveAudioSource, parseEntryMetadata } = require("../whisperwoof/bridge/regenerate-entry-pure");
         const row = appInit.getWhisperWoofEntryRow(entryId);
@@ -2796,6 +2797,7 @@ class IPCHandlers {
     ipcMain.handle("whisperwoof-regenerate-stt", async (_event, entryId, request = {}) => {
       const startedAt = Date.now();
       try {
+        const fs = require("fs");
         const appInit = require("../whisperwoof/bridge/app-init");
         const pure = require("../whisperwoof/bridge/regenerate-entry-pure");
         const { resolveRetryLanguage } = require("../whisperwoof/bridge/retry-transcription-pure");
