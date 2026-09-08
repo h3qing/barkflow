@@ -180,8 +180,8 @@
       "description": "Configura cómo activar el dictado",
       "hotkey": "Atajo",
       "mode": "Modo",
-      "tapDescription": "Pulsa para iniciar/detener",
-      "holdDescription": "Mantén pulsado mientras hablas",
+      "tapDescription": "Pulsa para iniciar, pulsa de nuevo para detener. Mantén pulsado para hablar y suelta para pegar.",
+      "holdDescription": "Mantén pulsado mientras hablas y suelta para pegar. Doble pulsación para fijar, pulsa para detener.",
       "test": "Prueba",
       "hotkeyToStartStop": "{{hotkey}} para iniciar/detener",
       "holdHotkey": "Mantener {{hotkey}}",
@@ -1268,7 +1268,8 @@
         "badges": {
           "dev": "Dev",
           "latest": "Última",
-          "update": "Actualizar"
+          "update": "Actualizar",
+          "local": "Local"
         },
         "checkForUpdates": "Buscar actualizaciones",
         "checking": "Verificando...",
@@ -1318,7 +1319,8 @@
         "restarting": "Reiniciando...",
         "title": "Actualizaciones",
         "versionPlaceholder": "—",
-        "whatsNew": "Novedades en v{{version}}"
+        "whatsNew": "Novedades en v{{version}}",
+        "localBuild": "Compilación local: la comprobación de actualizaciones está desactivada. Recompila para actualizar."
       }
     },
     "permissions": {
@@ -2000,7 +2002,9 @@
   "updateNotification": {
     "title": "Actualización de WhisperWoof disponible",
     "body": "La versión {{version}} está lista para descargar",
-    "cta": "Actualizar ahora"
+    "cta": "Actualizar ahora",
+    "skip": "Omitir",
+    "viewRelease": "Ver versión"
   },
   "permissionsGate": {
     "title": "Permisos necesarios",

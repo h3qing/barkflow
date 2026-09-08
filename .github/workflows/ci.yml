@@ -95,8 +95,10 @@ jobs:
       - name: Build renderer
         run: cd src && npx vite build
 
+      # whisperwoofUpdateMode=off: a PR test build must never prompt to
+      # "update" to a release (see src/whisperwoof/bridge/update-policy-pure.js).
       - name: Build Electron app (unsigned)
-        run: npx electron-builder --mac --arm64 --config.mac.identity=null --publish never
+        run: npx electron-builder --mac --arm64 --config.mac.identity=null --config.extraMetadata.whisperwoofUpdateMode=off --publish never
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: false
 

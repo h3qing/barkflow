@@ -337,7 +337,11 @@ export const useAudioRecording = (toast, options = {}) => {
           }
           tracker?.mark("pasteEnd");
 
-          audioManagerRef.current.saveTranscription(textToPaste, rawText);
+          // Awaited (after the paste, so nothing the user sees waits on it):
+          // the upstream row's id is the only link from this entry to the
+          // audio file it was transcribed from, which History → Regenerate
+          // needs. Retention off / failure → no id, and the entry still saves.
+          const saved = await audioManagerRef.current.saveTranscription(textToPaste, rawText);
 
           // WhisperWoof: Build latency timings + persist to bf_entries
           const capturedTimings = tracker?.toTimings() ?? null;
@@ -376,7 +380,16 @@ export const useAudioRecording = (toast, options = {}) => {
             durationMs: speakingDurationMs,
             projectId: null,
             audioPath: null,
-            metadata: capturedTimings ? { timings: capturedTimings } : {},
+            metadata: {
+              ...(capturedTimings ? { timings: capturedTimings } : {}),
+              ...(saved?.id ? { transcriptionId: saved.id } : {}),
+              // What produced this text, so History can show it and offer a
+              // different model for regeneration.
+              stt: {
+                source: result.source ?? null,
+                model: result.model ?? result.sttModel ?? null,
+              },
+            },
           });
 
           if (result.source === "openai" && getSettings().useLocalWhisper) {
@@ -452,6 +465,26 @@ export const useAudioRecording = (toast, options = {}) => {
       onToggle?.();
     });
 
+    // A stray single Fn tap: the main-process activation machine decided
+    // nothing meaningful was said — discard the capture, paste nothing.
+    // Same teardown as the hook's cancelRecording(): a cloud streaming
+    // session has no MediaRecorder to cancel, and paused media must resume.
+    const disposeCancel = window.electronAPI.onCancelDictation?.(() => {
+      activeHotkeyRef.current = null;
+      const manager = audioManagerRef.current;
+      if (manager) {
+        if (getSettings().pauseMediaOnDictation) {
+          window.electronAPI?.resumeMediaPlayback?.();
+        }
+        if (manager.getState().isStreaming) {
+          manager.stopStreamingRecording();
+        } else {
+          manager.cancelRecording();
+        }
+      }
+      onToggle?.();
+    });
+
     const handleNoAudioDetected = () => {
       toast({
         title: t("hooks.audioRecording.noAudio.title"),
@@ -467,6 +500,7 @@ export const useAudioRecording = (toast, options = {}) => {
       disposeToggle?.();
       disposeStart?.();
       disposeStop?.();
+      disposeCancel?.();
       disposeNoAudio?.();
       if (audioManagerRef.current) {
         audioManagerRef.current.cleanup();

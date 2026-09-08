@@ -152,8 +152,8 @@
       "description": "Configure como acionar o ditado",
       "hotkey": "Atalho",
       "mode": "Modo",
-      "tapDescription": "Pressione para iniciar/parar",
-      "holdDescription": "Segure enquanto fala",
+      "tapDescription": "Toque para iniciar, toque novamente para parar. Segure para falar e solte para colar.",
+      "holdDescription": "Segure enquanto fala e solte para colar. Toque duplo para travar, toque para parar.",
       "test": "Teste",
       "hotkeyToStartStop": "{{hotkey}} para iniciar/parar",
       "holdHotkey": "Segure {{hotkey}}",
@@ -1240,7 +1240,8 @@
         "badges": {
           "dev": "Dev",
           "latest": "Mais recente",
-          "update": "Atualização"
+          "update": "Atualização",
+          "local": "Local"
         },
         "checkForUpdates": "Verificar atualizações",
         "checking": "Verificando...",
@@ -1290,7 +1291,8 @@
         "restarting": "Reiniciando...",
         "title": "Atualizações",
         "versionPlaceholder": "—",
-        "whatsNew": "Novidades na v{{version}}"
+        "whatsNew": "Novidades na v{{version}}",
+        "localBuild": "Build local — a verificação de atualizações está desativada. Recompile para atualizar."
       }
     },
     "permissions": {
@@ -2000,7 +2002,9 @@
   "updateNotification": {
     "title": "Atualização do WhisperWoof disponível",
     "body": "A versão {{version}} está pronta para download",
-    "cta": "Atualizar agora"
+    "cta": "Atualizar agora",
+    "skip": "Ignorar",
+    "viewRelease": "Ver versão"
   },
   "permissionsGate": {
     "title": "Permissões necessárias",

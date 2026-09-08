@@ -439,6 +439,17 @@ class WindowManager {
     }
   }
 
+  sendCancelDictation() {
+    if (this.hotkeyManager.isInListeningMode()) {
+      return;
+    }
+    if (this.mainWindow && !this.mainWindow.isDestroyed()) {
+      this.mainWindow.webContents.send("cancel-dictation");
+      this._isDictatingToggle = false;
+      this.meetingDetectionEngine?.setUserRecording(false);
+    }
+  }
+
   sendStopDictation(hotkeyUsed = null) {
     if (this.hotkeyManager.isInListeningMode()) {
       return;
@@ -1086,6 +1097,9 @@ class WindowManager {
     this._pendingUpdateNotificationData = {
       version: info?.version,
       releaseDate: info?.releaseDate,
+      // Unsigned build: the button opens the release page instead of an
+      // in-app download the OS would refuse to install.
+      manual: info?.manual === true,
     };
 
     this._updateNotificationReadyFallback = setTimeout(() => {

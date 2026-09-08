@@ -437,6 +437,51 @@ function toggleWhisperWoofFavorite(id) {
   return newValue === 1;
 }
 
+function getWhisperWoofEntryRow(id) {
+  if (!whisperwoofDb) return null;
+  return whisperwoofDb.prepare("SELECT * FROM bf_entries WHERE id = ?").get(id) ?? null;
+}
+
+/**
+ * Legacy voice rows (saved before metadata.transcriptionId existed) can still
+ * find their audio: the upstream `transcriptions` row written for the same
+ * dictation lives in this same SQLite file, with the same text. Text equality
+ * and timestamp proximity are decided in regenerate-entry-pure.js.
+ */
+function findUpstreamTranscriptionForEntry(row) {
+  if (!whisperwoofDb || !row) return null;
+  try {
+    const { matchUpstreamTranscription } = require("./regenerate-entry-pure");
+    const shown = row.polished ?? row.raw_text ?? "";
+    const candidates = whisperwoofDb
+      .prepare(
+        "SELECT id, text, raw_text, timestamp, has_audio FROM transcriptions WHERE raw_text = ? OR text = ? ORDER BY id DESC LIMIT 20"
+      )
+      .all(row.raw_text ?? "", shown);
+    return matchUpstreamTranscription(row, candidates);
+  } catch (error) {
+    debugLogger.log(`[WhisperWoof] upstream transcription lookup failed: ${error.message}`);
+    return null;
+  }
+}
+
+function setWhisperWoofEntryMetadata(id, metadata) {
+  if (!whisperwoofDb) return null;
+  whisperwoofDb
+    .prepare("UPDATE bf_entries SET metadata = ? WHERE id = ?")
+    .run(JSON.stringify(metadata ?? {}), id);
+  return mapRow(getWhisperWoofEntryRow(id));
+}
+
+/** Regeneration / undo: the FTS update trigger keeps the search index in sync. */
+function updateWhisperWoofEntryText(id, { rawText, polished, metadata }) {
+  if (!whisperwoofDb) return null;
+  whisperwoofDb
+    .prepare("UPDATE bf_entries SET raw_text = ?, polished = ?, metadata = ? WHERE id = ?")
+    .run(rawText ?? null, polished ?? null, JSON.stringify(metadata ?? {}), id);
+  return mapRow(getWhisperWoofEntryRow(id));
+}
+
 function getWhisperWoofFavorites(limit = 50) {
   if (!whisperwoofDb) return [];
   return whisperwoofDb.prepare('SELECT * FROM bf_entries WHERE favorite = 1 ORDER BY created_at DESC LIMIT ?').all(limit).map(mapRow);
@@ -517,6 +562,10 @@ module.exports = {
   deleteWhisperWoofEntry,
   toggleWhisperWoofFavorite,
   getWhisperWoofFavorites,
+  getWhisperWoofEntryRow,
+  findUpstreamTranscriptionForEntry,
+  setWhisperWoofEntryMetadata,
+  updateWhisperWoofEntryText,
   startClipboardMonitor,
   stopClipboardMonitor,
   createWhisperWoofProject,

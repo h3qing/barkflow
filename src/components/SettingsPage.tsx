@@ -775,8 +775,10 @@ export default function SettingsPage({ activeSection = "general" }: SettingsPage
     error: updateError,
   } = useUpdater();
 
+  // Local/CI builds stamp updateMode "off": never checked, so never "available".
+  const updatesOff = updateStatus.isDevelopment || updateStatus.updatesDisabled === true;
   const isUpdateAvailable =
-    !updateStatus.isDevelopment && (updateStatus.updateAvailable || updateStatus.updateDownloaded);
+    !updatesOff && (updateStatus.updateAvailable || updateStatus.updateDownloaded);
 
   const migration = useMigration();
 
@@ -2821,6 +2823,11 @@ EOF`,
                       {t("settingsPage.general.hotkey.activationMode")}
                     </p>
                     <ActivationModeSelector value={activationMode} onChange={setActivationMode} />
+                    <p className="mt-2 text-xs text-muted-foreground/70">
+                      {activationMode === "tap"
+                        ? t("onboarding.activation.tapDescription")
+                        : t("onboarding.activation.holdDescription")}
+                    </p>
                   </SettingsPanelRow>
                 )}
               </SettingsPanel>
@@ -3435,9 +3442,11 @@ EOF`,
                     description={
                       updateStatus.isDevelopment
                         ? t("settingsPage.general.updates.devMode")
-                        : isUpdateAvailable
-                          ? t("settingsPage.general.updates.newVersionAvailable")
-                          : t("settingsPage.general.updates.latestVersion")
+                        : updateStatus.updatesDisabled
+                          ? t("settingsPage.general.updates.localBuild")
+                          : isUpdateAvailable
+                            ? t("settingsPage.general.updates.newVersionAvailable")
+                            : t("settingsPage.general.updates.latestVersion")
                     }
                   >
                     <div className="flex items-center gap-2.5">
@@ -3447,6 +3456,10 @@ EOF`,
                       {updateStatus.isDevelopment ? (
                         <Badge variant="warning">
                           {t("settingsPage.general.updates.badges.dev")}
+                        </Badge>
+                      ) : updateStatus.updatesDisabled ? (
+                        <Badge variant="outline">
+                          {t("settingsPage.general.updates.badges.local")}
                         </Badge>
                       ) : isUpdateAvailable ? (
                         <Badge variant="success">
@@ -3477,7 +3490,7 @@ EOF`,
                           }
                         } catch {}
                       }}
-                      disabled={checkingForUpdates || updateStatus.isDevelopment}
+                      disabled={checkingForUpdates || updatesOff}
                       variant="outline"
                       className="w-full"
                       size="sm"

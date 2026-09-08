@@ -180,8 +180,8 @@
       "description": "Configura come avviare la dettatura",
       "hotkey": "Scorciatoia",
       "mode": "Modalità",
-      "tapDescription": "Premi per avviare/fermare",
-      "holdDescription": "Tieni premuto mentre parli",
+      "tapDescription": "Premi per avviare, premi di nuovo per fermare. Tieni premuto per parlare, rilascia per incollare.",
+      "holdDescription": "Tieni premuto mentre parli, rilascia per incollare. Doppio tocco per bloccare, premi per fermare.",
       "test": "Test",
       "hotkeyToStartStop": "{{hotkey}} per avviare/fermare",
       "holdHotkey": "Tieni premuto {{hotkey}}",
@@ -1268,7 +1268,8 @@
         "badges": {
           "dev": "Dev",
           "latest": "Aggiornato",
-          "update": "Aggiornamento"
+          "update": "Aggiornamento",
+          "local": "Locale"
         },
         "checkForUpdates": "Controlla aggiornamenti",
         "checking": "Verifica...",
@@ -1318,7 +1319,8 @@
         "restarting": "Riavvio...",
         "title": "Aggiornamenti",
         "versionPlaceholder": "—",
-        "whatsNew": "Novità nella v{{version}}"
+        "whatsNew": "Novità nella v{{version}}",
+        "localBuild": "Build locale: il controllo aggiornamenti è disattivato. Ricompila per aggiornare."
       }
     },
     "permissions": {
@@ -2000,7 +2002,9 @@
   "updateNotification": {
     "title": "Aggiornamento WhisperWoof disponibile",
     "body": "La versione {{version}} è pronta per il download",
-    "cta": "Aggiorna ora"
+    "cta": "Aggiorna ora",
+    "skip": "Ignora",
+    "viewRelease": "Vedi release"
   },
   "permissionsGate": {
     "title": "Autorizzazioni necessarie",

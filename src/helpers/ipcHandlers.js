@@ -2623,6 +2623,13 @@ class IPCHandlers {
             debugLogger.debug("[WhisperWoof] Vocabulary usage tracking failed", { error: vocabErr.message });
           }
 
+          // Dictation happens in the overlay window while Home/History live in
+          // the control panel — broadcast so their stats refresh in real time.
+          this.broadcastToWindows("whisperwoof-entry-saved", {
+            id: result.id,
+            source: entry.source,
+          });
+
           return { success: true, ...result };
         }
         return { success: false, error: "WhisperWoof database not initialized" };
@@ -2741,6 +2748,168 @@ class IPCHandlers {
       } catch (error) {
         debugLogger.log(`[WhisperWoof] get-favorites failed: ${error.message}`);
         return [];
+      }
+    });
+
+    // WhisperWoof: Regenerate a History entry from its stored audio with a
+    // chosen STT model; polish is a renderer concern (CLAUDE.md), so the
+    // renderer re-runs cleanup and persists via whisperwoof-update-entry.
+    ipcMain.handle("whisperwoof-regenerate-options", async (_event, entryId) => {
+      try {
+        const fs = require("fs");
+        const appInit = require("../whisperwoof/bridge/app-init");
+        const { resolveAudioSource, parseEntryMetadata } = require("../whisperwoof/bridge/regenerate-entry-pure");
+        const row = appInit.getWhisperWoofEntryRow(entryId);
+        if (!row) return { success: false, error: "Entry not found" };
+
+        let audio = resolveAudioSource(row);
+        if (!audio && row.source === "voice") {
+          const match = appInit.findUpstreamTranscriptionForEntry(row);
+          if (match) {
+            audio = { kind: "upstream", id: match.id };
+            // Persist the link so the next open is a direct lookup.
+            appInit.setWhisperWoofEntryMetadata(entryId, {
+              ...parseEntryMetadata(row.metadata),
+              transcriptionId: match.id,
+            });
+          }
+        }
+        let audioAvailable = false;
+        if (audio?.kind === "file") audioAvailable = fs.existsSync(audio.path);
+        else if (audio?.kind === "upstream") {
+          audioAvailable = Boolean(this.audioStorageManager?.getAudioPath(audio.id));
+        }
+        const audioReason = !audio ? "no_audio_link" : audioAvailable ? null : "audio_deleted";
+
+        return {
+          success: true,
+          canRegenerateStt: audioAvailable,
+          audioReason,
+          stt: await this._buildRegenerateSttInventory(),
+          currentStt: parseEntryMetadata(row.metadata).stt ?? null,
+        };
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] regenerate-options failed: ${error.message}`);
+        return { success: false, error: error.message };
+      }
+    });
+
+    ipcMain.handle("whisperwoof-regenerate-stt", async (_event, entryId, request = {}) => {
+      const startedAt = Date.now();
+      try {
+        const fs = require("fs");
+        const appInit = require("../whisperwoof/bridge/app-init");
+        const pure = require("../whisperwoof/bridge/regenerate-entry-pure");
+        const { resolveRetryLanguage } = require("../whisperwoof/bridge/retry-transcription-pure");
+        const row = appInit.getWhisperWoofEntryRow(entryId);
+        if (!row) return { success: false, code: "not_found", error: "Entry not found" };
+
+        const audio = pure.resolveAudioSource(row);
+        let buffer = null;
+        if (audio?.kind === "file") {
+          try {
+            buffer = fs.readFileSync(audio.path);
+          } catch {
+            buffer = null;
+          }
+        } else if (audio?.kind === "upstream") {
+          buffer = this.audioStorageManager?.getAudioBuffer(audio.id) ?? null;
+        }
+        if (!buffer) {
+          return { success: false, code: "no_audio", error: "No audio is kept for this entry." };
+        }
+
+        const inventory = await this._buildRegenerateSttInventory();
+        const verdict = pure.validateRegenerateRequest(request, { inventory, language: request.language });
+        if (!verdict.ok) return { success: false, code: verdict.code, error: verdict.message };
+
+        // Freshly downloaded binaries must be detected (same as retry).
+        if (this.whisperManager?.serverManager) {
+          this.whisperManager.serverManager.cachedServerBinaryPath = null;
+        }
+
+        let result;
+        if (verdict.engine === "parakeet") {
+          result = await this.parakeetManager.transcribeLocalParakeet(buffer, { model: verdict.model });
+        } else {
+          const language = resolveRetryLanguage(request.language);
+          result = await this.whisperManager.transcribeLocalWhisper(buffer, {
+            model: verdict.model, // registry id — never a path
+            ...(language ? { language } : {}),
+          });
+        }
+        if (!result?.text) {
+          const message = result?.message || result?.error || "Transcription returned no text";
+          return { success: false, code: /no audio/i.test(message) ? "no_speech" : "stt_failed", error: message };
+        }
+
+        // Same script normalization live dictation applies.
+        const { normalizeChineseScript, scriptForLanguage } = require("../whisperwoof/bridge/chinese-script");
+        const rawText = normalizeChineseScript(
+          result.text,
+          request.script === "simplified" || request.script === "off"
+            ? request.script
+            : scriptForLanguage(request.language)
+        );
+        return {
+          success: true,
+          rawText,
+          engine: verdict.engine,
+          requestedModel: verdict.model,
+          modelUsed: result.modelUsed ?? verdict.model,
+          durationMs: Date.now() - startedAt,
+        };
+      } catch (error) {
+        debugLogger.error("Regenerate STT failed", { entryId, error: error.message }, "audio-storage");
+        return { success: false, code: "stt_failed", error: error.message };
+      }
+    });
+
+    ipcMain.handle("whisperwoof-update-entry", async (_event, entryId, patch = {}) => {
+      try {
+        const appInit = require("../whisperwoof/bridge/app-init");
+        const pure = require("../whisperwoof/bridge/regenerate-entry-pure");
+        const row = appInit.getWhisperWoofEntryRow(entryId);
+        if (!row) return { success: false, error: "Entry not found" };
+
+        const next = patch.undo
+          ? pure.popRegenerationHistory(row)
+          : pure.applyRegeneration(row, {
+              rawText: patch.rawText,
+              polished: patch.polished,
+              stt: patch.stt,
+              cleanup: patch.cleanup,
+              now: new Date().toISOString(),
+            });
+        if (!next) return { success: false, error: "Nothing to undo" };
+
+        const entry = appInit.updateWhisperWoofEntryText(entryId, {
+          rawText: next.raw_text,
+          polished: next.polished,
+          metadata: next.metadata,
+        });
+
+        // Keep the upstream row (Home's transcription list) in agreement.
+        const transcriptionId = next.metadata?.transcriptionId;
+        if (Number.isInteger(transcriptionId) && this.databaseManager?.updateTranscriptionText) {
+          try {
+            this.databaseManager.updateTranscriptionText(
+              transcriptionId,
+              next.polished ?? next.raw_text ?? "",
+              next.raw_text ?? null
+            );
+            const updated = this.databaseManager.getTranscriptionById?.(transcriptionId);
+            if (updated) this.broadcastToWindows("transcription-updated", updated);
+          } catch (mirrorError) {
+            debugLogger.log(`[WhisperWoof] upstream mirror failed: ${mirrorError.message}`);
+          }
+        }
+
+        this.broadcastToWindows("whisperwoof-entry-saved", { id: entryId, source: row.source, updated: true });
+        return { success: true, entry };
+      } catch (error) {
+        debugLogger.log(`[WhisperWoof] update-entry failed: ${error.message}`);
+        return { success: false, error: error.message };
       }
     });
 
@@ -3717,7 +3886,7 @@ class IPCHandlers {
       if (!buffer) return { success: false, error: "Audio file not found. The original recording may have been deleted by retention policy." };
       try {
         const {
-          resolveRetryModelFile,
+          resolveRetryWhisperModel,
           resolveRetryProvider,
           resolveRetryLanguage,
         } = require("../whisperwoof/bridge/retry-transcription-pure");
@@ -3760,10 +3929,13 @@ class IPCHandlers {
             ...(language ? { language } : {}),
           });
         } else if (whisperAvailable) {
-          const modelDir = path.join(app.getPath("userData"), "models");
-          let downloaded = [];
+          // Whisper models live in getModelsDir() (not <userData>/models), and
+          // transcribeLocalWhisper wants a registry id, never a path — the two
+          // reasons every Whisper retry used to fail.
+          let downloadedIds = [];
           try {
-            if (fs.existsSync(modelDir)) downloaded = fs.readdirSync(modelDir);
+            const listed = await this.whisperManager.listWhisperModels();
+            downloadedIds = (listed?.models || []).filter((m) => m.downloaded).map((m) => m.model);
           } catch (err) {
             debugLogger.warn(
               "Could not list downloaded Whisper models for retry",
@@ -3772,13 +3944,13 @@ class IPCHandlers {
             );
           }
 
-          const modelFile = resolveRetryModelFile(downloaded, requestedModel);
-          if (!modelFile) {
+          const modelId = resolveRetryWhisperModel(downloadedIds, requestedModel);
+          if (!modelId) {
             return { success: false, error: "No Whisper model downloaded. Go to Settings → Transcription to download a model, then retry." };
           }
 
           result = await this.whisperManager.transcribeLocalWhisper(buffer, {
-            model: path.join(modelDir, modelFile),
+            model: modelId,
             ...(language ? { language } : {}),
           });
         } else {
@@ -5820,6 +5992,9 @@ class IPCHandlers {
 
     ipcMain.handle("update-notification-respond", async (_event, action) => {
       this.windowManager?.dismissUpdateNotification();
+      if (action === "skip") {
+        return this.updateManager?.skipCurrentVersion() ?? { success: false };
+      }
       if (action === "update") {
         try {
           await this.updateManager?.downloadUpdate();
@@ -5953,6 +6128,35 @@ class IPCHandlers {
       } catch (error) {
         return { success: false, error: error.message };
       }
+    });
+  }
+
+  /**
+   * Every STT model the Regenerate picker may offer, with truthful
+   * downloaded/runnable state. Parakeet-family download state comes from the
+   * per-kind file check (parakeet.checkModelStatus stats a transducer file
+   * SenseVoice does not have).
+   */
+  async _buildRegenerateSttInventory() {
+    const { buildSttInventory } = require("../whisperwoof/bridge/regenerate-entry-pure");
+    const registry = require("../models/modelRegistryData.json");
+    let whisper = [];
+    try {
+      const listed = await this.whisperManager?.listWhisperModels?.();
+      whisper = (listed?.models || []).map((m) => ({ model: m.model, downloaded: Boolean(m.downloaded) }));
+    } catch {
+      whisper = [];
+    }
+    const parakeet = Object.keys(registry.parakeetModels || {}).map((model) => ({
+      model,
+      downloaded: Boolean(this.parakeetManager?.serverManager?.isModelDownloaded?.(model)),
+    }));
+    return buildSttInventory({
+      whisper,
+      parakeet,
+      whisperAvailable: Boolean(this.whisperManager?.serverManager?.isAvailable?.()),
+      parakeetOfflineAvailable: Boolean(this.parakeetManager?.serverManager?.isAvailable?.("offline")),
+      parakeetOnlineAvailable: Boolean(this.parakeetManager?.serverManager?.isAvailable?.("online")),
     });
   }
 

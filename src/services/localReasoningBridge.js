@@ -31,12 +31,17 @@ class LocalReasoningService {
     const startTime = Date.now();
 
     try {
+      // Dictation cleanup is a deterministic rewrite, not a chat: sample cold.
+      // This path (the one dictation actually takes) used to default to 0.7,
+      // which is where the random translations and "*punch*" replies came
+      // from; 0.3 also matches what eval/run-polish-eval.js measures. Not
+      // greedy: Qwen warns that greedy decoding loops. No repeat penalty —
+      // reduplication (看看, 谢谢, 慢慢) is grammar in Chinese, not a loop.
       const inferenceConfig = {
         maxTokens: config.maxTokens || this.calculateMaxTokens(text.length),
-        temperature: config.temperature || 0.7,
-        topK: config.topK || 40,
-        topP: config.topP || 0.9,
-        repeatPenalty: config.repeatPenalty || 1.1,
+        temperature: config.temperature ?? 0.3,
+        topK: config.topK ?? 40,
+        topP: config.topP ?? 0.9,
         contextSize: config.contextSize || 4096,
         threads: config.threads || 4,
         systemPrompt: config.systemPrompt || "",

@@ -562,14 +562,19 @@ class ParakeetManager {
 
     if (this.serverManager.isModelDownloaded(modelName)) {
       try {
-        const encoderPath = path.join(modelPath, "encoder.int8.onnx");
-        const stats = fs.statSync(encoderPath);
+        // Size of the model's own required files — SenseVoice ships
+        // model.int8.onnx, not a transducer's encoder/decoder/joiner, so
+        // stat'ing encoder.int8.onnx reported it as not downloaded.
+        const sizeBytes = getRequiredModelFiles(modelName).reduce(
+          (sum, file) => sum + fs.statSync(path.join(modelPath, file)).size,
+          0
+        );
         return {
           model: modelName,
           downloaded: true,
           path: modelPath,
-          size_bytes: stats.size,
-          size_mb: Math.round(stats.size / (1024 * 1024)),
+          size_bytes: sizeBytes,
+          size_mb: Math.round(sizeBytes / (1024 * 1024)),
           success: true,
           ...downloadStatus,
         };

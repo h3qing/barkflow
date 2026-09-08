@@ -11,6 +11,7 @@ import {
   normalizeChineseScript,
   resolveChineseScript,
 } from "../whisperwoof/core/language/normalize-chinese-script";
+import { guardPolishedOutput } from "../whisperwoof/core/polish/polish-output-guard";
 import {
   getSettings,
   getEffectiveReasoningModel,
@@ -1011,6 +1012,29 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
     return apiKey;
   }
 
+  /**
+   * The output guard rejected a polish result and the raw transcript pastes
+   * instead. Logged at WARN so it is visible at the default log level: a
+   * report of "it translated my Chinese" needs this line, and the
+   * REASONING_* stages are debug-only.
+   */
+  _logRejectedPolish(raw, polished, guarded) {
+    const preview = (s) => (s.length > 80 ? `${s.slice(0, 80)}…` : s);
+    logger.warn(
+      "REASONING_OUTPUT_REJECTED",
+      {
+        reason: guarded.reason,
+        detail: guarded.detail,
+        marker: guarded.marker,
+        rawLength: raw.length,
+        resultLength: polished.length,
+        raw: preview(raw),
+        polished: preview(polished),
+      },
+      "reasoning"
+    );
+  }
+
   async processWithReasoningModel(text, model, agentName) {
     // Signal the polish phase so the UI can switch "Transcribing…" → "Polishing…".
     this.onProcessingPhase?.("polishing");
@@ -1254,6 +1278,16 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
           reasoningModel,
           agentName
         );
+
+        // Last line of defense: a small model sometimes pastes its own
+        // deliberation ("注：原文中…修正后：…") into the answer as plain text,
+        // which no <think>-stripping can catch. When the output balloons or
+        // carries meta-markers the raw text lacks, paste what the user said.
+        const guarded = guardPolishedOutput(normalizedText, result);
+        if (!guarded.accepted) {
+          this._logRejectedPolish(normalizedText, result, guarded);
+          return normalizedText;
+        }
 
         logger.logReasoning("REASONING_SUCCESS", {
           resultLength: result.length,
@@ -1515,8 +1549,15 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
             effectiveModel,
             agentName
           );
+          // Same guard as the local-STT path: this branch used to paste
+          // whatever the model returned.
           if (result) {
-            processedText = result;
+            const guarded = guardPolishedOutput(processedText, result);
+            if (guarded.accepted) {
+              processedText = result;
+            } else {
+              this._logRejectedPolish(processedText, result, guarded);
+            }
           }
         }
       }
@@ -2092,12 +2133,17 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
     }
   }
 
+  /**
+   * Persist the transcription (and its audio) to the upstream store.
+   * @returns {Promise<{success: boolean, id: number|null}>} the upstream row id
+   *   when one was written — History entries keep it as the link to the audio.
+   */
   async saveTranscription(text, rawText = null) {
     if (!getSettings().dataRetentionEnabled) {
       logger.debug("Skipping transcription save — data retention disabled", {}, "audio");
       this.lastAudioBlob = null;
       this.lastAudioMetadata = null;
-      return true;
+      return { success: true, id: null };
     }
 
     try {
@@ -2120,9 +2166,9 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
         this.lastAudioMetadata = null;
       }
 
-      return true;
+      return { success: true, id: Number.isInteger(result?.id) ? result.id : null };
     } catch (error) {
-      return false;
+      return { success: false, id: null };
     }
   }
 
@@ -2736,8 +2782,15 @@ registerProcessor("pcm-streaming-processor", PCMStreamingProcessor);
               effectiveModel,
               agentName
             );
+            // Same guard as the batch path: streamed dictation must not be
+            // the one surface where a translation or emote slips through.
             if (result) {
-              finalText = result;
+              const guarded = guardPolishedOutput(finalText, result);
+              if (guarded.accepted) {
+                finalText = result;
+              } else {
+                this._logRejectedPolish(finalText, result, guarded);
+              }
             }
             logger.info(
               "Streaming BYOK reasoning complete",

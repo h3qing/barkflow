@@ -101,6 +101,31 @@
    "id": "en-zh-mixed-reverse",
    "input": "let's schedule the 复查 for next week and um make sure we bring the 检查报告",
    "want": "Fillers removed, capitalized. CRITICAL: 复查 and 检查报告 stay Chinese; the English stays English."
+  },
+  {
+   "id": "zh-only-filler-heavy",
+   "input": "嗯 然后 就是 那个 我们明天 那个 会议 改到周四吧 然后 就是 记得 提前 把 材料 发一下",
+   "want": "Fillers (嗯/然后/就是/那个) removed, punctuated, Chinese only. CRITICAL: no English anywhere in the output."
+  },
+  {
+   "id": "zh-en-clause-after-fillers",
+   "input": "嗯 然后 就是 那个 我们 deploy 一下 然后 就是 看看 log 有没有报错 然后再决定",
+   "want": "Fillers removed. CRITICAL: '看看 log 有没有报错 然后再决定' stays Chinese (with 'log' in English) — a partial rendering like 'then decide' is a failure."
+  },
+  {
+   "id": "zh-en-single-term",
+   "input": "这个 feature 的延迟太高了 我们能不能先改成 async 的",
+   "want": "Punctuated question. CRITICAL: 延迟 stays 延迟 (not 'latency'); feature/async stay English."
+  },
+  {
+   "id": "zh-en-term-to-chinese",
+   "input": "我们明天把这个新功能 deploy 一下然后看看有没有问题",
+   "want": "Punctuated. CRITICAL: 'deploy' stays English — 部署 is a failure."
+  },
+  {
+   "id": "zh-short-loanword",
+   "input": "好的 那我们明天 sync",
+   "want": "Short line out. 好的 may stay 好的 or become OK; 'sync' stays English; nothing added."
   }
  ]
 }

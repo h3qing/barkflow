@@ -93,8 +93,15 @@ jobs:
       - name: Build renderer
         run: cd src && npx vite build
 
+      # whisperwoofUpdateMode=manual: the app still checks for new releases,
+      # but an unsigned build cannot self-install (Squirrel refuses), so the
+      # prompt opens this release page for a manual download instead of a
+      # download that can never finish. Switch to signed builds to drop it.
+      # publish.channel=latest-arm64: the app looks for latest-arm64-mac.yml
+      # (src/updater.js sets that channel per arch); without this the file
+      # is named latest-mac.yml and every check 404s.
       - name: Build macOS arm64 (unsigned)
-        run: npx electron-builder --mac --arm64 --config.mac.identity=null --publish never
+        run: npx electron-builder --mac --arm64 --config.mac.identity=null --config.publish.channel=latest-arm64 --config.extraMetadata.whisperwoofUpdateMode=manual --publish never
         env:
           CSC_IDENTITY_AUTO_DISCOVERY: false
 
@@ -128,6 +135,7 @@ jobs:
           files: |
             dist/*.dmg
             dist/*.zip
+            dist/latest*.yml
           draft: false
           prerelease: false
         env:

@@ -180,8 +180,8 @@
       "description": "配置触发听写的方式",
       "hotkey": "快捷键",
       "mode": "模式",
-      "tapDescription": "按下开始/停止",
-      "holdDescription": "按住说话",
+      "tapDescription": "点按开始，再点按停止；按住说话，松开即输出。",
+      "holdDescription": "按住说话，松开即输出；双击锁定连续听写，再点按停止。",
       "test": "测试",
       "hotkeyToStartStop": "{{hotkey}} 开始/停止",
       "holdHotkey": "按住 {{hotkey}}",
@@ -1268,7 +1268,8 @@
         "badges": {
           "dev": "开发版",
           "latest": "最新",
-          "update": "更新"
+          "update": "更新",
+          "local": "本地"
         },
         "checkForUpdates": "检查更新",
         "checking": "检查中...",
@@ -1318,7 +1319,8 @@
         "restarting": "正在重启...",
         "title": "更新",
         "versionPlaceholder": "—",
-        "whatsNew": "v{{version}} 更新内容"
+        "whatsNew": "v{{version}} 更新内容",
+        "localBuild": "本地构建 — 不检查更新。拉取代码并重新构建即可更新。"
       }
     },
     "permissions": {
@@ -2002,7 +2004,9 @@
   "updateNotification": {
     "title": "WhisperWoof 有可用更新",
     "body": "版本 {{version}} 已可下载",
-    "cta": "立即更新"
+    "cta": "立即更新",
+    "skip": "跳过",
+    "viewRelease": "查看发布"
   },
   "permissionsGate": {
     "title": "需要权限",

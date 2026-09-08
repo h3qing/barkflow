@@ -4,6 +4,10 @@ interface UpdateStatus {
   updateAvailable: boolean;
   updateDownloaded: boolean;
   isDevelopment: boolean;
+  /** "off" (local/CI build, never checks), "manual" (unsigned release: opens the release page), "auto". */
+  updateMode?: "off" | "manual" | "auto";
+  updatesDisabled?: boolean;
+  disabledReason?: "development" | "local-build" | null;
 }
 
 interface UpdateInfo {
@@ -185,6 +189,11 @@ export function useUpdater() {
     updateGlobalState({ isDownloading: true, downloadProgress: 0, error: null });
     try {
       const result = await window.electronAPI.downloadUpdate();
+      // A manual-mode build opened the release page instead of downloading:
+      // no progress events will ever arrive, so don't leave the bar spinning.
+      if ((result as { manual?: boolean } | undefined)?.manual) {
+        updateGlobalState({ isDownloading: false, downloadProgress: 0 });
+      }
       return result;
     } catch (error) {
       updateGlobalState({

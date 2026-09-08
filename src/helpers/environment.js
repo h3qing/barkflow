@@ -27,6 +27,7 @@ const PERSISTED_KEYS = [
   "START_MINIMIZED",
   "UI_LANGUAGE",
   "WHISPER_CUDA_ENABLED",
+  "SKIPPED_UPDATE_VERSION",
 ];
 
 class EnvironmentManager {
@@ -163,6 +164,16 @@ class EnvironmentManager {
   saveActivationMode(mode) {
     const validMode = mode === "push" ? "push" : "tap";
     const result = this._saveKey("ACTIVATION_MODE", validMode);
+    this.saveAllKeysToEnvFile().catch(() => {});
+    return result;
+  }
+
+  getSkippedUpdateVersion() {
+    return this._getKey("SKIPPED_UPDATE_VERSION");
+  }
+
+  saveSkippedUpdateVersion(version) {
+    const result = this._saveKey("SKIPPED_UPDATE_VERSION", String(version || "").trim());
     this.saveAllKeysToEnvFile().catch(() => {});
     return result;
   }
